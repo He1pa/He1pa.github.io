@@ -569,6 +569,618 @@
       </tags>
   </entry>
   <entry>
+    <title>KMP算法以及代码实现</title>
+    <url>/2022/04/21/KMP%E7%AE%97%E6%B3%95%E4%BB%A5%E5%8F%8A%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/</url>
+    <content><![CDATA[<h1 id="KMP算法以及代码实现"><a href="#KMP算法以及代码实现" class="headerlink" title="KMP算法以及代码实现"></a>KMP算法以及代码实现</h1><h1 id="题目描述"><a href="#题目描述" class="headerlink" title="题目描述"></a>题目描述</h1><p>leetcode: <a href="https://leetcode-cn.com/problems/implement-strstr/">28.实现strStr()</a></p>
+<p>给你两个字符串 haystack 和 needle ，请你在 haystack 字符串中找出 needle 字符串出现的第一个位置（下标从 0 开始）。如果不存在，则返回  -1 。</p>
+<p>示例：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">input：haysteack=“aabaabaaf” needle= “aabaaf”</span><br><span class="line">output: 3</span><br></pre></td></tr></table></figure>
+<h1 id="KMP算法"><a href="#KMP算法" class="headerlink" title="KMP算法"></a>KMP算法</h1><p>暴力求解两个for循环，复杂度O(m*n)。KMP算法利用前缀表，获取已经匹配的文本内容，避免从头匹配。前缀表记录最长相等前后缀，用于模式串与主串不匹配时，回退到对应位置。</p>
+<h2 id="求取前缀表"><a href="#求取前缀表" class="headerlink" title="求取前缀表"></a>求取前缀表</h2><h3 id="前缀表说明"><a href="#前缀表说明" class="headerlink" title="前缀表说明"></a>前缀表说明</h3><p>前（后）缀定义：不包含最后（第一）一个字母，且以首（尾）字母开头（结尾）的子串，<code>aabaaf</code>为例：</p>
+<p>前缀：<code>a</code> <code>aa</code> <code>aab</code> <code>aaba</code> <code>aabaa</code></p>
+<p>后缀： <code>f</code> <code>af</code> <code>aaf</code> <code>baaf</code> <code>abaaf</code> </p>
+<p>前缀表记录了所有子串最长相等前后缀长度，<code>aabaaf</code>为例：</p>
+<p>字串包括：<code>a</code> <code>aa</code> <code>aab</code> <code>aaba</code> <code>aabaa</code> <code>aabaaf</code></p>
+<ul>
+<li>a： 无先后缀，0</li>
+<li>aa： 前缀<code>a</code>（第一个<code>a</code>）和后缀<code>a</code>（第二个<code>a</code>） 相等， 1</li>
+<li>aab： 无相等前后缀， 0</li>
+<li>aaba：前缀<code>a</code>(第一个<code>a</code>)后缀<code>a</code>（最后一个<code>a</code>）相等，1</li>
+<li>aabaa：前后缀<code>aa</code>， 2</li>
+<li>aabaaf： 0</li>
+</ul>
+<p>生成前缀表，记为next数组：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>2</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h3 id="前缀表计算"><a href="#前缀表计算" class="headerlink" title="前缀表计算"></a>前缀表计算</h3><p>初始化前缀表，并定义遍历下标<code>i</code>,<code>j</code>,其中<code>i</code>表示模式串中当前计算的位置，j表示与之匹配的前缀末尾：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">b</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">i</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">j</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>状态1：若<code>needle[i] != needle[j]</code>则 j回退， <code>j = next[j-1]</code>。若仍不相等，则继续回退。若相等或j = 0，则进入状态2。</p>
+<p>例如，对于：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">b</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">i</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">j</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此实，i = 5，j = 2 ，<code>needle[5] != needle[2]</code>， j = next[1 - 1] = 1</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">b</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">i</td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">j</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>仍不相等，继续回退 j = next[1-1] = 0，则进入状态2</p>
+<p>状态2：若<code>needle[i] == needle[j]</code>则 <code>next[i++] = next[++j]</code> </p>
+<p>例如对于初始状态：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">b</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">i</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">j</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>i = 1， j = 0, needle[1] == needle[0]，则j = 0 + 1,need[1] = 1, i = 1 + 1</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">b</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">a</th>
+<th style="text-align:center">f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">0</td>
+<td style="text-align:center">next[1] = 1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">i  = 1 + 1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center"></td>
+<td style="text-align:center">j = 0 + 1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="匹配过程"><a href="#匹配过程" class="headerlink" title="匹配过程"></a>匹配过程</h2><h3 id="模拟匹配"><a href="#模拟匹配" class="headerlink" title="模拟匹配"></a>模拟匹配</h3><p>状态1：初始状态：i,  j = 0, 0</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>i</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>b</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>j</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>状态2：当主串与模式串匹配时（<code>haysteack[i]==needle[j]</code>），i++,j++</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td>i</td>
+<td>→</td>
+<td>→</td>
+<td>→</td>
+<td>i</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>b</td>
+<td>a</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>j</td>
+<td>→</td>
+<td>→</td>
+<td>→</td>
+<td>j</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>状态3：当主串与模式串不匹配时（<code>haysteack[i]!=needle[j]</code>）。 j取前缀表前一位的值（<code>j = next[j-1]</code>）。若仍不相等且j&gt;0，则继续回退。若不相等且j = 0，则i++。</p>
+<p>例如：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>i</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>b</td>
+<td>a</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>j</td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>此时i = 5, j = 5, haysteack[5]!=needle[5]，j取前缀表前一位的值j=next[5-1] = 2</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>i</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>b</td>
+<td>a</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td>j</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>变为状态2，继续匹配，直至匹配完成</p>
+<p>若直至 j = 0 仍不相等，则i++。例如：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>d</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>i</td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>j=0</td>
+<td>←</td>
+<td>j</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>则i++，继续匹配</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>主串</th>
+<th>a</th>
+<th>a</th>
+<th>b</th>
+<th>a</th>
+<th>a</th>
+<th>d</th>
+<th>a</th>
+<th>a</th>
+<th>f</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td>i</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>模式串</td>
+<td>a</td>
+<td>a</td>
+<td>f</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td>j</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="代码实现"><a href="#代码实现" class="headerlink" title="代码实现"></a>代码实现</h2><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">Solution</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">strStr</span>(<span class="params">self, haystack: <span class="built_in">str</span>, needle: <span class="built_in">str</span></span>) -&gt; <span class="built_in">int</span>:</span><br><span class="line">        <span class="keyword">def</span> <span class="title function_">getNext</span>(<span class="params">s: <span class="built_in">str</span></span>) -&gt; <span class="type">List</span>[<span class="built_in">int</span>]:</span><br><span class="line">            <span class="comment"># 求取next数组</span></span><br><span class="line">            <span class="built_in">next</span> = [<span class="number">0</span>] * <span class="built_in">len</span>(s)</span><br><span class="line">            j = <span class="number">0</span></span><br><span class="line">            <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>, <span class="built_in">len</span>(s)):</span><br><span class="line">                <span class="keyword">while</span> j &gt; <span class="number">0</span> <span class="keyword">and</span> s[i] != s[j]:</span><br><span class="line">                    j = <span class="built_in">next</span>[j - <span class="number">1</span>]</span><br><span class="line">                <span class="keyword">if</span> s[i] == s[j]:</span><br><span class="line">                    j += <span class="number">1</span></span><br><span class="line">                <span class="built_in">next</span>[i] = j</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">next</span></span><br><span class="line">        <span class="comment"># 模式串为0时，返回0，满足indexOf()函数</span></span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">len</span>(needle) == <span class="number">0</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="number">0</span></span><br><span class="line">        <span class="built_in">next</span> = getNext(needle)</span><br><span class="line">        i, j = <span class="number">0</span>, <span class="number">0</span></span><br><span class="line">        <span class="comment"># 开始匹配</span></span><br><span class="line">        <span class="keyword">while</span> i &lt; <span class="built_in">len</span>(haystack) <span class="keyword">and</span> j &lt; <span class="built_in">len</span>(needle):</span><br><span class="line">            <span class="keyword">if</span> haystack[i] == needle[j]:</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">                j += <span class="number">1</span></span><br><span class="line">            <span class="keyword">elif</span> j:</span><br><span class="line">                j = <span class="built_in">next</span>[j - <span class="number">1</span>]</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                i += <span class="number">1</span></span><br><span class="line">        <span class="keyword">if</span> j == <span class="built_in">len</span>(needle):</span><br><span class="line">            <span class="keyword">return</span> i - j</span><br><span class="line">        <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>算法</category>
+      </categories>
+      <tags>
+        <tag>leetcode</tag>
+        <tag>KMP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Hello World</title>
+    <url>/2022/04/16/hello-world/</url>
+    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
+<span id="more"></span>
+<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
+<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
+<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
+<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
+<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+]]></content>
+  </entry>
+  <entry>
     <title>RAS算法的数学基础</title>
     <url>/2022/04/19/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB ETÜ - University of Economics &amp; Technology）的PPT课件，《信息安全原理及应用》第三版（熊平，朱天清）以及《信息安全数学基础——算法、应用与实践》第二版（任伟）。</p>
@@ -603,20 +1215,5 @@
         <tag>费马小定理</tag>
         <tag>Miller-Rabin</tag>
       </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2022/04/16/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<span id="more"></span>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
   </entry>
 </search>
