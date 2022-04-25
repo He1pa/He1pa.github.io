@@ -3034,4 +3034,150 @@
         <tag>几何</tag>
       </tags>
   </entry>
+  <entry>
+    <title>南大《软件分析》01.Introduction</title>
+    <url>/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。仅供个人学习，非原创，大部分内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>PL and Static Analysis</li>
+<li>Why We Learn Static Analysis</li>
+<li>What is Static Analysis</li>
+<li>Static Analysis Features and Examples</li>
+</ol>
+<span id="more"></span>
+<h1 id="PL-and-Static-Analysis"><a href="#PL-and-Static-Analysis" class="headerlink" title="PL and Static Analysis"></a>PL and Static Analysis</h1><p>PL: Progeamming Languages</p>
+<ul>
+<li>Theory<ul>
+<li>Language design</li>
+<li>Type system</li>
+<li>Semantics and logics</li>
+<li>……</li>
+</ul>
+</li>
+<li>Environment<ul>
+<li>Compilers</li>
+<li>Runtime system</li>
+<li>……</li>
+</ul>
+</li>
+<li>Application<ul>
+<li>==Program analysis==</li>
+<li>Program verification</li>
+<li>Program synthesis</li>
+<li>……</li>
+</ul>
+</li>
+</ul>
+<p>Background: In the last decade, the language cores had few changes, but the programs became significantly larger and more complicated.</p>
+<p>Challenge: How to ensure the reliability, security and other promises of large-scale and complex programs?</p>
+<h1 id="Why-we-need-static-analysis"><a href="#Why-we-need-static-analysis" class="headerlink" title="Why we need static analysis?"></a>Why we need static analysis?</h1><ul>
+<li>Program Reliability<ul>
+<li>Null pointer dereference, momery leak, etc.</li>
+</ul>
+</li>
+<li>Program Security<ul>
+<li>Private information leak, injection attack, etc.</li>
+</ul>
+</li>
+<li>Compiler Optimization<ul>
+<li>Dead code elimination, code motion, etc.</li>
+</ul>
+</li>
+<li>Program Understanding<ul>
+<li>IDE call hierarchy, type indication, etc.</li>
+</ul>
+</li>
+</ul>
+<h1 id="Static-Analysis"><a href="#Static-Analysis" class="headerlink" title="Static Analysis"></a>Static Analysis</h1><h2 id="Static-Analysis-1"><a href="#Static-Analysis-1" class="headerlink" title="Static Analysis"></a>Static Analysis</h2><p>==Static== analysis analyzes a program <em>P</em> to reason about its behaviors and deterines whether it satisfies some properties ==before running== <em>P</em>.</p>
+<ul>
+<li>Does <em>P</em> contain andy private information leaks?</li>
+<li>Does <em>P</em> deference any null pointers?</li>
+<li>Are all the cast operations in <em>P</em> safe?</li>
+<li>Can <em>v1</em> and <em>v2</em> in <em>P</em> point to the same memory location?</li>
+<li>Will certain <em>assert</em> statements in <em>P</em> fail?</li>
+<li>Is this piece of code in <em>P</em> dead(so that it could be eliminated)?</li>
+<li>…</li>
+</ul>
+<h2 id="Rice-Theorem"><a href="#Rice-Theorem" class="headerlink" title="Rice Theorem"></a>Rice Theorem</h2><p>Unfortuanately, by Rice’s Theorem, there is no such approach to determine whether P satisfies such non-trivial propertirs, i.e., giving exact answer: Yes or No.</p>
+<blockquote>
+<p>Rice’s Theorem:</p>
+<p>Any non-trivial property of the behavior of progras in a r.e. language is undecidable</p>
+</blockquote>
+<p>r.e.(recurisively enumerable) = recognizable by a Turing-machine（C, Java, and amost all languages）</p>
+<p>A property is trivial if either it is not satisfied by any r.e. language,  or if it is satisfied by all r.e. languages; otherwise it is non-trivial.</p>
+<p>non-trivial properties </p>
+<p>~= interesting properties </p>
+<p>~= the properties related with run-time behaviors of programs</p>
+<blockquote>
+<p>任何编程语言编写的程序中与动态运行时相关的特性都是不确定的</p>
+</blockquote>
+<p>Perfect static analysis</p>
+<ul>
+<li>Sound(Overapproximate，false postitivs), and</li>
+<li>Complete(Underaapproximate，false negatives)</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/SoundandComplete.png" alt></p>
+<p>Useful static analysis</p>
+<ul>
+<li>Compromise soundness(false negatives), or</li>
+<li>Compromise completeness(false positives)</li>
+</ul>
+<p>Mostly compromising completensess: ==Sound== but ==not fully-precise== static analysis.</p>
+<h2 id="Necessity-of-Soundness"><a href="#Necessity-of-Soundness" class="headerlink" title="Necessity of Soundness"></a>Necessity of Soundness</h2><p>Soundness is ==critiacal== to a collection of important(static-analysis) applications such as <em>compiler optimization</em> and <em>program verification</em>.</p>
+<p>Example: Safe Cast</p>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/SafeCast.png" alt></p>
+<ul>
+<li>Unsound: Safe Cast -&gt; wrong conclusion</li>
+<li>Sound: Not Safe Cast: correct conclusion</li>
+<li>Soundness is also ==preferable== to other (static-analysis) applications for which soundness is not demanded, e.g., bug detection, as better soundness implies more bugs could be found.</li>
+</ul>
+<h2 id="Static-Analysis-Bird’s-Eye-View"><a href="#Static-Analysis-Bird’s-Eye-View" class="headerlink" title="Static Analysis-Bird’s Eye View"></a>Static Analysis-Bird’s Eye View</h2><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">if (input)</span><br><span class="line">	x = 1;</span><br><span class="line">else</span><br><span class="line">	x = 0</span><br><span class="line">-&gt; x = ?</span><br></pre></td></tr></table></figure>
+<p>Two analysis results:</p>
+<ol>
+<li><p>when input is true, x = 1</p>
+<p>when input is false, x = 0</p>
+<p>Sonud, precise, expensive</p>
+</li>
+<li><p>x = 1 or  x = 0</p>
+<p>Sound, imprecise, cheap</p>
+</li>
+</ol>
+<p>Static Analysis: ensure(or get close to) ==soundness==, while making good trade-offs between analysis ==precision== and analysis ==speed==. </p>
+<h2 id="Two-Words-to-Conclude-Static-Analysis"><a href="#Two-Words-to-Conclude-Static-Analysis" class="headerlink" title="Two Words to Conclude Static Analysis"></a>Two Words to Conclude Static Analysis</h2><p>Abstraction + Over-approximation</p>
+<p>Example: Determine the sign (+, -, or 0) of all the variables of a given program.</p>
+<ul>
+<li>Abstraction</li>
+<li>Over-approximation<ul>
+<li>Transfer functions</li>
+<li>Control flows</li>
+</ul>
+</li>
+</ul>
+<h3 id="Abstaction"><a href="#Abstaction" class="headerlink" title="Abstaction"></a>Abstaction</h3><p>Determine the sign (+, -, or 0) of all the variables of a given program.</p>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/Abstraction.png" alt></p>
+<h3 id="Over-approximation"><a href="#Over-approximation" class="headerlink" title="Over-approximation:"></a>Over-approximation:</h3><h4 id="Transfer-Functions"><a href="#Transfer-Functions" class="headerlink" title="Transfer Functions"></a>Transfer Functions</h4><ul>
+<li>In static analysis, transfer functions define how to evaluate different program statements on abstract values.</li>
+<li>Transfer functions are defined according to “analysis problem” and the “semantics” of different program statements.</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/TransferFunction.png" alt></p>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/TranferFunctionAnalysis-1650865855789.png" alt></p>
+<p>1, 2: Static analysis is useful</p>
+<p>3: But(over-approximated) static analysis produces false positives</p>
+<h4 id="Control-Flows"><a href="#Control-Flows" class="headerlink" title="Control Flows"></a>Control Flows</h4><p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/ControlFlows.png" alt></p>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01.Introduction/ControlFlow2.png" alt></p>
+<p>As it’s impossible to enumerate all paths in practice, flow merging (as a way of over-approximation) is taken for granted in most static analyses.</p>
+]]></content>
+      <categories>
+        <category>软件分析</category>
+      </categories>
+      <tags>
+        <tag>Static Program Analysis</tag>
+        <tag>静态分析</tag>
+      </tags>
+  </entry>
 </search>
