@@ -30,7 +30,7 @@
 <meta property="og:image" content="https://nuaazz.github.io/2022/04/24/%E4%BA%8C%E7%BB%B4%E5%87%B8%E5%8C%85-Andrew%E7%AE%97%E6%B3%95/erect_the_fence_1.png">
 <meta property="og:image" content="https://nuaazz.github.io/2022/04/24/%E4%BA%8C%E7%BB%B4%E5%87%B8%E5%8C%85-Andrew%E7%AE%97%E6%B3%95/分界线.png">
 <meta property="article:published_time" content="2022-04-24T10:54:29.000Z">
-<meta property="article:modified_time" content="2022-04-25T13:27:11.964Z">
+<meta property="article:modified_time" content="2022-04-26T14:37:03.155Z">
 <meta property="article:author" content="HeiPa">
 <meta property="article:tag" content="leetcode">
 <meta property="article:tag" content="Andrew">
@@ -202,7 +202,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-04-25 21:27:11" itemprop="dateModified" datetime="2022-04-25T21:27:11+08:00">2022-04-25</time>
+                <time title="Modified: 2022-04-26 22:37:03" itemprop="dateModified" datetime="2022-04-26T22:37:03+08:00">2022-04-26</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -498,6 +498,63 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

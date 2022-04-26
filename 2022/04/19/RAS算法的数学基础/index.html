@@ -28,7 +28,7 @@
 <meta property="og:description" content="前言最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-04-19T03:12:12.419Z">
-<meta property="article:modified_time" content="2022-04-19T03:21:26.809Z">
+<meta property="article:modified_time" content="2022-04-26T14:36:37.608Z">
 <meta property="article:author" content="HeiPa">
 <meta property="article:tag" content="RSA">
 <meta property="article:tag" content="数学">
@@ -191,10 +191,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">Posted on</span>
-              
 
-              <time title="Created: 2022-04-19 11:12:12 / Modified: 11:21:26" itemprop="dateCreated datePublished" datetime="2022-04-19T11:12:12+08:00">2022-04-19</time>
+              <time title="Created: 2022-04-19 11:12:12" itemprop="dateCreated datePublished" datetime="2022-04-19T11:12:12+08:00">2022-04-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-04-26 22:36:37" itemprop="dateModified" datetime="2022-04-26T22:36:37+08:00">2022-04-26</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -490,6 +496,63 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 
