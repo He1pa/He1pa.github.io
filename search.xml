@@ -6006,7 +6006,7 @@
       </tags>
   </entry>
   <entry>
-    <title>南大《软件分析》03.Data Flow Analysis - Applications Ⅰ</title>
+    <title>南大《软件分析》03.Data Flow Analysis - Applications I</title>
     <url>/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/</url>
     <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
 <blockquote>
@@ -6144,7 +6144,7 @@
 </li>
 </ol>
 <h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/Eaxmple.jpg" alt></p>
-<h3 id="Interation-0-Init"><a href="#Interation-0-Init" class="headerlink" title="Interation 0(Init)"></a>Interation 0(Init)</h3><div class="table-container">
+<h3 id="Iteration-0-Init"><a href="#Iteration-0-Init" class="headerlink" title="Iteration 0(Init)"></a>Iteration 0(Init)</h3><div class="table-container">
 <table>
 <thead>
 <tr>
@@ -6375,6 +6375,557 @@
 <li>OUT’s will not change if IN’s do not change</li>
 <li>Reach a fixed point. Also related with monotonicity(next lectures)</li>
 </ul>
+]]></content>
+      <categories>
+        <category>软件分析</category>
+      </categories>
+      <tags>
+        <tag>静态分析</tag>
+        <tag>Static Analysis</tag>
+        <tag>Data Flow Analysis</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>南大《软件分析》04.Data Flow Analysis - Applications II</title>
+    <url>/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>Overview of Data Flow Analysis </li>
+<li>Preliminaries of Data Flow Analysis </li>
+<li>Reaching Definitions Analysis </li>
+<li>Live Variables Analysis </li>
+<li>Available Expressions Analysis</li>
+</ol>
+<span id="more"></span>
+<h1 id="Live-Variables-Analysis"><a href="#Live-Variables-Analysis" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h1><h2 id="Live-Variables-Analysis-1"><a href="#Live-Variables-Analysis-1" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h2><p>Live variables analysis tells whether the value of variable v at program point p could be used along some path in CFG starting at p. If so, v is live at p; otherwise, v is dead at p.</p>
+<ul>
+<li>Information of live variables can be used for register allocations. e.g., at some point all registers are full and we need to use one, then we should favor using a register with a dead value.</li>
+</ul>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/LiveVariablesAnalysis.jpg" alt></p>
+<h2 id="Understanding-Live-Variables-Analysis"><a href="#Understanding-Live-Variables-Analysis" class="headerlink" title="Understanding Live Variables Analysis"></a>Understanding Live Variables Analysis</h2><p>Abstraction</p>
+<ul>
+<li><p>Data Flow Values/Facts</p>
+<ul>
+<li><p>All the variables in a program</p>
+</li>
+<li><p>Can be represented by bit vertors</p>
+<p>e.g., V1, V2, V3, V4, …, V100(100 variables)</p>
+<p>$\underbrace{0000…0}_{100}$</p>
+<p>Bit i from the left represents variable Vi</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Safe-approximation</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/TransferFunction.png" alt></p>
+<h2 id="Algorithm-of-Live-Variables-Analysis"><a href="#Algorithm-of-Live-Variables-Analysis" class="headerlink" title="Algorithm of Live Variables Analysis"></a>Algorithm of Live Variables Analysis</h2><p>INPUT: CFG（$def_B$ and $use_B$ computed for each basic block B）</p>
+<p>OUTPUT: $IN[B]$ and $OUT[B]$ for each basic block B</p>
+<p>METHOD: <img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm.jpg" alt></p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Example.jpg" alt></p>
+<h3 id="Iteration-0-Init"><a href="#Iteration-0-Init" class="headerlink" title="Iteration 0(Init)"></a>Iteration 0(Init)</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init.jpg" alt></p>
+<h3 id="Iteration-1"><a href="#Iteration-1" class="headerlink" title="Iteration 1"></a>Iteration 1</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">000 0000 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1000 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes occur in IN[] of B1, B2, B3, B4, B5</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1.jpg" alt></p>
+<h3 id="Iteration-2"><a href="#Iteration-2" class="headerlink" title="Iteration 2"></a>Iteration 2</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">100 1001 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1001 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes orrcur in IN[] of B4</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2.jpg" alt></p>
+<h3 id="Iteration-3"><a href="#Iteration-3" class="headerlink" title="Iteration 3"></a>Iteration 3</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">100 1001 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1001 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>No changes occur in any IN[]</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration3.jpg" alt></p>
+<h1 id="Avaliable-Expression-Analysis"><a href="#Avaliable-Expression-Analysis" class="headerlink" title="Avaliable Expression Analysis"></a>Avaliable Expression Analysis</h1><h2 id="Avaliable-Expression-Analysis-1"><a href="#Avaliable-Expression-Analysis-1" class="headerlink" title="Avaliable Expression Analysis"></a>Avaliable Expression Analysis</h2><p>An expression x op y is available at program point p if (1) all paths from the entry to p must pass through the evaluation of x op y, and (2) after the last evaluation of x op y, there is no redefinition of x or y</p>
+<ul>
+<li>This definition means at program p, we can replace expression x op y by the result of its last evaluation</li>
+<li>The information of available expressions can be used for detecting global common subexpressions</li>
+</ul>
+<h2 id="Understanding-Avaliable-Expression-Analysis"><a href="#Understanding-Avaliable-Expression-Analysis" class="headerlink" title="Understanding Avaliable Expression Analysis"></a>Understanding Avaliable Expression Analysis</h2><p>Abstraction</p>
+<ul>
+<li><p>Data Flow Values/Facts </p>
+<ul>
+<li><p>All the expressions in a program</p>
+</li>
+<li><p>Can be represented by bit vectors </p>
+<p>e.g., E1, E2, E3, E4, …, E100 (100 expressions)</p>
+<p>$\underbrace{0000…0}_{100}$</p>
+<p>Bit i from the left represents expression Ei</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Safe-approximation</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Safe-approximation.png" alt></p>
+<ul>
+<li>Add to OUT the expression x op y(gen)</li>
+<li>Delete from IN any expression involving variable a(kill)</li>
+</ul>
+<p>$OUT[B] = gen_B \cup(IN[B] - kill_B)$</p>
+<p>$IN[B] = \cap_{P~a~predecessor~of~B }OUT[P]$</p>
+<p>$\cap$ : All paths from entry to point p must pass through the evaluation of x op y</p>
+<p>For safety of the analysis, it may report an expression as unavailable even if it is availabe(must analysis -&gt; under-approximation)</p>
+<h2 id="Algorithm-of-Avaliable-Expressions-Analysis"><a href="#Algorithm-of-Avaliable-Expressions-Analysis" class="headerlink" title="Algorithm of Avaliable Expressions Analysis"></a>Algorithm of Avaliable Expressions Analysis</h2><p>INPUT: CFG($kill_B$ and $gen_B$ computed for each basic block B)</p>
+<p>OUTPUT: IN[B] and OUT[B] for each basic block B</p>
+<p>METHOD:<img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm2.png" alt></p>
+<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h2><h3 id="Iteration-0-Init-1"><a href="#Iteration-0-Init-1" class="headerlink" title="Iteration 0(Init)"></a>Iteration 0(Init)</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init2.jpg" alt></p>
+<h3 id="Iteration-1-1"><a href="#Iteration-1-1" class="headerlink" title="Iteration 1"></a>Iteration 1</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">00000</td>
+<td style="text-align:center">p-1</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">11111 $\cap$ 10000</td>
+<td style="text-align:center">z/5  $e^7*x$</td>
+<td style="text-align:center">k,p</td>
+<td style="text-align:center">01010</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">y + 3</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">00011</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">2*y $e^7*x$</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">01110</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">00011 $\cap$ 01110</td>
+<td style="text-align:center">$e^7*x$ z/5</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">01010</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes occur in OUT[] of B1 B2 B3 B4 B5</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1_2.jpg" alt></p>
+<h3 id="Iteration-2-1"><a href="#Iteration-2-1" class="headerlink" title="Iteration 2"></a>Iteration 2</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">00000</td>
+<td style="text-align:center">p-1</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">01110 $\cap$ 10000</td>
+<td style="text-align:center">z/5  $e^7*x$</td>
+<td style="text-align:center">k,p</td>
+<td style="text-align:center">01010</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">y + 3</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">00011</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">2*y $e^7*x$</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">01110</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">00011 $\cap$ 01110</td>
+<td style="text-align:center">$e^7*x$ z/5</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">01010</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>No changes occur in any OUT[]</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2_2.jpg" alt></p>
+<h1 id="Analysis-Comparison"><a href="#Analysis-Comparison" class="headerlink" title="Analysis Comparison"></a>Analysis Comparison</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Reaching Definitions</th>
+<th style="text-align:center">Live Variables</th>
+<th style="text-align:center">Available Expressions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Domain</td>
+<td style="text-align:center">Set of definitions</td>
+<td style="text-align:center">Set of variables</td>
+<td style="text-align:center">Set of expressions</td>
+</tr>
+<tr>
+<td style="text-align:center">Direction</td>
+<td style="text-align:center">Forwards</td>
+<td style="text-align:center">Backwards</td>
+<td style="text-align:center">Forwards</td>
+</tr>
+<tr>
+<td style="text-align:center">Mat/Must</td>
+<td style="text-align:center">May</td>
+<td style="text-align:center">May</td>
+<td style="text-align:center">Must</td>
+</tr>
+<tr>
+<td style="text-align:center">Boundary</td>
+<td style="text-align:center">$OUT[entry]=\phi$</td>
+<td style="text-align:center">$IN[exit]=\phi$</td>
+<td style="text-align:center">$OUT[entry]=\phi$</td>
+</tr>
+<tr>
+<td style="text-align:center">Initialization</td>
+<td style="text-align:center">$OUT[B]=\phi$</td>
+<td style="text-align:center">$IN[B]=\phi$</td>
+<td style="text-align:center">$OUT[B]=\cup$</td>
+</tr>
+<tr>
+<td style="text-align:center">Transfer function</td>
+<td style="text-align:center">$OUT=gen\cup(IN-kill)$</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">Meet</td>
+<td style="text-align:center">$\cup$</td>
+<td style="text-align:center">$\cup$</td>
+<td style="text-align:center">$\cap$</td>
+</tr>
+</tbody>
+</table>
+</div>
 ]]></content>
       <categories>
         <category>软件分析</category>
