@@ -6936,4 +6936,175 @@
         <tag>Data Flow Analysis</tag>
       </tags>
   </entry>
+  <entry>
+    <title>南大《软件分析》05.Data Flow Analysis Foundation I</title>
+    <url>/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/</url>
+    <content><![CDATA[<h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>Iterative Algorithm, Another View</li>
+<li>Partial Order</li>
+<li>Upper and Lower Bounds</li>
+<li>Lattice, Semilattice, Complete and Product Lattice </li>
+<li>Data Flow Analysis Framework via Lattice</li>
+<li>Monotonicity and Fixed Point Theorem</li>
+<li>Relate Iterative Algorithm to Fixed Point Theorem</li>
+<li>May/Must Analysis, A Lattice View</li>
+<li>MOP and Distributivity</li>
+<li>Constant Propagation</li>
+<li>Worklist Algorithm</li>
+</ol>
+<span id="more"></span>
+<h1 id="Iterative-Algorithm-Anthor-View"><a href="#Iterative-Algorithm-Anthor-View" class="headerlink" title="Iterative Algorithm, Anthor View"></a>Iterative Algorithm, Anthor View</h1><ul>
+<li><p>Given a CFG (program) with k nodes, the iterative algorithm updates OUT[n] for every node n in each iteration. </p>
+</li>
+<li><p>Assume the domain of the values in data flow analysis is V, then we can define a k-tuple</p>
+<p>$(OUT[n_1], OUT[n_2], …, OUT[n_k])$</p>
+<p>as an element of set $(V_1 × V_2 × … × V_3)$denoted as $V^k$ , to hold the values of the analysis after each iteration</p>
+</li>
+<li><p>Each iteration can be considered as taking an action to map an element of Vk to a new element of Vk , through applying the transfer functions and control-flow handing, abstracted as a function$F: V^k \rightarrow V^k$</p>
+</li>
+<li><p>Then the algorithm outputs a series of k-tuples iteratively until a k-tuple is the same as the last one in two consecutive iterations</p>
+</li>
+</ul>
+<p>Given a CFG (program) with $k$ nodes, the iterative algorithm updates $OUT[n]$ for every node n in each iteration.</p>
+<p>Each iteration takes an action$F: V^k \rightarrow V^k$</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/IterationAlgorithm.jpg" alt></p>
+<ul>
+<li>init → $(\bot, \bot …, \bot) = X_0$</li>
+<li>iter 1 → $(v_1^1, v_2^1, …, v_k^1) = X_1 = F(X_0)$</li>
+<li>iter 2 → $(v_1^2, v_2^2, …, v_k^2) = X_2 = F(X_1)$</li>
+<li>…</li>
+<li>iter i → $(v_1^i, v_2^i, …, v_k^i) = X_i = F(X_{i-1})\because X_i=X_{i+1}$ </li>
+<li>iter i+1 → $(v_1^i, v_2^i, …, v_k^i) = X_{i+1} = F(X_{i})\therefore X_i=X_{i+1}=F(X_i)$</li>
+</ul>
+<p>X is a fied of function F if $X=F(X)$</p>
+<p>The iterative algorithm reaches a fixed point</p>
+<p>The iterative algorithm (or the IN/OUT equation system) produces a solution to a data flow analysis</p>
+<ul>
+<li>Is the algorithm guaranteed to terminate or reach the fixed point, or does it always have a solution?</li>
+<li>If so, is there only one solution or only one fixed point? If more than one, is our solution the best one (most precise)?</li>
+<li>When will the algorithm reach the fixed point, or when can we get the solution?</li>
+</ul>
+<h1 id="Partial-Order"><a href="#Partial-Order" class="headerlink" title="Partial Order"></a>Partial Order</h1><h2 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h2><p>We define poset as a pair (P, ⊑) where ⊑ is a binary relation that defines a partial ordering over P, and ⊑ has the following properties:</p>
+<ol>
+<li>∀x ∈ P, x ⊑ x (Reflexivity)</li>
+<li>∀x, y ∈ P, x ⊑ y ∧ y ⊑ x ⟹ x = y (Antisymmetry)</li>
+<li>∀x, y, z ∈ P, x ⊑ y ∧ y ⊑ z ⟹ x ⊑ z (Transitivity)</li>
+</ol>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example 1"></a>Example 1</h3><p>Is (S, ⊑) a poset where S is a set of integers and ⊑ represents ≤ (less than or equal to)?</p>
+<ol>
+<li>Reflexivity 1 ≤ 1， 2 ≤ 2 √</li>
+<li>Antisymmetry x ≤ y ∧ y ≤ x then x = y  √</li>
+<li>Transitivity 1 ≤ 2 ∧ 2 ≤ 3 then 1 ≤ 3  √</li>
+</ol>
+<h3 id="Example-2"><a href="#Example-2" class="headerlink" title="Example 2"></a>Example 2</h3><p>Is (S, ⊑) a poset where S is a set of integers and ⊑ represents &lt; (less than)?</p>
+<p>(1) Reflexivity 1 &lt; 1, 2&lt; 2  ×</p>
+<h3 id="Example-3"><a href="#Example-3" class="headerlink" title="Example 3"></a>Example 3</h3><p>Is (S, ⊑) a poset where S is a set of English words and ⊑ represents the substring relation, i.e., s1 ⊑ s2 means s1 is a substring of s2?</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/StringExample.jpg" alt></p>
+<ol>
+<li>Reflexivity √</li>
+<li>Antisymmetry √</li>
+<li>Transitivity √</li>
+</ol>
+<h3 id="Example-4"><a href="#Example-4" class="headerlink" title="Example 4"></a>Example 4</h3><p> Is (S, ⊑) a poset where S is the power set of set {a,b,c} and ⊑ represents ⊆ (subset)?</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/SubSetExample.jpg" alt></p>
+<ol>
+<li>Reflexivity √</li>
+<li>Antisymmetry √</li>
+<li>Transitivity √</li>
+</ol>
+<h1 id="Upper-and-Lower-Bounds"><a href="#Upper-and-Lower-Bounds" class="headerlink" title="Upper and Lower Bounds"></a>Upper and Lower Bounds</h1><p>Given a poset (P, ⊑) and its subset S that S ⊆ P, we say that u ∈ P is an upper bound of S, if ∀x ∈ S, x ⊑ u. Similarly, l ∈ P is an lower bound of S, if ∀x ∈ S, l ⊑ x.</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/UPandLowBound.png" alt></p>
+<p>We define the least upper bound (lub or join) of S, written ⊔S, if for every upper bound of S, say u, ⊔S ⊑ u. Similarly, We define the greatest lower bound (glb, or meet) of S, written ⊓S, if for every lower bound of S, say l, l ⊑ ⊓S.</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/LubGlb.png" alt></p>
+<p>Usually, if S contains only two elements a and b (S = {a, b}), then ⊔S can be written a ⊔ b (the join of a and b) ⊓S can be written a ⊓ b (the meet of a and b)</p>
+<h2 id="Some-Properties"><a href="#Some-Properties" class="headerlink" title="Some Properties"></a>Some Properties</h2><ul>
+<li><p>Not every poset has lub or glb</p>
+</li>
+<li><p>But if a poset has lub or glb, it will be unique</p>
+<p>Proof:</p>
+<p>assume g1 and g2 are both glbs of poset P </p>
+<p>according to the definition of glb </p>
+<p>g1 ⊑ (g2 = ⊓P) and g2 ⊑ (g1 = ⊓P) </p>
+<p>by the antisymmetry of partial order ⊑ </p>
+<p>g1 = g2</p>
+</li>
+</ul>
+<h1 id="Lattice-Semilattice-Complete-and-Product-Lattice"><a href="#Lattice-Semilattice-Complete-and-Product-Lattice" class="headerlink" title="Lattice, Semilattice, Complete and Product Lattice"></a>Lattice, Semilattice, Complete and Product Lattice</h1><h2 id="Lattice"><a href="#Lattice" class="headerlink" title="Lattice"></a>Lattice</h2><p>Given a poset (P, ⊑), ∀a, b ∈ P, if a ⊔ b and a ⊓ b exist, then (P, ⊑) is called a lattice</p>
+<p>A poset is a lattice if every pair of its elements has a least upper bound and a greatest lower bound</p>
+<h3 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h3><h4 id="Example-1-1"><a href="#Example-1-1" class="headerlink" title="Example 1"></a>Example 1</h4><p>Is (S, ⊑) a lattice where S is a set of integers and ⊑ represents ≤ (less than or equal to)?</p>
+<p>The ⊔ operator means “max” and ⊓ operator means “min” √</p>
+<h4 id="Example-2-1"><a href="#Example-2-1" class="headerlink" title="Example 2"></a>Example 2</h4><p>s (S, ⊑) a lattice where S is a set of English words and ⊑ represents the substring relation, i.e., s1 ⊑ s2 means s1 is a substring of s2?</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/StringExample.jpg" alt></p>
+<p>pin ⊔ sin = ? ×</p>
+<h4 id="Example-3-1"><a href="#Example-3-1" class="headerlink" title="Example 3"></a>Example 3</h4><p> Is (S, ⊑) a lattice where S is the power set of set {a,b,c} and ⊑ represents ⊆ (subset)?</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/SubSetExample.jpg" alt></p>
+<p>The ⊔ operator means ∪ and ⊓ operator means ∩ √</p>
+<h2 id="Semilattice"><a href="#Semilattice" class="headerlink" title="Semilattice"></a>Semilattice</h2><p>Given a poset (P, ⊑), ∀a, b ∈ P, if only a ⊔ b exists, then (P, ⊑) is called a join semilattice if only a ⊓ b exists, then (P, ⊑) is called a meet semilattice</p>
+<h2 id="Complete-Lattice"><a href="#Complete-Lattice" class="headerlink" title="Complete Lattice"></a>Complete Lattice</h2><p>Given a lattice (P, ⊑), for arbitrary subset S of P, if ⊔S and ⊓S exist, then (P, ⊑) is called a complete lattice</p>
+<p>All subsets of a lattice have a least upper bound and a greatest lower bound</p>
+<h2 id="Example-2"><a href="#Example-2" class="headerlink" title="Example"></a>Example</h2><h3 id="Example-1-2"><a href="#Example-1-2" class="headerlink" title="Example 1"></a>Example 1</h3><p>Is (S, ⊑) a complete lattice where S is a set of integers and ⊑ represents ≤ (less than or equal to)?</p>
+<p>For a subset $S^+$ including all positive integers, it has no ⊔$S^+$ (+∞)</p>
+<h3 id="Example-2-2"><a href="#Example-2-2" class="headerlink" title="Example 2"></a>Example 2</h3><p>Is (S, ⊑) a complete lattice where S is the power set of set {a,b,c} and ⊑ represents ⊆ (subset)?</p>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/SubSetExample.jpg" alt></p>
+<p>√</p>
+<p>Note: the definition of bounds implies that the bounds are not necessarily in the subsets (but they must be in the lattice)</p>
+<p>Every complete lattice (P, ⊑) has a greatest element = ⊔P called top and a least element ⊥ = ⊓P called bottom</p>
+<p>Every finite lattice (P is finite) is a complete lattice</p>
+<h2 id="Product-Lattice"><a href="#Product-Lattice" class="headerlink" title="Product Lattice"></a>Product Lattice</h2><p>Given lattices L1 = (P1, $⊑_1$), L2 = (P2, $⊑_2$), …, Ln = (Pn, $⊑_n$), if for all i, (Pi , $⊑_i$ ) has $⊔_i$ (least upper bound) and $⊓_i$ (greatest lower bound), then we can have a product lattice $L^n = (P, ⊑)$ that is defined by:</p>
+<ul>
+<li>$P = P_1 × … × P_n$</li>
+<li>$(x_1,…,x_n)⊑(y_1,…,y_n)\Leftrightarrow(x_1⊑y_1)∧…∧(x_n⊑y_n)$</li>
+<li>$(x_1,…,x_n)⊔(y_1,…,y_n)=(x_1⊔_1y_1,…,x_n⊔_ny_n)$</li>
+<li><p>$(x_1,…,x_n)⊓(y_1,…,y_n)=(x_1⊓ _1y_1,…,x_n⊓ _ny_n)$</p>
+</li>
+<li><p>A product lattice is a lattice</p>
+</li>
+<li>If a product lattice L is a product of complete lattices, then L is also complete</li>
+</ul>
+<h1 id="Data-Flow-Analysis-Framework-via-Lattice"><a href="#Data-Flow-Analysis-Framework-via-Lattice" class="headerlink" title="Data Flow Analysis Framework via Lattice"></a>Data Flow Analysis Framework via Lattice</h1><p>A data flow analysis framework (D, L, F) consists of:</p>
+<ul>
+<li>D: a direction of data flow: forwards or backwards</li>
+<li>L: a lattice including domain of the values V and a meet ⊓ or join ⊔ operator</li>
+<li>F: a family of transfer functions from V to V</li>
+</ul>
+<p><img src="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/DFAviaLattice.png" alt></p>
+<p>Data flow analysis can be seen as iteratively applying transfer functions and meet/join operations on the values of a lattice</p>
+<h1 id="Monotonicity-and-Fixed-Point-Theorem"><a href="#Monotonicity-and-Fixed-Point-Theorem" class="headerlink" title="Monotonicity and Fixed Point Theorem"></a>Monotonicity and Fixed Point Theorem</h1><h2 id="Monotonicity"><a href="#Monotonicity" class="headerlink" title="Monotonicity"></a>Monotonicity</h2><p>A function f: L → L (L is a lattice) is monotonic if ∀x, y ∈ L, x ⊑ y ⟹ f(x) ⊑ f(y)</p>
+<h2 id="Fixed-Point-Theorem"><a href="#Fixed-Point-Theorem" class="headerlink" title="Fixed-Point Theorem"></a>Fixed-Point Theorem</h2><p>Given a complete lattice (L, ⊑), if </p>
+<p>(1) f: L → L is monotonic and (2) L is finite, </p>
+<p>then the least fixed point of f can be found by iterating $f(⊥), f(f(⊥)), …, f^k(⊥)$ until a fixed point is reached the greatest fixed point of f can be found by iterating $f( ), f(f( )), …, f^k( )$ until a fixed point is reached</p>
+<h2 id="Prove-Existence-of-fixed-point"><a href="#Prove-Existence-of-fixed-point" class="headerlink" title="Prove: Existence of fixed point"></a>Prove: Existence of fixed point</h2><p>Proof:</p>
+<p>By the definition of ⊥ and f: L → L, we have $⊥ ⊑ f(⊥)$</p>
+<p>As f is monotonic, we have $f(⊥) ⊑ f(f(⊥)) = f^2(⊥)$</p>
+<p>By repeatedly applying f, we have an ascending chain $⊥ ⊑ f(⊥) ⊑ f^2(⊥) ⊑ … ⊑ f^i (⊥)$</p>
+<p>As L is finite (its height is H), the values are bounded among $⊥ , f(⊥) , f^2(⊥) … f^H(⊥)$</p>
+<p>When i &gt; H, by pigeonhole principle, there exists k and j that $f^k(⊥) = f^j (⊥) (assume k &lt; j ≤ H+1)$</p>
+<p>Further as fk(⊥) ⊑ … ⊑ fj (⊥), we have $f^{Fix} = f^k(⊥) = f^{k+1}(⊥) = f^j (⊥)$</p>
+<p>Thus, the fixed point exists.</p>
+<h2 id="Prove-Least-Fixed-Point"><a href="#Prove-Least-Fixed-Point" class="headerlink" title="Prove: Least Fixed Point"></a>Prove: Least Fixed Point</h2><p>Proof:</p>
+<p>Assume we have another fixed point x, i.e., x = f(x)</p>
+<p>By the definition of ⊥, we have ⊥ ⊑ x</p>
+<p>Induction begins:</p>
+<p>As f is monotonic, we have f(⊥) ⊑ f(x)</p>
+<p>Assume $f^i (⊥) ⊑ f^i (x)$, as f is monotonic, we have $f^{i+1}(⊥) ⊑ f{i+1}(x)$</p>
+<p>Thus by induction, we have $f^i (⊥) ⊑ f^i (x)$</p>
+<p>Thus  $f^i (⊥) ⊑ f^i (x) = x$, then we have $f^{Fix} = f^k(⊥) ⊑ x$ </p>
+<p>Thus the fixed point is the least</p>
+<p>Now what we have just seen is the property (fixed point theorem) for the function on a lattice. We cannot say our iterative algorithm also has that property unless we can relate the algorithm to the fixed point theorem, if possible</p>
+]]></content>
+      <categories>
+        <category>软件分析</category>
+      </categories>
+      <tags>
+        <tag>静态分析</tag>
+        <tag>Static Analysis</tag>
+        <tag>Data Flow Analysis</tag>
+      </tags>
+  </entry>
 </search>
