@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="南大《软件分析》06.DadaFlowAnalysisFoundation II">
+<meta property="og:url" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/height.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MayandMust1.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MayandMust2.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MOP.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/ItervsMOP.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/domain.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/Nondistributivity.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/Algorithm.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/WorklistAlgorithm.jpg">
+<meta property="article:published_time" content="2022-05-04T05:48:12.000Z">
+<meta property="article:modified_time" content="2022-12-08T05:37:10.006Z">
+<meta property="article:author" content="HeiPa">
+<meta property="article:tag" content="静态分析">
+<meta property="article:tag" content="Static Analysis">
+<meta property="article:tag" content="Data Flow Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/height.png">
+
+<link rel="canonical" href="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>南大《软件分析》06.DadaFlowAnalysisFoundation II | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          南大《软件分析》06.DadaFlowAnalysisFoundation II
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-05-04 13:48:12" itemprop="dateCreated datePublished" datetime="2022-05-04T13:48:12+08:00">2022-05-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 13:37:10" itemprop="dateModified" datetime="2022-12-08T13:37:10+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>Iterative Algorithm, Another View</li>
+<li>Partial Order</li>
+<li>Upper and Lower Bounds</li>
+<li>Lattice, Semilattice, Complete and Product Lattice </li>
+<li>Data Flow Analysis Framework via Lattice</li>
+<li>Monotonicity and Fixed Point Theorem</li>
+<li>Relate Iterative Algorithm to Fixed Point Theorem</li>
+<li>May/Must Analysis, A Lattice View</li>
+<li>MOP and Distributivity</li>
+<li>Constant Propagation</li>
+<li>Worklist Algorithm</li>
+</ol>
+<span id="more"></span>
+<h1 id="Review-The-Questions-We-Have-Seen-Before"><a href="#Review-The-Questions-We-Have-Seen-Before" class="headerlink" title="Review The Questions We Have Seen Before"></a>Review The Questions We Have Seen Before</h1><p>The iterative algorithm (or the IN/OUT equation system) produces a solution to a data flow analysis</p>
+<ul>
+<li>Is the algorithm guaranteed to terminate or reach the fixed point, or does it always have a solution?</li>
+<li>If so, is there only one solution or only one fixed point? If more than one, is our solution the best one (most precise)?</li>
+<li>When will the algorithm reach the fixed point, or when can we get the solution?</li>
+</ul>
+<p>Now what we have just seen is the property (fixed point theorem) for the function on a lattice. We cannot say our iterative algorithm also has that property unless we can relate the algorithm to the fixed point theorem, if possible</p>
+<h1 id="Relate-Iterative-Algorithm-to-Fixed-Point-Theorem"><a href="#Relate-Iterative-Algorithm-to-Fixed-Point-Theorem" class="headerlink" title="Relate Iterative Algorithm to Fixed-Point Theorem"></a>Relate Iterative Algorithm to Fixed-Point Theorem</h1><ul>
+<li>​         → $(\bot, \bot …, \bot)$</li>
+<li>iter 1 → $(v_1^1, v_2^1, …, v_k^1)$</li>
+<li>iter 2 → $(v_1^2, v_2^2, …, v_k^2)$</li>
+<li>…</li>
+<li>iter i → $(v_1^i, v_2^i, …, v_k^i)$ </li>
+<li>iter i+1 → $(v_1^i, v_2^i, …, v_k^i)$</li>
+</ul>
+<p>Given a complete lattice (L, ⊑), if </p>
+<p>(1) f: L → L is monotonic and (2) L is finite, </p>
+<p>then the least fixed point of f can be found by iterating $f(⊥), f(f(⊥)), …, f^k(⊥)$ until a fixed point is reached the greatest fixed point of f can be found by iterating $f( ), f(f( )), …, f^k( )$ until a fixed point is reached</p>
+<p>If a product lattice $L^k$ is a product of complete (and finite) lattices, i.e., (L, L, …, L), then $L^k$ is also complete (and finite)</p>
+<p>In each iteration, it is equivalent to think that we apply function F which consists of (1) transfer function fi : L → L for every node (2) join/meet function ⊔/⊓: L×L → L for control-flow confluence</p>
+<p>Now the remaining issue is to prove that function F is monotonic</p>
+<h2 id="Prove-Function-F-is-Monotonic"><a href="#Prove-Function-F-is-Monotonic" class="headerlink" title="Prove Function F is Monotonic"></a>Prove Function F is Monotonic</h2><p>In each iteration, it is equivalent to think that we apply function F which consists of </p>
+<ol>
+<li><p>transfer function fi : L → L for every node</p>
+<p>Gen/Kill function is monotonic</p>
+</li>
+<li><p>join/meet function ⊔/⊓: L×L → L for control-flow confluence</p>
+<p>Actually the binary operator is a basic case of L × L ×… × L, we want show that ⊔ is monotonic</p>
+</li>
+</ol>
+<blockquote>
+<p>Proof. </p>
+<p>∀x, y, z ∈ L, x ⊑ y, we want to prove x ⊔ z ⊑ y ⊔ z </p>
+<p>by the definition of ⊔, y ⊑ y ⊔ z </p>
+<p>by transitivity of ⊑, x ⊑ y ⊔ z </p>
+<p>thus y ⊔ z is an upper bound for x, and also for z (by ⊔’s definition) as x ⊔ z is the least upper bound of x and z </p>
+<p>thus x ⊔ z ⊑ y ⊔ z</p>
+</blockquote>
+<p>Thus the fixed point theorem applies to the iterative algorithm for data flow analysis.</p>
+<h2 id="When-Will-the-Algorithm-Reach-the-Fixed-Point"><a href="#When-Will-the-Algorithm-Reach-the-Fixed-Point" class="headerlink" title="When Will the Algorithm Reach the Fixed Point?"></a>When Will the Algorithm Reach the Fixed Point?</h2><p>The height of a lattice h is the length of the longest path from Top to Bottom in the lattice.</p>
+<p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/height.png" alt></p>
+<p>The maximum iterations i needed to reach the fixed point</p>
+<p>In each iteration, assume only one step in the lattice (upwards or downwards) is made in one node (e.g., one 0-&gt;1 in RD) </p>
+<p>Assume the lattice height is h and the number of nodes in CFG is k </p>
+<p>We need at most i = h*k iterations</p>
+<h1 id="May-and-Must-Analyses-a-Lattice-View"><a href="#May-and-Must-Analyses-a-Lattice-View" class="headerlink" title="May and Must Analyses, a Lattice View"></a>May and Must Analyses, a Lattice View</h1><p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MayandMust1.jpg" alt></p>
+<p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MayandMust2.jpg" alt></p>
+<h1 id="MOP-and-Distributivity"><a href="#MOP-and-Distributivity" class="headerlink" title="MOP and Distributivity"></a>MOP and Distributivity</h1><h2 id="How-Precise-Is-Our-Solution"><a href="#How-Precise-Is-Our-Solution" class="headerlink" title="How Precise Is Our Solution?"></a>How Precise Is Our Solution?</h2><p>Meet-Over-All-Paths Solution(MOP)</p>
+<p>$P = Entry \rightarrow S_1 \rightarrow S_2 \rightarrow \dots \rightarrow S_i$</p>
+<p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/MOP.jpg" alt></p>
+<p>Transfer function $F<em>P$ for a path P (from Entry to $S_i$ ) is a composition of transfer functions for all statements on that path: $f</em>{S1}$, $f<em>{S2}$, …, $f</em>{S_{i-1}}$</p>
+<p>$MOP[S_i]=⊔/⊓ F_P(OUT[Entry])$</p>
+<p>MOP computes the data-flow values at the end of each path and apply join / meet operator to these values to find their lub / glb</p>
+<p>Some paths may be not executable -&gt; not fully precise</p>
+<p>Unbounded, and not enumerable -&gt; impratical</p>
+<h2 id="Ours-Iterative-Alorithm-vs-MOP"><a href="#Ours-Iterative-Alorithm-vs-MOP" class="headerlink" title="Ours(Iterative Alorithm) vs. MOP"></a>Ours(Iterative Alorithm) vs. MOP</h2><p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/ItervsMOP.png" alt></p>
+<p>$IN[S<em>4]=f</em>{s<em>3}(f</em>{s<em>1}(OUT[Entry])⊔f</em>{s_2}(OUT[Entry]))$</p>
+<p>$MOP[S<em>4]=f</em>{s<em>3}(f</em>{s<em>1}(OUT[Entry]))⊔f</em>{s<em>3}(f</em>{s_2}(OUT[Entry]))$</p>
+<p>Ours = F(x⊔y),  MOP = F(x) ⊔ F(y)</p>
+<blockquote>
+<p>By definition of lub ⊔, we have </p>
+<p>x ⊑ x ⊔ y and y ⊑ x ⊔ y </p>
+<p>As transfer function F is monotonic, we have </p>
+<p>F(x) ⊑ F(x ⊔ y) and F(y) ⊑ F(x ⊔ y) </p>
+<p>That means F(x ⊔ y) is an upper bound of F(x) and F(y) </p>
+<p>As F(x) ⊔ F(y) is the lub of F(x) and F(y), we have </p>
+<p>F(x) ⊔ F(y) ⊑ F(x ⊔ y) </p>
+<p>MOP ⊑ Ours </p>
+<p>(Ours is less precise than MOP) </p>
+</blockquote>
+<p>When F is distributive, i.e., F(x ⊔ y) = F(x) ⊔ F(y), MOP=Ours(Ours is as precise as MOP)</p>
+<p>Bit-vector or Gen/Kill problems (set union /intersection for join/meet) are distributive, but some analyses are not distributie.</p>
+<h1 id="Constant-Propagation"><a href="#Constant-Propagation" class="headerlink" title="Constant Propagation"></a>Constant Propagation</h1><p>Given a variable x at program point p, determine whether x is guaranteed to hold a constant value at p.</p>
+<p>The OUT of each node in CFG, includes a set of pairs (x, v) where x is a variable and v is the value held by x after that node</p>
+<p>A  data flow analysis framework (D, L, F) consists of: </p>
+<ul>
+<li>D: a direction of data flow: forwards or backwards</li>
+<li>L: a lattice including domain of the values V and a meet ⊓ or join ⊔ operator</li>
+<li>F: a family of transfer functions from V to V</li>
+</ul>
+<h2 id="Lattice"><a href="#Lattice" class="headerlink" title="Lattice"></a>Lattice</h2><ul>
+<li><p>Domain of the values V</p>
+<p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/domain.jpg" alt></p>
+</li>
+<li><p>Meet Operator ⊓</p>
+<ul>
+<li>NAC ⊓ v = NAC</li>
+<li>UNDEF ⊓ v = v</li>
+<li>c ⊓ c = c</li>
+<li>c1 ⊓ c2 = NAC</li>
+</ul>
+</li>
+</ul>
+<h2 id="Transfer-Function"><a href="#Transfer-Function" class="headerlink" title="Transfer Function"></a>Transfer Function</h2><p>Given a statement s: x = …, we define its transfer function F as</p>
+<p>$F:OUT[s]=gen \cup (IN[s] - {(x,_)})$</p>
+<p>(we use val(x) to denote the lattice value that variable x holds)</p>
+<ul>
+<li>s: x = c // c is a constant gen = {x,c}</li>
+<li>s: x = y  gen = {(x, val(y))}</li>
+<li>s: x = y op z gen = {(x,f(y,z))}</li>
+</ul>
+<p>f{y,z} = </p>
+<ul>
+<li>val(y) op val(z) // if val(y) and val(z) are constants</li>
+<li>NAC // if val(y) or val(z) is NAC</li>
+<li>UNDEF // otherwise</li>
+</ul>
+<p>(if s is not an assignment statement, F is the identity function)</p>
+<h2 id="Nondistributivity"><a href="#Nondistributivity" class="headerlink" title="Nondistributivity"></a>Nondistributivity</h2><p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/Nondistributivity.jpg" alt></p>
+<p>F(X ⊓ Y) = {(a,NAC), (b,NAC), (c,NAC)}</p>
+<p>F(x) ⊓ F(Y) = {(a, NAC), (b, NAC), (c,10)} </p>
+<p>F(X ⊓ Y) ≠ F(x) ⊓ F(Y)  and F(X ⊓ Y) ⊑ F(x) ⊓ F(Y)</p>
+<h1 id="Worklist-Algorithm-an-optimization-of-Iterative-Algorithm"><a href="#Worklist-Algorithm-an-optimization-of-Iterative-Algorithm" class="headerlink" title="Worklist Algorithm, an optimization of Iterative Algorithm"></a>Worklist Algorithm, an optimization of Iterative Algorithm</h1><h2 id="Review-Iterative-Algorithm-for-May-amp-Forward-Analysis"><a href="#Review-Iterative-Algorithm-for-May-amp-Forward-Analysis" class="headerlink" title="Review Iterative Algorithm for May&amp;Forward Analysis"></a>Review Iterative Algorithm for May&amp;Forward Analysis</h2><p>INPUT: CFG($kill_B$ and $gen_B$ computed for each basic block B)</p>
+<p>OUTPUT: $IN[B]$ and$OUT[B]$ for each basic block B</p>
+<p>METHOD:<img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/Algorithm.jpg" alt></p>
+<h2 id="WorkList-Algorithm"><a href="#WorkList-Algorithm" class="headerlink" title="WorkList Algorithm"></a>WorkList Algorithm</h2><p><img src="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/WorklistAlgorithm.jpg" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" rel="tag"># 静态分析</a>
+              <a href="/tags/Static-Analysis/" rel="tag"># Static Analysis</a>
+              <a href="/tags/Data-Flow-Analysis/" rel="tag"># Data Flow Analysis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/" rel="prev" title="南大《软件分析》05.Data Flow Analysis Foundation I">
+      <i class="fa fa-chevron-left"></i> 南大《软件分析》05.Data Flow Analysis Foundation I
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/12/08/CSS/" rel="next" title="CSS">
+      CSS <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-number">2.</span> <span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Review-The-Questions-We-Have-Seen-Before"><span class="nav-number">3.</span> <span class="nav-text">Review The Questions We Have Seen Before</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Relate-Iterative-Algorithm-to-Fixed-Point-Theorem"><span class="nav-number">4.</span> <span class="nav-text">Relate Iterative Algorithm to Fixed-Point Theorem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prove-Function-F-is-Monotonic"><span class="nav-number">4.1.</span> <span class="nav-text">Prove Function F is Monotonic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#When-Will-the-Algorithm-Reach-the-Fixed-Point"><span class="nav-number">4.2.</span> <span class="nav-text">When Will the Algorithm Reach the Fixed Point?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#May-and-Must-Analyses-a-Lattice-View"><span class="nav-number">5.</span> <span class="nav-text">May and Must Analyses, a Lattice View</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MOP-and-Distributivity"><span class="nav-number">6.</span> <span class="nav-text">MOP and Distributivity</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Precise-Is-Our-Solution"><span class="nav-number">6.1.</span> <span class="nav-text">How Precise Is Our Solution?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ours-Iterative-Alorithm-vs-MOP"><span class="nav-number">6.2.</span> <span class="nav-text">Ours(Iterative Alorithm) vs. MOP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Constant-Propagation"><span class="nav-number">7.</span> <span class="nav-text">Constant Propagation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lattice"><span class="nav-number">7.1.</span> <span class="nav-text">Lattice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transfer-Function"><span class="nav-number">7.2.</span> <span class="nav-text">Transfer Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nondistributivity"><span class="nav-number">7.3.</span> <span class="nav-text">Nondistributivity</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Worklist-Algorithm-an-optimization-of-Iterative-Algorithm"><span class="nav-number">8.</span> <span class="nav-text">Worklist Algorithm, an optimization of Iterative Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Review-Iterative-Algorithm-for-May-amp-Forward-Analysis"><span class="nav-number">8.1.</span> <span class="nav-text">Review Iterative Algorithm for May&amp;Forward Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WorkList-Algorithm"><span class="nav-number">8.2.</span> <span class="nav-text">WorkList Algorithm</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

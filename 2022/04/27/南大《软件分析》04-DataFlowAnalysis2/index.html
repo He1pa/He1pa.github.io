@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="南大《软件分析》04.Data Flow Analysis - Applications II">
+<meta property="og:url" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/LiveVariablesAnalysis.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/TransferFunction.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Example.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration3.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Safe-approximation.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm2.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init2.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1_2.jpg">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2_2.jpg">
+<meta property="article:published_time" content="2022-04-27T05:13:32.000Z">
+<meta property="article:modified_time" content="2022-12-08T05:37:09.991Z">
+<meta property="article:author" content="HeiPa">
+<meta property="article:tag" content="静态分析">
+<meta property="article:tag" content="Static Analysis">
+<meta property="article:tag" content="Data Flow Analysis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/LiveVariablesAnalysis.jpg">
+
+<link rel="canonical" href="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>南大《软件分析》04.Data Flow Analysis - Applications II | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          南大《软件分析》04.Data Flow Analysis - Applications II
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-27 13:13:32" itemprop="dateCreated datePublished" datetime="2022-04-27T13:13:32+08:00">2022-04-27</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>Overview of Data Flow Analysis </li>
+<li>Preliminaries of Data Flow Analysis </li>
+<li>Reaching Definitions Analysis </li>
+<li>Live Variables Analysis </li>
+<li>Available Expressions Analysis</li>
+</ol>
+<span id="more"></span>
+<h1 id="Live-Variables-Analysis"><a href="#Live-Variables-Analysis" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h1><h2 id="Live-Variables-Analysis-1"><a href="#Live-Variables-Analysis-1" class="headerlink" title="Live Variables Analysis"></a>Live Variables Analysis</h2><p>Live variables analysis tells whether the value of variable v at program point p could be used along some path in CFG starting at p. If so, v is live at p; otherwise, v is dead at p.</p>
+<ul>
+<li>Information of live variables can be used for register allocations. e.g., at some point all registers are full and we need to use one, then we should favor using a register with a dead value.</li>
+</ul>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/LiveVariablesAnalysis.jpg" alt></p>
+<h2 id="Understanding-Live-Variables-Analysis"><a href="#Understanding-Live-Variables-Analysis" class="headerlink" title="Understanding Live Variables Analysis"></a>Understanding Live Variables Analysis</h2><p>Abstraction</p>
+<ul>
+<li><p>Data Flow Values/Facts</p>
+<ul>
+<li><p>All the variables in a program</p>
+</li>
+<li><p>Can be represented by bit vertors</p>
+<p>e.g., V1, V2, V3, V4, …, V100(100 variables)</p>
+<p>$\underbrace{0000…0}_{100}$</p>
+<p>Bit i from the left represents variable Vi</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Safe-approximation</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/TransferFunction.png" alt></p>
+<h2 id="Algorithm-of-Live-Variables-Analysis"><a href="#Algorithm-of-Live-Variables-Analysis" class="headerlink" title="Algorithm of Live Variables Analysis"></a>Algorithm of Live Variables Analysis</h2><p>INPUT: CFG（$def_B$ and $use_B$ computed for each basic block B）</p>
+<p>OUTPUT: $IN[B]$ and $OUT[B]$ for each basic block B</p>
+<p>METHOD: <img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm.jpg" alt></p>
+<h2 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h2><p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Example.jpg" alt></p>
+<h3 id="Iteration-0-Init"><a href="#Iteration-0-Init" class="headerlink" title="Iteration 0(Init)"></a>Iteration 0(Init)</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init.jpg" alt></p>
+<h3 id="Iteration-1"><a href="#Iteration-1" class="headerlink" title="Iteration 1"></a>Iteration 1</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">000 0000 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1000 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes occur in IN[] of B1, B2, B3, B4, B5</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1.jpg" alt></p>
+<h3 id="Iteration-2"><a href="#Iteration-2" class="headerlink" title="Iteration 2"></a>Iteration 2</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">100 1001 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1001 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes orrcur in IN[] of B4</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2.jpg" alt></p>
+<h3 id="Iteration-3"><a href="#Iteration-3" class="headerlink" title="Iteration 3"></a>Iteration 3</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">OUTPUT</th>
+<th style="text-align:center">use</th>
+<th style="text-align:center">def</th>
+<th style="text-align:center">INPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">exit</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">000 0000</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">000 0000</td>
+<td style="text-align:center">p</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">000 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">100 1001 U 000 1000</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">010 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">000 1000</td>
+<td style="text-align:center">x</td>
+<td style="text-align:center"></td>
+<td style="text-align:center">100 1000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">010 1001 U 100 1000</td>
+<td style="text-align:center">k</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">100 1001</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">100 1001</td>
+<td style="text-align:center">p q z</td>
+<td style="text-align:center">y x</td>
+<td style="text-align:center">001 1101</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>No changes occur in any IN[]</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration3.jpg" alt></p>
+<h1 id="Avaliable-Expression-Analysis"><a href="#Avaliable-Expression-Analysis" class="headerlink" title="Avaliable Expression Analysis"></a>Avaliable Expression Analysis</h1><h2 id="Avaliable-Expression-Analysis-1"><a href="#Avaliable-Expression-Analysis-1" class="headerlink" title="Avaliable Expression Analysis"></a>Avaliable Expression Analysis</h2><p>An expression x op y is available at program point p if (1) all paths from the entry to p must pass through the evaluation of x op y, and (2) after the last evaluation of x op y, there is no redefinition of x or y</p>
+<ul>
+<li>This definition means at program p, we can replace expression x op y by the result of its last evaluation</li>
+<li>The information of available expressions can be used for detecting global common subexpressions</li>
+</ul>
+<h2 id="Understanding-Avaliable-Expression-Analysis"><a href="#Understanding-Avaliable-Expression-Analysis" class="headerlink" title="Understanding Avaliable Expression Analysis"></a>Understanding Avaliable Expression Analysis</h2><p>Abstraction</p>
+<ul>
+<li><p>Data Flow Values/Facts </p>
+<ul>
+<li><p>All the expressions in a program</p>
+</li>
+<li><p>Can be represented by bit vectors </p>
+<p>e.g., E1, E2, E3, E4, …, E100 (100 expressions)</p>
+<p>$\underbrace{0000…0}_{100}$</p>
+<p>Bit i from the left represents expression Ei</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>Safe-approximation</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Safe-approximation.png" alt></p>
+<ul>
+<li>Add to OUT the expression x op y(gen)</li>
+<li>Delete from IN any expression involving variable a(kill)</li>
+</ul>
+<p>$OUT[B] = gen_B \cup(IN[B] - kill_B)$</p>
+<p>$IN[B] = \cap_{P~a~predecessor~of~B }OUT[P]$</p>
+<p>$\cap$ : All paths from entry to point p must pass through the evaluation of x op y</p>
+<p>For safety of the analysis, it may report an expression as unavailable even if it is availabe(must analysis -&gt; under-approximation)</p>
+<h2 id="Algorithm-of-Avaliable-Expressions-Analysis"><a href="#Algorithm-of-Avaliable-Expressions-Analysis" class="headerlink" title="Algorithm of Avaliable Expressions Analysis"></a>Algorithm of Avaliable Expressions Analysis</h2><p>INPUT: CFG($kill_B$ and $gen_B$ computed for each basic block B)</p>
+<p>OUTPUT: IN[B] and OUT[B] for each basic block B</p>
+<p>METHOD:<img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Algorithm2.png" alt></p>
+<h2 id="Example-1"><a href="#Example-1" class="headerlink" title="Example"></a>Example</h2><h3 id="Iteration-0-Init-1"><a href="#Iteration-0-Init-1" class="headerlink" title="Iteration 0(Init)"></a>Iteration 0(Init)</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">11111</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Init2.jpg" alt></p>
+<h3 id="Iteration-1-1"><a href="#Iteration-1-1" class="headerlink" title="Iteration 1"></a>Iteration 1</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">00000</td>
+<td style="text-align:center">p-1</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">11111 $\cap$ 10000</td>
+<td style="text-align:center">z/5  $e^7*x$</td>
+<td style="text-align:center">k,p</td>
+<td style="text-align:center">01010</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">y + 3</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">00011</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">2*y $e^7*x$</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">01110</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">00011 $\cap$ 01110</td>
+<td style="text-align:center">$e^7*x$ z/5</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">01010</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>Changes occur in OUT[] of B1 B2 B3 B4 B5</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration1_2.jpg" alt></p>
+<h3 id="Iteration-2-1"><a href="#Iteration-2-1" class="headerlink" title="Iteration 2"></a>Iteration 2</h3><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">INPUT</th>
+<th style="text-align:center">gen</th>
+<th style="text-align:center">kill</th>
+<th style="text-align:center">OUTPUT</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">entry</td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center"></td>
+<td style="text-align:center">00000</td>
+</tr>
+<tr>
+<td style="text-align:center">B1</td>
+<td style="text-align:center">00000</td>
+<td style="text-align:center">p-1</td>
+<td style="text-align:center">y</td>
+<td style="text-align:center">10000</td>
+</tr>
+<tr>
+<td style="text-align:center">B2</td>
+<td style="text-align:center">01110 $\cap$ 10000</td>
+<td style="text-align:center">z/5  $e^7*x$</td>
+<td style="text-align:center">k,p</td>
+<td style="text-align:center">01010</td>
+</tr>
+<tr>
+<td style="text-align:center">B3</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">y + 3</td>
+<td style="text-align:center">z</td>
+<td style="text-align:center">00011</td>
+</tr>
+<tr>
+<td style="text-align:center">B4</td>
+<td style="text-align:center">01010</td>
+<td style="text-align:center">2*y $e^7*x$</td>
+<td style="text-align:center">x q</td>
+<td style="text-align:center">01110</td>
+</tr>
+<tr>
+<td style="text-align:center">B5</td>
+<td style="text-align:center">00011 $\cap$ 01110</td>
+<td style="text-align:center">$e^7*x$ z/5</td>
+<td style="text-align:center">m y</td>
+<td style="text-align:center">01010</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>No changes occur in any OUT[]</p>
+<p><img src="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/Iteration2_2.jpg" alt></p>
+<h1 id="Analysis-Comparison"><a href="#Analysis-Comparison" class="headerlink" title="Analysis Comparison"></a>Analysis Comparison</h1><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center"></th>
+<th style="text-align:center">Reaching Definitions</th>
+<th style="text-align:center">Live Variables</th>
+<th style="text-align:center">Available Expressions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Domain</td>
+<td style="text-align:center">Set of definitions</td>
+<td style="text-align:center">Set of variables</td>
+<td style="text-align:center">Set of expressions</td>
+</tr>
+<tr>
+<td style="text-align:center">Direction</td>
+<td style="text-align:center">Forwards</td>
+<td style="text-align:center">Backwards</td>
+<td style="text-align:center">Forwards</td>
+</tr>
+<tr>
+<td style="text-align:center">Mat/Must</td>
+<td style="text-align:center">May</td>
+<td style="text-align:center">May</td>
+<td style="text-align:center">Must</td>
+</tr>
+<tr>
+<td style="text-align:center">Boundary</td>
+<td style="text-align:center">$OUT[entry]=\phi$</td>
+<td style="text-align:center">$IN[exit]=\phi$</td>
+<td style="text-align:center">$OUT[entry]=\phi$</td>
+</tr>
+<tr>
+<td style="text-align:center">Initialization</td>
+<td style="text-align:center">$OUT[B]=\phi$</td>
+<td style="text-align:center">$IN[B]=\phi$</td>
+<td style="text-align:center">$OUT[B]=\cup$</td>
+</tr>
+<tr>
+<td style="text-align:center">Transfer function</td>
+<td style="text-align:center">$OUT=gen\cup(IN-kill)$</td>
+<td style="text-align:center">-</td>
+<td style="text-align:center">-</td>
+</tr>
+<tr>
+<td style="text-align:center">Meet</td>
+<td style="text-align:center">$\cup$</td>
+<td style="text-align:center">$\cup$</td>
+<td style="text-align:center">$\cap$</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" rel="tag"># 静态分析</a>
+              <a href="/tags/Static-Analysis/" rel="tag"># Static Analysis</a>
+              <a href="/tags/Data-Flow-Analysis/" rel="tag"># Data Flow Analysis</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/" rel="prev" title="南大《软件分析》03.Data Flow Analysis - Applications I">
+      <i class="fa fa-chevron-left"></i> 南大《软件分析》03.Data Flow Analysis - Applications I
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/" rel="next" title="南大《软件分析》05.Data Flow Analysis Foundation I">
+      南大《软件分析》05.Data Flow Analysis Foundation I <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-number">2.</span> <span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Live-Variables-Analysis"><span class="nav-number">3.</span> <span class="nav-text">Live Variables Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Live-Variables-Analysis-1"><span class="nav-number">3.1.</span> <span class="nav-text">Live Variables Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Understanding-Live-Variables-Analysis"><span class="nav-number">3.2.</span> <span class="nav-text">Understanding Live Variables Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Algorithm-of-Live-Variables-Analysis"><span class="nav-number">3.3.</span> <span class="nav-text">Algorithm of Live Variables Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example"><span class="nav-number">3.4.</span> <span class="nav-text">Example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-0-Init"><span class="nav-number">3.4.1.</span> <span class="nav-text">Iteration 0(Init)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-1"><span class="nav-number">3.4.2.</span> <span class="nav-text">Iteration 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-2"><span class="nav-number">3.4.3.</span> <span class="nav-text">Iteration 2</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-3"><span class="nav-number">3.4.4.</span> <span class="nav-text">Iteration 3</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Avaliable-Expression-Analysis"><span class="nav-number">4.</span> <span class="nav-text">Avaliable Expression Analysis</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Avaliable-Expression-Analysis-1"><span class="nav-number">4.1.</span> <span class="nav-text">Avaliable Expression Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Understanding-Avaliable-Expression-Analysis"><span class="nav-number">4.2.</span> <span class="nav-text">Understanding Avaliable Expression Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Algorithm-of-Avaliable-Expressions-Analysis"><span class="nav-number">4.3.</span> <span class="nav-text">Algorithm of Avaliable Expressions Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Example-1"><span class="nav-number">4.4.</span> <span class="nav-text">Example</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-0-Init-1"><span class="nav-number">4.4.1.</span> <span class="nav-text">Iteration 0(Init)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-1-1"><span class="nav-number">4.4.2.</span> <span class="nav-text">Iteration 1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iteration-2-1"><span class="nav-number">4.4.3.</span> <span class="nav-text">Iteration 2</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Analysis-Comparison"><span class="nav-number">5.</span> <span class="nav-text">Analysis Comparison</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lint 与 LintPass背景在 KusionStack 技术栈中， KCL 配置策略语言是重要的组成部分之一。为了帮助用户更好的编写 KCL 代码，我们也为 KCL 语言开发了一些语言工具，Lint 就是其中一种。Lint 工具帮助用户检查代码中潜在的问题和错误，同时也可以用于自动化的代码检查，保障仓库代码规范和质量。因为 KCL 语言由 Rust 实现，一些功能也学习和参考了 Rustc。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rustc 源码学习 - lint 与 LintPass">
+<meta property="og:url" content="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="Lint 与 LintPass背景在 KusionStack 技术栈中， KCL 配置策略语言是重要的组成部分之一。为了帮助用户更好的编写 KCL 代码，我们也为 KCL 语言开发了一些语言工具，Lint 就是其中一种。Lint 工具帮助用户检查代码中潜在的问题和错误，同时也可以用于自动化的代码检查，保障仓库代码规范和质量。因为 KCL 语言由 Rust 实现，一些功能也学习和参考了 Rustc。">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/lint_lintpass.jpeg">
+<meta property="article:published_time" content="2022-04-25T07:34:14.000Z">
+<meta property="article:modified_time" content="2022-12-08T05:37:09.938Z">
+<meta property="article:author" content="HeiPa">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Rust源码学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/lint_lintpass.jpeg">
+
+<link rel="canonical" href="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Rustc 源码学习 - lint 与 LintPass | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rustc 源码学习 - lint 与 LintPass
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-25 15:34:14" itemprop="dateCreated datePublished" datetime="2022-04-25T15:34:14+08:00">2022-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lint-与-LintPass"><a href="#Lint-与-LintPass" class="headerlink" title="Lint 与 LintPass"></a>Lint 与 LintPass</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在 <a target="_blank" rel="noopener" href="https://github.com/KusionStack/kusion">KusionStack</a> 技术栈中， KCL 配置策略语言是重要的组成部分之一。为了帮助用户更好的编写 KCL 代码，我们也为 KCL 语言开发了一些语言工具，Lint 就是其中一种。Lint 工具帮助用户检查代码中潜在的问题和错误，同时也可以用于自动化的代码检查，保障仓库代码规范和质量。因为 KCL 语言由 Rust 实现，一些功能也学习和参考了 Rustc。本文是在学习 Rustc 过程中的一些思考和沉淀，在这里做一些分享。</p>
+<h3 id="Rustc"><a href="#Rustc" class="headerlink" title="Rustc"></a>Rustc</h3><p>Rustc 是 Rust Compiler 的简称，即 Rust 编程语言的编译器。Rust 的编译器是自举的，即 Rustc 由 Rust 语言编写而成，可以通过旧版本编译出新版本。因此，Rustc 可以说是用 Rust 语言编写编译器的最佳实践。</p>
+<h3 id="Lint-工具"><a href="#Lint-工具" class="headerlink" title="Lint 工具"></a>Lint 工具</h3><p>Lint 是代码静态分析工具的一种，最早是来源于 C 语言。Lint 工具通常会检查代码中潜在的问题和错误，包括（但不限于）编程风格（缩进、空行、空格）、代码质量（定义未使用的变量、文档缺失）以及错误代码（除0错误、重复定义、循环引用）等问题。通常来说，Lint 工具除了标识错误外，还会带有一定的 fix/refactor suggest 和 auto-fix 的能力。在工程中引入 Lint 工具可以有效的减少错误，提高整体的工程质量。此外，对一种编程语言来说，Lint 工具通常也是其他工具研发的前置条件，例如 IDE 插件的错误提示，CI 的 Pipeline 检测等。</p>
+<h2 id="Lint-vs-LintPass"><a href="#Lint-vs-LintPass" class="headerlink" title="Lint vs. LintPass"></a>Lint vs. LintPass</h2><h3 id="概念与关系"><a href="#概念与关系" class="headerlink" title="概念与关系"></a>概念与关系</h3><p>Rustc 中关于 Lint 最主要的结构有两个， <code>Lint</code> 和 <code>LintPass</code>。首先需要区分 Lint 和 LintPass 的概念。Rustc 的很多文档中都将它们统称为 <code>Lint</code>，这很容易造成混淆。关于这两者之间的区别，rustc-dev-guide 给出的解释是：</p>
+<blockquote>
+<p>Lint declarations don’t carry any “state” - they are merely global identifiers and descriptions of lints. We assert at runtime that they are not registered twice (by lint name).<br>Lint passes are the meat of any lint.</p>
+</blockquote>
+<p>从定义方面， <code>Lint</code> 是对所定义的 lint 检查的静态描述，例如 name, level, description, code 等属性，与检查时的状态无关，Rustc 用 <code>Lint</code> 的定义做唯一性的检查。而 <code>LintPass</code> 是 <code>Lint</code> 的具体实现，是在检查时调用的 <code>check_*</code> 方法。<br>在具体的代码实现方法， <code>Lint</code>定义为一个 Struct，所有 lint 的定义都是此类型的一个实例/对象。而 <code>LintPass</code> 则对应为一个 trait。trait 类似于 java/c++ 中的接口，每一个 lintpass 的定义都需要实现该接口中定义的方法。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Specification of a single lint.</span></span><br><span class="line"><span class="meta">#[derive(Copy, Clone, Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Lint</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> name: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>,</span><br><span class="line">    <span class="comment">/// Default level for the lint.</span></span><br><span class="line">    <span class="keyword">pub</span> default_level: Level,</span><br><span class="line">    <span class="comment">/// Description of the lint or the issue it detects.</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// e.g., &quot;imports that are never used&quot;</span></span><br><span class="line">    <span class="keyword">pub</span> desc: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>,</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">LintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>需要注意的是，尽管刚刚的描述中说到<code>trait</code> 类似于接口而 <code>Lint</code> 是一个 struct，但 <code>Lint</code> 和 <code>LintPass</code> 之间并不是 OO 中一个“类”和它的“方法”的关系。而是在声明 <code>LintPass</code> 会生成一个实现了该 trait 的同名的 struct，该 struct 中的 <code>get_lints()</code> 方法会生成对应的 <code>Lint</code> 定义。</p>
+<p><img src="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/lint_lintpass.jpeg" alt="lint vs. lintpass"></p>
+<p>这与 rustc-dev-guide 的描述也保持了一致:</p>
+<blockquote>
+<p>A lint might not have any lint pass that emits it, it could have many, or just one — the compiler doesn’t track whether a pass is in any way associated with a particular lint, and frequently lints are emitted as part of other work (e.g., type checking, etc.).</p>
+</blockquote>
+<h3 id="Lint-与-LintPass-的宏定义"><a href="#Lint-与-LintPass-的宏定义" class="headerlink" title="Lint 与 LintPass 的宏定义"></a>Lint 与 LintPass 的宏定义</h3><p>Rustc 为 Lint 和 LintPass 都提供了用于定义其结构的宏。<br>定义 Lint 的宏<code>declare_lint</code> 比较简单，可以在<code>rustc_lint_defs::lib.rs</code>中找到。<code>declare_lint</code> 宏解析输入参数，并生成名称为 <code>$NAME</code> 的 Lint struct。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[macro_export]</span></span><br><span class="line"><span class="built_in">macro_rules!</span> declare_lint &#123;</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr) =&gt; (</span><br><span class="line">        $crate::declare_lint!(</span><br><span class="line">            $(<span class="meta">#[$attr]</span>)* $vis $NAME, $Level, $desc,</span><br><span class="line">        );</span><br><span class="line">    );</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr,</span><br><span class="line">     $(@feature_gate = $gate:expr;)?</span><br><span class="line">     $(@future_incompatible = FutureIncompatibleInfo &#123; $($field:ident : $val:expr),* $(,)*  &#125;; )?</span><br><span class="line">     $($v:ident),*) =&gt; (</span><br><span class="line">        $(<span class="meta">#[$attr]</span>)*</span><br><span class="line">        $vis <span class="keyword">static</span> $NAME: &amp;$crate::Lint = &amp;$crate::Lint &#123;</span><br><span class="line">            name: <span class="built_in">stringify!</span>($NAME),</span><br><span class="line">            default_level: $crate::$Level,</span><br><span class="line">            desc: $desc,</span><br><span class="line">            edition_lint_opts: <span class="literal">None</span>,</span><br><span class="line">            is_plugin: <span class="literal">false</span>,</span><br><span class="line">            $($v: <span class="literal">true</span>,)*</span><br><span class="line">            $(feature_gate: <span class="title function_ invoke__">Some</span>($gate),)*</span><br><span class="line">            $(future_incompatible: <span class="title function_ invoke__">Some</span>($crate::FutureIncompatibleInfo &#123;</span><br><span class="line">                $($field: $val,)*</span><br><span class="line">                ..$crate::FutureIncompatibleInfo::<span class="title function_ invoke__">default_fields_for_macro</span>()</span><br><span class="line">            &#125;),)*</span><br><span class="line">            ..$crate::Lint::<span class="title function_ invoke__">default_fields_for_macro</span>()</span><br><span class="line">        &#125;;</span><br><span class="line">    );</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr,</span><br><span class="line">     $lint_edition: expr =&gt; $edition_level: ident</span><br><span class="line">    ) =&gt; (</span><br><span class="line">        $(<span class="meta">#[$attr]</span>)*</span><br><span class="line">        $vis <span class="keyword">static</span> $NAME: &amp;$crate::Lint = &amp;$crate::Lint &#123;</span><br><span class="line">            name: <span class="built_in">stringify!</span>($NAME),</span><br><span class="line">            default_level: $crate::$Level,</span><br><span class="line">            desc: $desc,</span><br><span class="line">            edition_lint_opts: <span class="title function_ invoke__">Some</span>(($lint_edition, $crate::Level::$edition_level)),</span><br><span class="line">            report_in_external_macro: <span class="literal">false</span>,</span><br><span class="line">            is_plugin: <span class="literal">false</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>LintPass 的定义涉及到两个宏：</p>
+<ul>
+<li>declare_lint_pass：生成一个名为<code>$name</code> 的 struct，并且调用 <code>impl_lint_pass</code> 宏。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_lint_pass &#123;</span><br><span class="line">    ($(<span class="meta">#[$m:meta]</span>)* $name:ident =&gt; [$($lint:expr),* $(,)?]) =&gt; &#123;</span><br><span class="line">        $(<span class="meta">#[$m]</span>)* <span class="meta">#[derive(Copy, Clone)]</span> <span class="keyword">pub</span> <span class="keyword">struct</span> $name;</span><br><span class="line">        $crate::impl_lint_pass!($name =&gt; [$($lint),*]);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>impl_lint_pass：为生成的 <code>LintPass</code> 结构实现<code>fn name()</code>和 <code>fn get_lints()</code> 方法。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> impl_lint_pass &#123;</span><br><span class="line">    ($ty:ty =&gt; [$($lint:expr),* $(,)?]) =&gt; &#123;</span><br><span class="line">        <span class="keyword">impl</span> $crate::LintPass <span class="keyword">for</span> $ty &#123;</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> &#123; <span class="built_in">stringify!</span>($ty) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">impl</span> $ty &#123;</span><br><span class="line">            <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_lints</span>() <span class="punctuation">-&gt;</span> $crate::LintArray &#123; $crate::lint_array!($($lint),*) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="EarlyLintPass-与-LateLintPass"><a href="#EarlyLintPass-与-LateLintPass" class="headerlink" title="EarlyLintPass 与 LateLintPass"></a>EarlyLintPass 与 LateLintPass</h3><p>前面关于 <code>LintPass</code> 的宏之中，只定义了<code>fn name()</code>和 <code>fn get_lints()</code> 方法，但并没有定义用于检查的 <code>check_*</code> 函数。这是因为 Rustc 中将 <code>LintPass</code> 分为了更为具体的两类：<code>EarlyLintPass</code>和<code>LateLintPass</code>。其主要区别在于检查的元素是否带有类型信息，即在类型检查之前还是之后执行。例如， <code>WhileTrue</code> 检查代码中的 <code>while true&#123;...&#125;</code> 并提示用户使用 <code>loop&#123;...&#125;</code> 去代替。这项检查不需要任何的类型信息，因此被定义为一个  <code>EarlyLint</code>(代码中 <code>impl EarlyLintPass for WhileTrue</code>。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">declare_lint! &#123;</span><br><span class="line">    WHILE_TRUE,</span><br><span class="line">    Warn,</span><br><span class="line">    <span class="string">&quot;suggest using `loop &#123; &#125;` instead of `while true &#123; &#125;`&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">declare_lint_pass!(WhileTrue =&gt; [WHILE_TRUE]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">WhileTrue</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_expr</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, cx: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, e: &amp;ast::Expr) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Rustc 中用了3个宏去定义 <code>EarlyLintPass</code>：</p>
+<ul>
+<li>early<em>lint_methods：early_lint_methods 中定义了 <code>EarlyLintPass</code> 中需要实现的 `check</em>*<code>函数，并且将这些函数以及接收的参数</code>$args`传递给下一个宏。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> early_lint_methods &#123;</span><br><span class="line">    ($<span class="keyword">macro</span>:path, $args:tt) =&gt; (</span><br><span class="line">        $macro!($args, [</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_param</span>(a: &amp;ast::Param);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_ident</span>(a: &amp;ast::Ident);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate</span>(a: &amp;ast::Crate);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate_post</span>(a: &amp;ast::Crate);</span><br><span class="line">            ...</span><br><span class="line">        ]);</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>declare_early_lint_pass：生成trait <code>EarlyLintPass</code> 并调用宏 <code>expand_early_lint_pass_methods</code>。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_early_lint_pass &#123;</span><br><span class="line">    ([], [$($methods:tt)*]) =&gt; (</span><br><span class="line">        <span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">EarlyLintPass</span>: LintPass &#123;</span><br><span class="line">            expand_early_lint_pass_methods!(&amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, [$($methods)*]);</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>expand<em>early_lint_pass_methods：为`check</em>*`方法提供默认实现，即空检查。</li>
+</ul>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> expand_early_lint_pass_methods &#123;</span><br><span class="line">    ($context:ty, [$($(<span class="meta">#[$attr:meta]</span>)* <span class="keyword">fn</span> $name:<span class="title function_ invoke__">ident</span>($($param:ident: $arg:ty),*);)*]) =&gt; (</span><br><span class="line">        $(<span class="meta">#[inline(always)]</span> <span class="keyword">fn</span> $<span class="title function_ invoke__">name</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, _: $context, $(_: $arg),*) &#123;&#125;)*</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样的设计好处有以下几点：</p>
+<ol>
+<li>因为 LintPass 是一个 trait，每一个 LintPass 的定义都需要实现其内部定义的所有方法。但 early lint 和 late lint 发生在编译的不同阶段，函数入参也不一致（AST 和 HIR）。因此，LintPass 的定义只包含了 <code>fn name()</code> 和 <code>fn get_lints()</code> 这两个通用的方法。而执行检查函数则定义在了更为具体的 <code>EarlyLintPass</code> 和 <code>LateLintPass</code> 中。</li>
+<li>同样的，对于 <code>EarlyLintPass</code>， 每一个 lintpass 的定义都必须实现其中的所有方法。但并非每一个 lintpass 都需要检查 AST 的所有节点。 <code>expand_early_lint_pass_methods</code> 为其内部方法提供了默认实现。这样在定义具体的 lintpass 时，只需要关注和实现其相关的检查函数即可。例如，对于 <code>WhileTrue</code> 的定义，因为 <code>while true &#123; &#125;</code>这样的写法只会出现在 <code>ast::Expr</code> 节点中，因此只需要实现 <code>check_expr</code> 函数即可。在其他任何节点调用 <code>WhileTrue</code> 的检查函数，如在检查 AST 上的标识符节点时，调用 <code>WhileTrue.check_ident()</code>，则根据宏 <code>expand_early_lint_pass_methods</code> 中的定义执行一个空函数。</li>
+</ol>
+<h3 id="pass-的含义"><a href="#pass-的含义" class="headerlink" title="pass 的含义"></a>pass 的含义</h3><p>在 Rustc 中，除了 <code>Lint</code> 和 <code>LintPass</code> 外，还有一些 <code>*Pass</code> 的命名，如 <code>Mir</code> 和 <code>MirPass</code>、<code>rustc_passes</code> 包等。编译原理龙书中对Pass有对应的解释：</p>
+<blockquote>
+<p>1.2.8 将多个步骤组合成趟<br>前面关于步骤的讨论讲的是一个编译器的逻辑组织方式。在一个特定的实现中，多个步骤的活动可以被组合成一趟（pass）。每趟读入一个输入文件并产生一个输出文件。</p>
+</blockquote>
+<p>在声明 <code>LintPass</code> 的宏 <code>declare_lint_pass</code> 中，其第二个参数为一个列表，表示一个 lintpass 可以生成多个 lint。Rustc 中还有一些 CombinedLintPass 中也是将所有 builtin 的 lint 汇总到一个 lintpass 中。这与龙书中“趟”的定义基本一致:<code>LintPass</code> 可以组合多个 <code>Lint</code> 的检查，每个 LintPass 读取一个 AST 并产生对应的结果。</p>
+<h2 id="Lint-的简单实现"><a href="#Lint-的简单实现" class="headerlink" title="Lint 的简单实现"></a>Lint 的简单实现</h2><p>在 LintPass 的定义中，给每一个 lintpass 的所有 <code>check_*</code> 方法都提供了一个默认实现。到这里为止，基本上已经可以实现 Lint 检查的功能。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Linter</span> &#123; &#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">ast_visit</span>::Visitor <span class="keyword">for</span> <span class="title class_">Linter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_crate</span>(a: ast:<span class="keyword">crate</span>)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_crate</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_crate</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_stmt</span>(a: ast:stmt)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_stmt</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_stmt</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">linter</span> = Linter::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">c</span> <span class="keyword">in</span> crates&#123;</span><br><span class="line">    linter.<span class="title function_ invoke__">visit_crate</span>(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>Visitor</code> 是遍历 AST 的工具，在这里为 Linter 实现其中的 <code>visit_*</code> 方法，在遍历时调用所有 lintpass 的 <code>check_*</code> 函数。<code>walk_*</code> 会继续调用其他的 <code>visit_*</code> 函数，遍历其中的子节点。因此，对于每一个 crate， 只需要调用 <code>visit_crate()</code> 函数就可以遍历 AST 并完成检查。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简单介绍了 Rustc 源码中关于 Lint 的几个重要结构。并以 <code>WhileTrue</code> 为例说明了 Rustc 如何中定义和实现一个 <code>Lint</code>，最后基于这些结构，提供了一个简易的 Lint 检查的实现方式。希望能够对理解 Rustc 及 Lint 有所帮助，如有错误，欢迎指正。KCL 的 Lint 工具也参考了其中部分设计， 由文末简易的 Linter 结构改进而成。篇幅限制，将后续的文章将继续介绍 Rustc 中 Lint 在编译过程中的注册和执行过程，如何继续优化上述 <code>Linter</code> 的实现，以及 KCL Lint 的设计和实践，期待继续关注。</p>
+<h2 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h2><ul>
+<li>KusionStack: <a target="_blank" rel="noopener" href="https://github.com/KusionStack">https://github.com/KusionStack</a></li>
+<li>Rustc: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust">https://github.com/rust-lang/rust</a></li>
+<li>rustc-dev-guide: <a target="_blank" rel="noopener" href="https://rustc-dev-guide.rust-lang.org/">https://rustc-dev-guide.rust-lang.org/</a></li>
+<li>Rust Visitor: <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html">https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html</a></li>
+<li>Rust Clippy: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust-clippy">https://github.com/rust-lang/rust-clippy</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/tags/Rust%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag"># Rust源码学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/" rel="prev" title="Rustc 源码学习 - CombinedLintPass">
+      <i class="fa fa-chevron-left"></i> Rustc 源码学习 - CombinedLintPass
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/" rel="next" title="南大《软件分析》03.Data Flow Analysis - Applications I">
+      南大《软件分析》03.Data Flow Analysis - Applications I <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lint-%E4%B8%8E-LintPass"><span class="nav-number">1.</span> <span class="nav-text">Lint 与 LintPass</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%83%8C%E6%99%AF"><span class="nav-number">1.1.</span> <span class="nav-text">背景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rustc"><span class="nav-number">1.1.1.</span> <span class="nav-text">Rustc</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lint-%E5%B7%A5%E5%85%B7"><span class="nav-number">1.1.2.</span> <span class="nav-text">Lint 工具</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lint-vs-LintPass"><span class="nav-number">1.2.</span> <span class="nav-text">Lint vs. LintPass</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A6%82%E5%BF%B5%E4%B8%8E%E5%85%B3%E7%B3%BB"><span class="nav-number">1.2.1.</span> <span class="nav-text">概念与关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Lint-%E4%B8%8E-LintPass-%E7%9A%84%E5%AE%8F%E5%AE%9A%E4%B9%89"><span class="nav-number">1.2.2.</span> <span class="nav-text">Lint 与 LintPass 的宏定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#EarlyLintPass-%E4%B8%8E-LateLintPass"><span class="nav-number">1.2.3.</span> <span class="nav-text">EarlyLintPass 与 LateLintPass</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pass-%E7%9A%84%E5%90%AB%E4%B9%89"><span class="nav-number">1.2.4.</span> <span class="nav-text">pass 的含义</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lint-%E7%9A%84%E7%AE%80%E5%8D%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">1.3.</span> <span class="nav-text">Lint 的简单实现</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">1.4.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ref"><span class="nav-number">1.5.</span> <span class="nav-text">Ref</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

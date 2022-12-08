@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:type" content="article">
+<meta property="og:title" content="南大《软件分析》02.Intermediate Representation">
+<meta property="og:url" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CompilerandStaticAnalyzers.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/ASTandIR.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/SSA.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/BB.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFGedge.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG2.png">
+<meta property="og:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG3.png">
+<meta property="article:published_time" content="2022-04-25T07:34:14.000Z">
+<meta property="article:modified_time" content="2022-12-08T05:37:09.967Z">
+<meta property="article:author" content="HeiPa">
+<meta property="article:tag" content="静态分析">
+<meta property="article:tag" content="Static Analysis">
+<meta property="article:tag" content="IR">
+<meta property="article:tag" content="3AC">
+<meta property="article:tag" content="SSA">
+<meta property="article:tag" content="Basic Block">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CompilerandStaticAnalyzers.png">
+
+<link rel="canonical" href="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>南大《软件分析》02.Intermediate Representation | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          南大《软件分析》02.Intermediate Representation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-25 15:34:14" itemprop="dateCreated datePublished" datetime="2022-04-25T15:34:14+08:00">2022-04-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
+<blockquote>
+<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
+<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
+<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
+</blockquote>
+<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
+<li>Compilers and Static Analyzers </li>
+<li>AST vs. IR </li>
+<li>IR: Three-Address Code (3AC) </li>
+<li>3AC in Real Static Analyzer </li>
+<li>Static Single Assignment (SSA) </li>
+<li>Basic Blocks (BB) </li>
+<li>Control Flow Graphs (CFG)</li>
+</ol>
+<span id="more"></span>
+<h1 id="Compiler-and-Static-Analyzers"><a href="#Compiler-and-Static-Analyzers" class="headerlink" title="Compiler and Static Analyzers"></a>Compiler and Static Analyzers</h1><p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CompilerandStaticAnalyzers.png" alt></p>
+<h1 id="AST-vs-IR"><a href="#AST-vs-IR" class="headerlink" title="AST vs. IR"></a>AST vs. IR</h1><p>AST：</p>
+<ul>
+<li>high-level and closed to grammar structure</li>
+<li>usually language dependent</li>
+<li>suitable for fast type checking</li>
+<li>lack of control flow information</li>
+</ul>
+<p>IR：</p>
+<ul>
+<li>low-level and closed to machine code</li>
+<li>usually language independent</li>
+<li>compact and uniform</li>
+<li>contains control flow information</li>
+<li>usually considered as the basis for static analysis</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/ASTandIR.png" alt></p>
+<h1 id="Intermediate-Representation-IR"><a href="#Intermediate-Representation-IR" class="headerlink" title="Intermediate Representation(IR)"></a>Intermediate Representation(IR)</h1><h2 id="3-Address-Code-3AC"><a href="#3-Address-Code-3AC" class="headerlink" title="3-Address Code(3AC)"></a>3-Address Code(3AC)</h2><p> There is at most one operator on the right side of an instruction</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">t = a + b + 3</span><br><span class="line">↓</span><br><span class="line">t1 = a + b</span><br><span class="line">t2 = t1 + 3</span><br></pre></td></tr></table></figure>
+<p>Each 3AC contains at most 3 addresses:</p>
+<ul>
+<li>Name: a, b</li>
+<li>Constant: 3</li>
+<li>Compiler-generated temporary: t1, t2</li>
+</ul>
+<h2 id="Some-Common-3AC-Forms"><a href="#Some-Common-3AC-Forms" class="headerlink" title="Some Common 3AC Forms"></a>Some Common 3AC Forms</h2><ul>
+<li>x, y, z: addresses</li>
+<li>bop: binary arithmetic or logical operation</li>
+<li>uop: unary operation(minus, negation, casting)</li>
+<li>L: a label to represent a program location</li>
+<li>rop: relational operator(&gt;,&lt;,==,&gt;=,&lt;=, etc.)</li>
+<li>goto L: unconditional jump</li>
+<li>if … goto L: conditional jump</li>
+</ul>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">x = y bop z</span><br><span class="line">x = uop y</span><br><span class="line">x = y</span><br><span class="line">goto L</span><br><span class="line">if x goto L</span><br><span class="line">if x rop y goto L</span><br></pre></td></tr></table></figure>
+<h1 id="Soot-and-Its-IR-Jimple"><a href="#Soot-and-Its-IR-Jimple" class="headerlink" title="Soot and Its IR: Jimple"></a>Soot and Its IR: Jimple</h1><p>Soot: Most popular static analysis framework for Java </p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://github.com/Sable/soot/wiki/Tutorials">https://github.com/Sable/soot/wiki/Tutorials</a> </p>
+<p><a target="_blank" rel="noopener" href="https://github.com/Sable/soot">https://github.com/Sable/soot</a> </p>
+</blockquote>
+<p>Soot’s IR is Jimple: typed 3-address code</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java Src</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ForLoop3AC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span> <span class="variable">x</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span>(<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>; i&lt;<span class="number">10</span>; i++) &#123;</span><br><span class="line">            x = x + <span class="number">1</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3AC(jimple)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">&#123;</span><br><span class="line">    java.lang.String[] r0;</span><br><span class="line">    <span class="type">int</span> i1;</span><br><span class="line">    </span><br><span class="line">    r0 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line">    i1 = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">label1:</span><br><span class="line">    <span class="keyword">if</span> i1 &gt;= <span class="number">10</span> goto label2;</span><br><span class="line">    i1 = i1 + <span class="number">1</span>;</span><br><span class="line">    goto label1;</span><br><span class="line"></span><br><span class="line">label2:</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java Src</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">DoWhileLoop3AC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">        <span class="type">int</span>[] arr = <span class="keyword">new</span> <span class="title class_">int</span>[<span class="number">10</span>];</span><br><span class="line">        <span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">do</span> &#123;</span><br><span class="line">            i = i + <span class="number">1</span>;</span><br><span class="line">        &#125; <span class="keyword">while</span> (arr[i] &lt; <span class="number">10</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3AC(jimple)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">&#123;</span><br><span class="line">    java.lang.String[] r0;</span><br><span class="line">    <span class="type">int</span>[] r1;</span><br><span class="line">    <span class="type">int</span> $i0, i1;</span><br><span class="line">    </span><br><span class="line">    r0 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line">    r1 = newarray (<span class="type">int</span>)[<span class="number">10</span>];</span><br><span class="line">    i1 = <span class="number">0</span>;</span><br><span class="line">        </span><br><span class="line">label1:</span><br><span class="line">    i1 = i1 + <span class="number">1</span>;</span><br><span class="line">    $i0 = r1[i1];</span><br><span class="line">    <span class="keyword">if</span> $i0 &lt; <span class="number">10</span> goto label1;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java Src</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">ForLoop3AC</span> &#123;</span><br><span class="line">    String <span class="title function_">foo</span><span class="params">(String para1, String para2)</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> para1 + <span class="string">&quot; &quot;</span> + para2;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String[] args)</span> &#123;</span><br><span class="line">		<span class="type">MethodCall3AC</span> <span class="variable">mc</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">MethodCall3AC</span>();</span><br><span class="line">        <span class="type">String</span> <span class="variable">result</span> <span class="operator">=</span> mc.foo(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3AC(jimple)</span></span><br><span class="line">java.lang.String <span class="title function_">foo</span><span class="params">(java.lang.String, java.lang.String)</span></span><br><span class="line">&#123;</span><br><span class="line">	nju.sa.examples.MethodCal13AC r0;</span><br><span class="line">	java.lang.String r1, r2, $r7;</span><br><span class="line">	java.lang.StringBuilder $r3, $r4, $r5, $r6;</span><br><span class="line">	r0 := <span class="meta">@this</span>: nju.sa.examples.MethodCall3AC;</span><br><span class="line">	r1 := <span class="meta">@parameter0</span>: java.lang.String;</span><br><span class="line">	r2 := <span class="meta">@parameter1</span>: java.lang.String;</span><br><span class="line">	$r3 = <span class="keyword">new</span> <span class="title class_">java</span>.lang.StringBuilder;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// method signature &lt;&gt;</span></span><br><span class="line">    specialinvoke $r3.&lt;java.lang.StringBuilder: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line">	$r4 = virtualinvoke $r3.&lt;java.lang.StringBuilder: java.lang.StringBuilder <span class="title function_">append</span><span class="params">(java.lang.String)</span>&gt;(r1);</span><br><span class="line">    $r5 = virtualinoke $r4.&lt;java.lang.StringBuilder: java.lang.StringBuilder append java.lang.String)&gt;(<span class="string">&quot; &quot;</span>);</span><br><span class="line">    $r6 = virtualinvoke $r5.&lt;java.lang.StringBuilder: java.lang.StringBuilder <span class="title function_">append</span><span class="params">(java.lang.String)</span>&gt;(r2);</span><br><span class="line">    $r7 = virtualinvoke $r6.&lt;java.lang.StringBuilder: java.lang.String <span class="title function_">toString</span><span class="params">()</span>&gt;();</span><br><span class="line">    <span class="keyword">return</span> $r7;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">&#123;</span><br><span class="line">	java.lang.String[] r0;</span><br><span class="line">    nju.sa.examples.MethodCall3AC $r3;</span><br><span class="line">    </span><br><span class="line">    r0 := <span class="meta">@parameter0</span>: java.lang.String[]; </span><br><span class="line">    $r3 = <span class="keyword">new</span> <span class="title class_">nju</span>.sa.example.MethodCall3AC;</span><br><span class="line">    </span><br><span class="line">    specialinvoke $r3.&lt;nju.sa.example.MethodCall3AC: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line">    virtualinvoke $r3.&lt;nju.sa.example.MethodCall3AC: java.lang.String <span class="title function_">foo</span><span class="params">(java.lang.String, java.lang.String)</span>&gt;(<span class="string">&quot;hello&quot;</span>, <span class="string">&quot;world&quot;</span>);</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<blockquote>
+<p>invokespecial: call constructor, call superclass methods, call private methods</p>
+<p>invokevirutal: instance methods call (virtual dispatch)</p>
+<p>invokeinterface: cannot optimization，checking interface implementation</p>
+<p>invokestatic: call static methods</p>
+<p>Java 7: invokedynamic -&gt; Java static typing , dynamic language runs on JVM</p>
+<p>method signature: class name, return type, method name(parameter types)</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Java Src</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Class3AC</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> <span class="variable">pi</span> <span class="operator">=</span> <span class="number">3.14</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(String args[])</span> &#123;</span><br><span class="line">        </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 3AC(jimple)</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">nju</span>.sa.examples.Class3AC <span class="keyword">extends</span> <span class="title class_">java</span>.lang.Object</span><br><span class="line">&#123;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">double</span> pi;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">void</span> &lt;init&gt;()</span><br><span class="line">	&#123;</span><br><span class="line">		nju.sa.examples.Class3AC r0;</span><br><span class="line">		r0 := <span class="meta">@this</span>: nju.sa.examples.Class3AC;</span><br><span class="line">		specialinvoke r0.&lt;java.lang.0bject: <span class="keyword">void</span> &lt;init&gt;()&gt;();</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">main</span><span class="params">(java.lang.String[])</span></span><br><span class="line">	&#123;</span><br><span class="line">		java.lang.String[] r0;</span><br><span class="line">		r0 := <span class="meta">@parameter0</span>: java.lang.String[];</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br><span class="line">	<span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> &lt;clinit&gt;()</span><br><span class="line">	&#123;</span><br><span class="line">		&lt;nju.sa.examples.Class3AC: <span class="type">double</span> pi&gt; = <span class="number">3.14</span>;</span><br><span class="line">		<span class="keyword">return</span>;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="Static-Single-Assignment-SSA"><a href="#Static-Single-Assignment-SSA" class="headerlink" title="Static Single Assignment(SSA)"></a>Static Single Assignment(SSA)</h1><ul>
+<li>All assignments in SSA are to variables with distinct names<ul>
+<li>Give each definition a fresh name</li>
+<li>Propagate fresh name to subsequent uses</li>
+<li>Every variable has exactly on definition</li>
+</ul>
+</li>
+</ul>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th>3AC</th>
+<th>SSA</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>p = a + b</td>
+<td>p1 = a + b</td>
+</tr>
+<tr>
+<td>q = p - c</td>
+<td>q1 = p1 - c</td>
+</tr>
+<tr>
+<td>p = q * d</td>
+<td>p2 = q1 * d</td>
+</tr>
+<tr>
+<td>p = e - p</td>
+<td>p3 = e - p2</td>
+</tr>
+<tr>
+<td>q = p + q</td>
+<td>q2 = p3 + q1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>What if a variable use is at control flow merges?</p>
+<ul>
+<li>A special merge operator,$\phi$ (called phi-function), is introduced to select the values at merge nodes</li>
+<li>$\phi(x0, x1)$has the value x0 if the control flow passes through the true part of the conditional and the value x1 otherwise</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/SSA.png" alt></p>
+<p>Why SSA?</p>
+<ul>
+<li><p>Flow information is indirectly incorporated into the unique variable names</p>
+<p>May help deliver some simpler analyses, e.g., flow-insensitive analysis gains partial precision of flow-sensitive analysis via SSA</p>
+</li>
+<li><p>Define-and-Use pairs are explicit</p>
+<p>Enable more effective data facts storage and propagation in some on-demand tasks </p>
+<p>Some optimization tasks perform better on SSA (e.g., conditional constant propagation, global value numbering)</p>
+</li>
+</ul>
+<p>Why not SSA?</p>
+<ul>
+<li>may introduce too many variables and phi-functions</li>
+<li>May introduce inefficiency problem when translating to machine code (due to copy operations）</li>
+</ul>
+<h1 id="Control-Flow-Analysis"><a href="#Control-Flow-Analysis" class="headerlink" title="Control Flow Analysis"></a>Control Flow Analysis</h1><ul>
+<li>Usually refer to building Control Flow Graph (CFG) </li>
+<li>CFG serves as the basic structure for static analysis </li>
+<li>The node in CFG can be an individual 3-address instruction, or (usually) a Basic Block (BB)</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG.png" alt></p>
+<h1 id="Basic-Blocks-BB"><a href="#Basic-Blocks-BB" class="headerlink" title="Basic Blocks(BB)"></a>Basic Blocks(BB)</h1><p>Basic block(BB) are maximal sequences of consecutive three-address instruction with theproperties that</p>
+<ul>
+<li>It can be entered only at the beginning, i.e., the first instruction in the block </li>
+<li>It can be exited only at the end, i.e., the last instruction in the block</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/BB.png" alt></p>
+<h1 id="Design-the-algorithm-to-build-BBs"><a href="#Design-the-algorithm-to-build-BBs" class="headerlink" title="Design the algorithm to build BBs"></a>Design the algorithm to build BBs</h1><h2 id="How-to-build-Basic-Blocks"><a href="#How-to-build-Basic-Blocks" class="headerlink" title="How to build Basic Blocks?"></a>How to build Basic Blocks?</h2><p>INPUT: A sequence of three-address instructions of P </p>
+<p>OUTPUT: A list of basic blocks of P </p>
+<p>METHOD: </p>
+<ol>
+<li>Determine the leaders in P<ul>
+<li>The first instruction in P is a leader</li>
+<li>Any target instruction of a conditional or unconditional jump is a leader </li>
+<li>Any instruction that immediately follows a conditional or unconditional jump is a leader</li>
+</ul>
+</li>
+<li>Build BBs for P<ul>
+<li>A BB consists of a leader and all its subsequent instructions until the next leader</li>
+</ul>
+</li>
+</ol>
+<p>Example: </p>
+<p>Input: 3AC of P</p>
+<ol>
+<li>x = input</li>
+<li>y = x - 1</li>
+<li>z = x * y</li>
+<li>if z &lt; x goto (7)</li>
+<li>p = x / y</li>
+<li>q = p + y</li>
+<li>a = q</li>
+<li>b = x + a</li>
+<li>c = 2a - b</li>
+<li>if p == q goto 12</li>
+<li>goto 3</li>
+<li>return </li>
+</ol>
+<p>Output: BBs of P</p>
+<ol>
+<li>Determine the leaders of P<ul>
+<li>(1) (first instruction)</li>
+<li>(3) (7) (12) (target instruction of a conditional or unconditional jump)</li>
+<li>(5) (11) (12) (instruction that follows a conditional or unconditional jump)</li>
+</ul>
+</li>
+<li>Build BBs of P<ul>
+<li>B1 {(1), (2)}</li>
+<li>B2 {(3), (4)}</li>
+<li>B3 {(5), (6)}</li>
+<li>B4 {(7), (8), (9), (10)}</li>
+<li>B5 {(11)}</li>
+<li>B6 {(12)}</li>
+</ul>
+</li>
+</ol>
+<h1 id="Control-Flow-Graph-CFG"><a href="#Control-Flow-Graph-CFG" class="headerlink" title="Control Flow Graph(CFG)"></a>Control Flow Graph(CFG)</h1><ul>
+<li>The nodes of CFG are basic blocks</li>
+<li>There is an edge from block A to block B if and only if<ul>
+<li>There is a conditional or unconditional jump from the end of A to the beginning of B</li>
+<li>B immediately follows A in the original order of instructions an A does not end in an unconditional jump</li>
+</ul>
+</li>
+<li>It is normal to replace the jumps to instruction lables by jumps to basic blocks</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFGedge.png" alt></p>
+<p>So, we can get:</p>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG2.png" alt></p>
+<p>And Usually we add two nodes, Entry and Exit. </p>
+<ul>
+<li>They do not correspond to executable IR</li>
+<li>A edge from Entry to the BB containing the first instruction of IR</li>
+<li>A edge to Exit from any BB containing an instruction that could be the last instruction of IR</li>
+</ul>
+<p><img src="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/CFG3.png" alt></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E9%9D%99%E6%80%81%E5%88%86%E6%9E%90/" rel="tag"># 静态分析</a>
+              <a href="/tags/Static-Analysis/" rel="tag"># Static Analysis</a>
+              <a href="/tags/IR/" rel="tag"># IR</a>
+              <a href="/tags/3AC/" rel="tag"># 3AC</a>
+              <a href="/tags/SSA/" rel="tag"># SSA</a>
+              <a href="/tags/Basic-Block/" rel="tag"># Basic Block</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B01-Introduction/" rel="prev" title="南大《软件分析》01.Introduction">
+      <i class="fa fa-chevron-left"></i> 南大《软件分析》01.Introduction
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/" rel="next" title="Rustc 源码学习 - CombinedLintPass">
+      Rustc 源码学习 - CombinedLintPass <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-number">2.</span> <span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiler-and-Static-Analyzers"><span class="nav-number">3.</span> <span class="nav-text">Compiler and Static Analyzers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AST-vs-IR"><span class="nav-number">4.</span> <span class="nav-text">AST vs. IR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Intermediate-Representation-IR"><span class="nav-number">5.</span> <span class="nav-text">Intermediate Representation(IR)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Address-Code-3AC"><span class="nav-number">5.1.</span> <span class="nav-text">3-Address Code(3AC)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-Common-3AC-Forms"><span class="nav-number">5.2.</span> <span class="nav-text">Some Common 3AC Forms</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Soot-and-Its-IR-Jimple"><span class="nav-number">6.</span> <span class="nav-text">Soot and Its IR: Jimple</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Static-Single-Assignment-SSA"><span class="nav-number">7.</span> <span class="nav-text">Static Single Assignment(SSA)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Analysis"><span class="nav-number">8.</span> <span class="nav-text">Control Flow Analysis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Basic-Blocks-BB"><span class="nav-number">9.</span> <span class="nav-text">Basic Blocks(BB)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Design-the-algorithm-to-build-BBs"><span class="nav-number">10.</span> <span class="nav-text">Design the algorithm to build BBs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-build-Basic-Blocks"><span class="nav-number">10.1.</span> <span class="nav-text">How to build Basic Blocks?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Graph-CFG"><span class="nav-number">11.</span> <span class="nav-text">Control Flow Graph(CFG)</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
