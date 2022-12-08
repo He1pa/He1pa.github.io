@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
@@ -132,9 +132,24 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">34</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -168,7 +183,7 @@
     <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -208,6 +223,27 @@
             </span>
 
           
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -455,8 +491,8 @@
       <i class="fa fa-chevron-left"></i> 南大《软件分析》01.Introduction
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/" rel="next" title="Rustc 源码学习 - CombinedLintPass">
-      Rustc 源码学习 - CombinedLintPass <i class="fa fa-chevron-right"></i>
+    <a href="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/" rel="next" title="南大《软件分析》03.Data Flow Analysis - Applications I">
+      南大《软件分析》03.Data Flow Analysis - Applications I <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -470,6 +506,7 @@
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -516,12 +553,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-number">2.</span> <span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiler-and-Static-Analyzers"><span class="nav-number">3.</span> <span class="nav-text">Compiler and Static Analyzers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AST-vs-IR"><span class="nav-number">4.</span> <span class="nav-text">AST vs. IR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Intermediate-Representation-IR"><span class="nav-number">5.</span> <span class="nav-text">Intermediate Representation(IR)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Address-Code-3AC"><span class="nav-number">5.1.</span> <span class="nav-text">3-Address Code(3AC)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-Common-3AC-Forms"><span class="nav-number">5.2.</span> <span class="nav-text">Some Common 3AC Forms</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Soot-and-Its-IR-Jimple"><span class="nav-number">6.</span> <span class="nav-text">Soot and Its IR: Jimple</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Static-Single-Assignment-SSA"><span class="nav-number">7.</span> <span class="nav-text">Static Single Assignment(SSA)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Analysis"><span class="nav-number">8.</span> <span class="nav-text">Control Flow Analysis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Basic-Blocks-BB"><span class="nav-number">9.</span> <span class="nav-text">Basic Blocks(BB)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Design-the-algorithm-to-build-BBs"><span class="nav-number">10.</span> <span class="nav-text">Design the algorithm to build BBs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-build-Basic-Blocks"><span class="nav-number">10.1.</span> <span class="nav-text">How to build Basic Blocks?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Graph-CFG"><span class="nav-number">11.</span> <span class="nav-text">Control Flow Graph(CFG)</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Compiler-and-Static-Analyzers"><span class="nav-text">Compiler and Static Analyzers</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#AST-vs-IR"><span class="nav-text">AST vs. IR</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Intermediate-Representation-IR"><span class="nav-text">Intermediate Representation(IR)</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Address-Code-3AC"><span class="nav-text">3-Address Code(3AC)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Some-Common-3AC-Forms"><span class="nav-text">Some Common 3AC Forms</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Soot-and-Its-IR-Jimple"><span class="nav-text">Soot and Its IR: Jimple</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Static-Single-Assignment-SSA"><span class="nav-text">Static Single Assignment(SSA)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Analysis"><span class="nav-text">Control Flow Analysis</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Basic-Blocks-BB"><span class="nav-text">Basic Blocks(BB)</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Design-the-algorithm-to-build-BBs"><span class="nav-text">Design the algorithm to build BBs</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-to-build-Basic-Blocks"><span class="nav-text">How to build Basic Blocks?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Control-Flow-Graph-CFG"><span class="nav-text">Control Flow Graph(CFG)</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="HeiPa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
   <p class="site-author-name" itemprop="name">HeiPa</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -530,22 +569,32 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+          
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
 
@@ -578,6 +627,26 @@
   </div>
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
@@ -627,6 +696,92 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

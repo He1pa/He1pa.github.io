@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta property="og:type" content="website">
@@ -113,9 +113,24 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">34</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -145,10 +160,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/12/08/GUI/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/GUI/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -159,7 +174,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/12/08/GUI/" class="post-title-link" itemprop="url">Java Swing AWT</a>
+            <a href="/2022/04/15/GUI/" class="post-title-link" itemprop="url">Java Swing AWT</a>
         </h2>
 
         <div class="post-meta">
@@ -169,8 +184,15 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-12-08 13:37:09" itemprop="dateCreated datePublished" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 22:00:14" itemprop="dateModified" datetime="2022-12-08T22:00:14+08:00">2022-12-08</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -182,6 +204,20 @@
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/GUI/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/GUI/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -195,7 +231,7 @@
           <p>Java Swing AWT 简介</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/12/08/GUI/">
+              <a class="btn" href="/2022/04/15/GUI/">
                 Read more &raquo;
               </a>
             </div>
@@ -219,10 +255,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/12/08/JavaSE/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/CSS/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -233,7 +269,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/12/08/JavaSE/" class="post-title-link" itemprop="url">JavaSE</a>
+            <a href="/2022/04/15/CSS/" class="post-title-link" itemprop="url">CSS</a>
         </h2>
 
         <div class="post-meta">
@@ -243,82 +279,15 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-12-08 13:37:09" itemprop="dateCreated datePublished" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
                 </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Java基础知识</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2022/12/08/JavaSE/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/12/08/CSS/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="HeiPa">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Write the code, Change the world">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/12/08/CSS/" class="post-title-link" itemprop="url">CSS</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 22:00:17" itemprop="dateModified" datetime="2022-12-08T22:00:17+08:00">2022-12-08</time>
               </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-12-08 13:37:09" itemprop="dateCreated datePublished" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
-            </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -330,6 +299,20 @@
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/CSS/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/CSS/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -354,7 +337,7 @@
 </ol>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/12/08/CSS/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/CSS/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -378,10 +361,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/JavaSE/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -392,7 +375,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/" class="post-title-link" itemprop="url">南大《软件分析》06.DadaFlowAnalysisFoundation II</a>
+            <a href="/2022/04/15/JavaSE/" class="post-title-link" itemprop="url">JavaSE</a>
         </h2>
 
         <div class="post-meta">
@@ -402,14 +385,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-05-04 13:48:12" itemprop="dateCreated datePublished" datetime="2022-05-04T13:48:12+08:00">2022-05-04</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:10" itemprop="dateModified" datetime="2022-12-08T13:37:10+08:00">2022-12-08</time>
+                <time title="Modified: 2022-12-08 22:00:05" itemprop="dateModified" datetime="2022-12-08T22:00:05+08:00">2022-12-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -417,11 +400,25 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
                 </span>
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/JavaSE/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/JavaSE/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -432,28 +429,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
-<blockquote>
-<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
-<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
-<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
-</blockquote>
-<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
-<li>Iterative Algorithm, Another View</li>
-<li>Partial Order</li>
-<li>Upper and Lower Bounds</li>
-<li>Lattice, Semilattice, Complete and Product Lattice </li>
-<li>Data Flow Analysis Framework via Lattice</li>
-<li>Monotonicity and Fixed Point Theorem</li>
-<li>Relate Iterative Algorithm to Fixed Point Theorem</li>
-<li>May/Must Analysis, A Lattice View</li>
-<li>MOP and Distributivity</li>
-<li>Constant Propagation</li>
-<li>Worklist Algorithm</li>
-</ol>
+          <p>Java基础知识</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/JavaSE/">
                 Read more &raquo;
               </a>
             </div>
@@ -477,10 +456,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/HTML/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -491,7 +470,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/" class="post-title-link" itemprop="url">南大《软件分析》05.Data Flow Analysis Foundation I</a>
+            <a href="/2022/04/15/HTML/" class="post-title-link" itemprop="url">HTML</a>
         </h2>
 
         <div class="post-meta">
@@ -501,14 +480,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-04-30 12:22:57" itemprop="dateCreated datePublished" datetime="2022-04-30T12:22:57+08:00">2022-04-30</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:10" itemprop="dateModified" datetime="2022-12-08T13:37:10+08:00">2022-12-08</time>
+                <time title="Modified: 2022-12-08 22:00:11" itemprop="dateModified" datetime="2022-12-08T22:00:11+08:00">2022-12-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -516,11 +495,25 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
                 </span>
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/HTML/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/HTML/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -531,28 +524,12 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
-<blockquote>
-<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
-<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
-<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
-</blockquote>
-<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
-<li>Iterative Algorithm, Another View</li>
-<li>Partial Order</li>
-<li>Upper and Lower Bounds</li>
-<li>Lattice, Semilattice, Complete and Product Lattice </li>
-<li>Data Flow Analysis Framework via Lattice</li>
-<li>Monotonicity and Fixed Point Theorem</li>
-<li>Relate Iterative Algorithm to Fixed Point Theorem</li>
-<li>May/Must Analysis, A Lattice View</li>
-<li>MOP and Distributivity</li>
-<li>Constant Propagation</li>
-<li>Worklist Algorithm</li>
-</ol>
+          <h1 id="1-初识HTML"><a href="#1-初识HTML" class="headerlink" title="1 初识HTML"></a>1 初识HTML</h1><p>什么是HTML</p>
+<p>HTML：Hper Text Markup Langueage（超文本标记语言）</p>
+<p>超文本：包括文字、图片、音频、视频、动画等</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/04/30/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B05-DataFlowAnalysisFoundation1/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/HTML/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -576,10 +553,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/JavaScript/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -590,7 +567,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/" class="post-title-link" itemprop="url">南大《软件分析》04.Data Flow Analysis - Applications II</a>
+            <a href="/2022/04/15/JavaScript/" class="post-title-link" itemprop="url">JavaScript</a>
         </h2>
 
         <div class="post-meta">
@@ -600,14 +577,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-04-27 13:13:32" itemprop="dateCreated datePublished" datetime="2022-04-27T13:13:32+08:00">2022-04-27</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+                <time title="Modified: 2022-12-08 22:00:08" itemprop="dateModified" datetime="2022-12-08T22:00:08+08:00">2022-12-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -615,11 +592,25 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                  <a href="/categories/%E5%89%8D%E7%AB%AF/" itemprop="url" rel="index"><span itemprop="name">前端</span></a>
                 </span>
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/JavaScript/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/JavaScript/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -630,22 +621,15 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
-<blockquote>
-<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
-<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
-<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
-</blockquote>
-<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
-<li>Overview of Data Flow Analysis </li>
-<li>Preliminaries of Data Flow Analysis </li>
-<li>Reaching Definitions Analysis </li>
-<li>Live Variables Analysis </li>
-<li>Available Expressions Analysis</li>
-</ol>
+          <h1 id="1-什么是JavaScript"><a href="#1-什么是JavaScript" class="headerlink" title="1 什么是JavaScript"></a>1 什么是JavaScript</h1><h2 id="1-1-概述"><a href="#1-1-概述" class="headerlink" title="1.1 概述"></a>1.1 概述</h2><p>JavaScript是一门世界上最流行的脚本语言</p>
+<p>==合格的后端人员必须精通JavaScript==</p>
+<h2 id="1-2-历史"><a href="#1-2-历史" class="headerlink" title="1.2 历史"></a>1.2 历史</h2><p>ECMAScript它可以理解为JavaScript的一个标准</p>
+<p>最新版本已经到es6版本~</p>
+<p>但是大部分浏览器还只停留在支持es5代码上！</p>
+<p>开发环境–线上环境，版本不一致</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/04/27/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B04-DataFlowAnalysis2/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/JavaScript/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -669,10 +653,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -683,7 +667,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/" class="post-title-link" itemprop="url">南大《软件分析》03.Data Flow Analysis - Applications I</a>
+            <a href="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" class="post-title-link" itemprop="url">RAS算法的数学基础</a>
         </h2>
 
         <div class="post-meta">
@@ -693,14 +677,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-04-26 16:14:01" itemprop="dateCreated datePublished" datetime="2022-04-26T16:14:01+08:00">2022-04-26</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+                <time title="Modified: 2022-12-08 22:00:33" itemprop="dateModified" datetime="2022-12-08T22:00:33+08:00">2022-12-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -708,11 +692,25 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                  <a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">密码学</span></a>
                 </span>
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -723,22 +721,10 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
-<blockquote>
-<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
-<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
-<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
-</blockquote>
-<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
-<li>Overview of Data Flow Analysis </li>
-<li>Preliminaries of Data Flow Analysis </li>
-<li>Reaching Definitions Analysis </li>
-<li>Live Variables Analysis </li>
-<li>Available Expressions Analysis</li>
-</ol>
+          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB ETÜ - University of Economics &amp; Technology）的PPT课件，《信息安全原理及应用》第三版（熊平，朱天清）以及《信息安全数学基础——算法、应用与实践》第二版（任伟）。</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/04/26/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B03-DataFlowAnalysis1/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/#more" rel="contents">
                 Read more &raquo;
               </a>
             </div>
@@ -762,10 +748,10 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/Mybatis/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -776,7 +762,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/" class="post-title-link" itemprop="url">Rustc 源码学习 - lint 与 LintPass</a>
+            <a href="/2022/04/15/Mybatis/" class="post-title-link" itemprop="url">MyBatis笔记</a>
         </h2>
 
         <div class="post-meta">
@@ -786,14 +772,14 @@
               </span>
               <span class="post-meta-item-text">Posted on</span>
 
-              <time title="Created: 2022-04-25 15:34:14" itemprop="dateCreated datePublished" datetime="2022-04-25T15:34:14+08:00">2022-04-25</time>
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
             </span>
               <span class="post-meta-item">
                 <span class="post-meta-item-icon">
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
+                <time title="Modified: 2022-12-08 21:59:57" itemprop="dateModified" datetime="2022-12-08T21:59:57+08:00">2022-12-08</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -801,11 +787,25 @@
               </span>
               <span class="post-meta-item-text">In</span>
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
                 </span>
             </span>
 
           
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/Mybatis/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/Mybatis/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -816,282 +816,298 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h1 id="Lint-与-LintPass"><a href="#Lint-与-LintPass" class="headerlink" title="Lint 与 LintPass"></a>Lint 与 LintPass</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在 <a target="_blank" rel="noopener" href="https://github.com/KusionStack/kusion">KusionStack</a> 技术栈中， KCL 配置策略语言是重要的组成部分之一。为了帮助用户更好的编写 KCL 代码，我们也为 KCL 语言开发了一些语言工具，Lint 就是其中一种。Lint 工具帮助用户检查代码中潜在的问题和错误，同时也可以用于自动化的代码检查，保障仓库代码规范和质量。因为 KCL 语言由 Rust 实现，一些功能也学习和参考了 Rustc。本文是在学习 Rustc 过程中的一些思考和沉淀，在这里做一些分享。</p>
-<h3 id="Rustc"><a href="#Rustc" class="headerlink" title="Rustc"></a>Rustc</h3><p>Rustc 是 Rust Compiler 的简称，即 Rust 编程语言的编译器。Rust 的编译器是自举的，即 Rustc 由 Rust 语言编写而成，可以通过旧版本编译出新版本。因此，Rustc 可以说是用 Rust 语言编写编译器的最佳实践。</p>
-<h3 id="Lint-工具"><a href="#Lint-工具" class="headerlink" title="Lint 工具"></a>Lint 工具</h3><p>Lint 是代码静态分析工具的一种，最早是来源于 C 语言。Lint 工具通常会检查代码中潜在的问题和错误，包括（但不限于）编程风格（缩进、空行、空格）、代码质量（定义未使用的变量、文档缺失）以及错误代码（除0错误、重复定义、循环引用）等问题。通常来说，Lint 工具除了标识错误外，还会带有一定的 fix/refactor suggest 和 auto-fix 的能力。在工程中引入 Lint 工具可以有效的减少错误，提高整体的工程质量。此外，对一种编程语言来说，Lint 工具通常也是其他工具研发的前置条件，例如 IDE 插件的错误提示，CI 的 Pipeline 检测等。</p>
-<h2 id="Lint-vs-LintPass"><a href="#Lint-vs-LintPass" class="headerlink" title="Lint vs. LintPass"></a>Lint vs. LintPass</h2><h3 id="概念与关系"><a href="#概念与关系" class="headerlink" title="概念与关系"></a>概念与关系</h3><p>Rustc 中关于 Lint 最主要的结构有两个， <code>Lint</code> 和 <code>LintPass</code>。首先需要区分 Lint 和 LintPass 的概念。Rustc 的很多文档中都将它们统称为 <code>Lint</code>，这很容易造成混淆。关于这两者之间的区别，rustc-dev-guide 给出的解释是：</p>
-<blockquote>
-<p>Lint declarations don’t carry any “state” - they are merely global identifiers and descriptions of lints. We assert at runtime that they are not registered twice (by lint name).<br>Lint passes are the meat of any lint.</p>
-</blockquote>
-<p>从定义方面， <code>Lint</code> 是对所定义的 lint 检查的静态描述，例如 name, level, description, code 等属性，与检查时的状态无关，Rustc 用 <code>Lint</code> 的定义做唯一性的检查。而 <code>LintPass</code> 是 <code>Lint</code> 的具体实现，是在检查时调用的 <code>check_*</code> 方法。<br>在具体的代码实现方法， <code>Lint</code>定义为一个 Struct，所有 lint 的定义都是此类型的一个实例/对象。而 <code>LintPass</code> 则对应为一个 trait。trait 类似于 java/c++ 中的接口，每一个 lintpass 的定义都需要实现该接口中定义的方法。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/// Specification of a single lint.</span></span><br><span class="line"><span class="meta">#[derive(Copy, Clone, Debug)]</span></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">Lint</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> name: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>,</span><br><span class="line">    <span class="comment">/// Default level for the lint.</span></span><br><span class="line">    <span class="keyword">pub</span> default_level: Level,</span><br><span class="line">    <span class="comment">/// Description of the lint or the issue it detects.</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// e.g., &quot;imports that are never used&quot;</span></span><br><span class="line">    <span class="keyword">pub</span> desc: &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>,</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">LintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>需要注意的是，尽管刚刚的描述中说到<code>trait</code> 类似于接口而 <code>Lint</code> 是一个 struct，但 <code>Lint</code> 和 <code>LintPass</code> 之间并不是 OO 中一个“类”和它的“方法”的关系。而是在声明 <code>LintPass</code> 会生成一个实现了该 trait 的同名的 struct，该 struct 中的 <code>get_lints()</code> 方法会生成对应的 <code>Lint</code> 定义。</p>
-<p><img src="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-lint%E4%B8%8Elintpass/lint_lintpass.jpeg" alt="lint vs. lintpass"></p>
-<p>这与 rustc-dev-guide 的描述也保持了一致:</p>
-<blockquote>
-<p>A lint might not have any lint pass that emits it, it could have many, or just one — the compiler doesn’t track whether a pass is in any way associated with a particular lint, and frequently lints are emitted as part of other work (e.g., type checking, etc.).</p>
-</blockquote>
-<h3 id="Lint-与-LintPass-的宏定义"><a href="#Lint-与-LintPass-的宏定义" class="headerlink" title="Lint 与 LintPass 的宏定义"></a>Lint 与 LintPass 的宏定义</h3><p>Rustc 为 Lint 和 LintPass 都提供了用于定义其结构的宏。<br>定义 Lint 的宏<code>declare_lint</code> 比较简单，可以在<code>rustc_lint_defs::lib.rs</code>中找到。<code>declare_lint</code> 宏解析输入参数，并生成名称为 <code>$NAME</code> 的 Lint struct。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#[macro_export]</span></span><br><span class="line"><span class="built_in">macro_rules!</span> declare_lint &#123;</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr) =&gt; (</span><br><span class="line">        $crate::declare_lint!(</span><br><span class="line">            $(<span class="meta">#[$attr]</span>)* $vis $NAME, $Level, $desc,</span><br><span class="line">        );</span><br><span class="line">    );</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr,</span><br><span class="line">     $(@feature_gate = $gate:expr;)?</span><br><span class="line">     $(@future_incompatible = FutureIncompatibleInfo &#123; $($field:ident : $val:expr),* $(,)*  &#125;; )?</span><br><span class="line">     $($v:ident),*) =&gt; (</span><br><span class="line">        $(<span class="meta">#[$attr]</span>)*</span><br><span class="line">        $vis <span class="keyword">static</span> $NAME: &amp;$crate::Lint = &amp;$crate::Lint &#123;</span><br><span class="line">            name: <span class="built_in">stringify!</span>($NAME),</span><br><span class="line">            default_level: $crate::$Level,</span><br><span class="line">            desc: $desc,</span><br><span class="line">            edition_lint_opts: <span class="literal">None</span>,</span><br><span class="line">            is_plugin: <span class="literal">false</span>,</span><br><span class="line">            $($v: <span class="literal">true</span>,)*</span><br><span class="line">            $(feature_gate: <span class="title function_ invoke__">Some</span>($gate),)*</span><br><span class="line">            $(future_incompatible: <span class="title function_ invoke__">Some</span>($crate::FutureIncompatibleInfo &#123;</span><br><span class="line">                $($field: $val,)*</span><br><span class="line">                ..$crate::FutureIncompatibleInfo::<span class="title function_ invoke__">default_fields_for_macro</span>()</span><br><span class="line">            &#125;),)*</span><br><span class="line">            ..$crate::Lint::<span class="title function_ invoke__">default_fields_for_macro</span>()</span><br><span class="line">        &#125;;</span><br><span class="line">    );</span><br><span class="line">    ($(<span class="meta">#[$attr:meta]</span>)* $vis: vis $NAME: ident, $Level: ident, $desc: expr,</span><br><span class="line">     $lint_edition: expr =&gt; $edition_level: ident</span><br><span class="line">    ) =&gt; (</span><br><span class="line">        $(<span class="meta">#[$attr]</span>)*</span><br><span class="line">        $vis <span class="keyword">static</span> $NAME: &amp;$crate::Lint = &amp;$crate::Lint &#123;</span><br><span class="line">            name: <span class="built_in">stringify!</span>($NAME),</span><br><span class="line">            default_level: $crate::$Level,</span><br><span class="line">            desc: $desc,</span><br><span class="line">            edition_lint_opts: <span class="title function_ invoke__">Some</span>(($lint_edition, $crate::Level::$edition_level)),</span><br><span class="line">            report_in_external_macro: <span class="literal">false</span>,</span><br><span class="line">            is_plugin: <span class="literal">false</span>,</span><br><span class="line">        &#125;;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>LintPass 的定义涉及到两个宏：</p>
-<ul>
-<li>declare_lint_pass：生成一个名为<code>$name</code> 的 struct，并且调用 <code>impl_lint_pass</code> 宏。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_lint_pass &#123;</span><br><span class="line">    ($(<span class="meta">#[$m:meta]</span>)* $name:ident =&gt; [$($lint:expr),* $(,)?]) =&gt; &#123;</span><br><span class="line">        $(<span class="meta">#[$m]</span>)* <span class="meta">#[derive(Copy, Clone)]</span> <span class="keyword">pub</span> <span class="keyword">struct</span> $name;</span><br><span class="line">        $crate::impl_lint_pass!($name =&gt; [$($lint),*]);</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>impl_lint_pass：为生成的 <code>LintPass</code> 结构实现<code>fn name()</code>和 <code>fn get_lints()</code> 方法。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> impl_lint_pass &#123;</span><br><span class="line">    ($ty:ty =&gt; [$($lint:expr),* $(,)?]) =&gt; &#123;</span><br><span class="line">        <span class="keyword">impl</span> $crate::LintPass <span class="keyword">for</span> $ty &#123;</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> &#123; <span class="built_in">stringify!</span>($ty) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">impl</span> $ty &#123;</span><br><span class="line">            <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_lints</span>() <span class="punctuation">-&gt;</span> $crate::LintArray &#123; $crate::lint_array!($($lint),*) &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="EarlyLintPass-与-LateLintPass"><a href="#EarlyLintPass-与-LateLintPass" class="headerlink" title="EarlyLintPass 与 LateLintPass"></a>EarlyLintPass 与 LateLintPass</h3><p>前面关于 <code>LintPass</code> 的宏之中，只定义了<code>fn name()</code>和 <code>fn get_lints()</code> 方法，但并没有定义用于检查的 <code>check_*</code> 函数。这是因为 Rustc 中将 <code>LintPass</code> 分为了更为具体的两类：<code>EarlyLintPass</code>和<code>LateLintPass</code>。其主要区别在于检查的元素是否带有类型信息，即在类型检查之前还是之后执行。例如， <code>WhileTrue</code> 检查代码中的 <code>while true&#123;...&#125;</code> 并提示用户使用 <code>loop&#123;...&#125;</code> 去代替。这项检查不需要任何的类型信息，因此被定义为一个  <code>EarlyLint</code>(代码中 <code>impl EarlyLintPass for WhileTrue</code>。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">declare_lint! &#123;</span><br><span class="line">    WHILE_TRUE,</span><br><span class="line">    Warn,</span><br><span class="line">    <span class="string">&quot;suggest using `loop &#123; &#125;` instead of `while true &#123; &#125;`&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">declare_lint_pass!(WhileTrue =&gt; [WHILE_TRUE]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">WhileTrue</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_expr</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, cx: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, e: &amp;ast::Expr) &#123;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>Rustc 中用了3个宏去定义 <code>EarlyLintPass</code>：</p>
-<ul>
-<li>early<em>lint_methods：early_lint_methods 中定义了 <code>EarlyLintPass</code> 中需要实现的 `check</em>*<code>函数，并且将这些函数以及接收的参数</code>$args`传递给下一个宏。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> early_lint_methods &#123;</span><br><span class="line">    ($<span class="keyword">macro</span>:path, $args:tt) =&gt; (</span><br><span class="line">        $macro!($args, [</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_param</span>(a: &amp;ast::Param);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_ident</span>(a: &amp;ast::Ident);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate</span>(a: &amp;ast::Crate);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate_post</span>(a: &amp;ast::Crate);</span><br><span class="line">            ...</span><br><span class="line">        ]);</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>declare_early_lint_pass：生成trait <code>EarlyLintPass</code> 并调用宏 <code>expand_early_lint_pass_methods</code>。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_early_lint_pass &#123;</span><br><span class="line">    ([], [$($methods:tt)*]) =&gt; (</span><br><span class="line">        <span class="keyword">pub</span> <span class="keyword">trait</span> <span class="title class_">EarlyLintPass</span>: LintPass &#123;</span><br><span class="line">            expand_early_lint_pass_methods!(&amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, [$($methods)*]);</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<ul>
-<li>expand<em>early_lint_pass_methods：为`check</em>*`方法提供默认实现，即空检查。</li>
-</ul>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> expand_early_lint_pass_methods &#123;</span><br><span class="line">    ($context:ty, [$($(<span class="meta">#[$attr:meta]</span>)* <span class="keyword">fn</span> $name:<span class="title function_ invoke__">ident</span>($($param:ident: $arg:ty),*);)*]) =&gt; (</span><br><span class="line">        $(<span class="meta">#[inline(always)]</span> <span class="keyword">fn</span> $<span class="title function_ invoke__">name</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, _: $context, $(_: $arg),*) &#123;&#125;)*</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>这样的设计好处有以下几点：</p>
-<ol>
-<li>因为 LintPass 是一个 trait，每一个 LintPass 的定义都需要实现其内部定义的所有方法。但 early lint 和 late lint 发生在编译的不同阶段，函数入参也不一致（AST 和 HIR）。因此，LintPass 的定义只包含了 <code>fn name()</code> 和 <code>fn get_lints()</code> 这两个通用的方法。而执行检查函数则定义在了更为具体的 <code>EarlyLintPass</code> 和 <code>LateLintPass</code> 中。</li>
-<li>同样的，对于 <code>EarlyLintPass</code>， 每一个 lintpass 的定义都必须实现其中的所有方法。但并非每一个 lintpass 都需要检查 AST 的所有节点。 <code>expand_early_lint_pass_methods</code> 为其内部方法提供了默认实现。这样在定义具体的 lintpass 时，只需要关注和实现其相关的检查函数即可。例如，对于 <code>WhileTrue</code> 的定义，因为 <code>while true &#123; &#125;</code>这样的写法只会出现在 <code>ast::Expr</code> 节点中，因此只需要实现 <code>check_expr</code> 函数即可。在其他任何节点调用 <code>WhileTrue</code> 的检查函数，如在检查 AST 上的标识符节点时，调用 <code>WhileTrue.check_ident()</code>，则根据宏 <code>expand_early_lint_pass_methods</code> 中的定义执行一个空函数。</li>
-</ol>
-<h3 id="pass-的含义"><a href="#pass-的含义" class="headerlink" title="pass 的含义"></a>pass 的含义</h3><p>在 Rustc 中，除了 <code>Lint</code> 和 <code>LintPass</code> 外，还有一些 <code>*Pass</code> 的命名，如 <code>Mir</code> 和 <code>MirPass</code>、<code>rustc_passes</code> 包等。编译原理龙书中对Pass有对应的解释：</p>
-<blockquote>
-<p>1.2.8 将多个步骤组合成趟<br>前面关于步骤的讨论讲的是一个编译器的逻辑组织方式。在一个特定的实现中，多个步骤的活动可以被组合成一趟（pass）。每趟读入一个输入文件并产生一个输出文件。</p>
-</blockquote>
-<p>在声明 <code>LintPass</code> 的宏 <code>declare_lint_pass</code> 中，其第二个参数为一个列表，表示一个 lintpass 可以生成多个 lint。Rustc 中还有一些 CombinedLintPass 中也是将所有 builtin 的 lint 汇总到一个 lintpass 中。这与龙书中“趟”的定义基本一致:<code>LintPass</code> 可以组合多个 <code>Lint</code> 的检查，每个 LintPass 读取一个 AST 并产生对应的结果。</p>
-<h2 id="Lint-的简单实现"><a href="#Lint-的简单实现" class="headerlink" title="Lint 的简单实现"></a>Lint 的简单实现</h2><p>在 LintPass 的定义中，给每一个 lintpass 的所有 <code>check_*</code> 方法都提供了一个默认实现。到这里为止，基本上已经可以实现 Lint 检查的功能。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">struct</span> <span class="title class_">Linter</span> &#123; &#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">ast_visit</span>::Visitor <span class="keyword">for</span> <span class="title class_">Linter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_crate</span>(a: ast:<span class="keyword">crate</span>)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_crate</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_crate</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_stmt</span>(a: ast:stmt)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_stmt</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_stmt</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">let</span> <span class="variable">linter</span> = Linter::<span class="title function_ invoke__">new</span>();</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> <span class="variable">c</span> <span class="keyword">in</span> crates&#123;</span><br><span class="line">    linter.<span class="title function_ invoke__">visit_crate</span>(c);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><code>Visitor</code> 是遍历 AST 的工具，在这里为 Linter 实现其中的 <code>visit_*</code> 方法，在遍历时调用所有 lintpass 的 <code>check_*</code> 函数。<code>walk_*</code> 会继续调用其他的 <code>visit_*</code> 函数，遍历其中的子节点。因此，对于每一个 crate， 只需要调用 <code>visit_crate()</code> 函数就可以遍历 AST 并完成检查。</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简单介绍了 Rustc 源码中关于 Lint 的几个重要结构。并以 <code>WhileTrue</code> 为例说明了 Rustc 如何中定义和实现一个 <code>Lint</code>，最后基于这些结构，提供了一个简易的 Lint 检查的实现方式。希望能够对理解 Rustc 及 Lint 有所帮助，如有错误，欢迎指正。KCL 的 Lint 工具也参考了其中部分设计， 由文末简易的 Linter 结构改进而成。篇幅限制，将后续的文章将继续介绍 Rustc 中 Lint 在编译过程中的注册和执行过程，如何继续优化上述 <code>Linter</code> 的实现，以及 KCL Lint 的设计和实践，期待继续关注。</p>
-<h2 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h2><ul>
-<li>KusionStack: <a target="_blank" rel="noopener" href="https://github.com/KusionStack">https://github.com/KusionStack</a></li>
-<li>Rustc: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust">https://github.com/rust-lang/rust</a></li>
-<li>rustc-dev-guide: <a target="_blank" rel="noopener" href="https://rustc-dev-guide.rust-lang.org/">https://rustc-dev-guide.rust-lang.org/</a></li>
-<li>Rust Visitor: <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html">https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html</a></li>
-<li>Rust Clippy: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust-clippy">https://github.com/rust-lang/rust-clippy</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="HeiPa">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Write the code, Change the world">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/" class="post-title-link" itemprop="url">Rustc 源码学习 - CombinedLintPass</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-04-25 15:34:14" itemprop="dateCreated datePublished" datetime="2022-04-25T15:34:14+08:00">2022-04-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="CombinedLintPass"><a href="#CombinedLintPass" class="headerlink" title="CombinedLintPass"></a>CombinedLintPass</h1><h2 id="背景"><a href="#背景" class="headerlink" title="背景"></a>背景</h2><p>在 <a target="_blank" rel="noopener" href="https://github.com/KusionStack/kusion">KusionStack</a> 技术栈中， KCL 配置策略语言是重要的组成部分之一。为了帮助用户更好的编写 KCL 代码，我们也为 KCL 语言开发了一些语言工具，Lint 就是其中一种。Lint 工具帮助用户检查代码中潜在的问题和错误，同时也可以用于自动化的代码检查，保障仓库代码规范和质量。因为 KCL 语言由 Rust 实现，一些功能也学习和参考了 Rustc。本文是在学习 Rustc 过程中的一些思考和沉淀，在这里做一些分享。</p>
-<p><a target="_blank" rel="noopener" href="https://github.com/awesome-kusion/rust-code-book/blob/main/rust-tools/lint/lint-pass.md">前一篇文章</a> 介绍了关于 <code>Lint</code> 和 <code>LintPass</code> 的一些概念和实现。基于这些结构，提供了一个简易的 <code>Lint</code> 检查的实现方式。本文主要介绍 <code>CombinedLintPass</code> 这一结构的实现，并基于 <code>CombinedLintPass</code> 进一步优化 <code>Lint</code> 的实现。</p>
-<h2 id="CombinedLintpass"><a href="#CombinedLintpass" class="headerlink" title="CombinedLintpass"></a>CombinedLintpass</h2><p>Rustc 在 <code>LintPass</code> 的中实现了 <code>Lint</code> 工具检查的具体逻辑。并且使用 Visitor 模式遍历 AST 的同时调用 lintpass 中的 <code>check_*</code>方法。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">ast_visit</span>::Visitor <span class="keyword">for</span> <span class="title class_">Linter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_crate</span>(a: ast:<span class="keyword">crate</span>)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_crate</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_crate</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_stmt</span>(a: ast:stmt)&#123;</span><br><span class="line">        <span class="keyword">for</span> <span class="variable">lintpass</span> <span class="keyword">in</span> lintpasses&#123;</span><br><span class="line">            lintpass.<span class="title function_ invoke__">check_stmt</span>(a)</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="title function_ invoke__">walk_stmt</span>();</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>但是，Rustc 自身和 clippy 提供的 Lint 定义多达550+多个。考虑到性能因素，定义大量的 LintPass，分别注册和调用显然是不合适的。Rustc 提供了一种更优的解决方法：既然可以将多个 Lint 组织为一个 LintPass，同样也可以将多个 LintPass 组合成一个 CombinedLintPass。</p>
-<blockquote>
-<p><a target="_blank" rel="noopener" href="https://rustc-dev-guide.rust-lang.org/diagnostics/lintstore.html#compiler-lint-passes-are-combined-into-one-pass">Compiler lint passes are combined into one pass</a><br>Within the compiler, for performance reasons, we usually do not register dozens of lint passes. Instead, we have a single lint pass of each variety (e.g., BuiltinCombinedModuleLateLintPass) which will internally call all of the individual lint passes; this is because then we get the benefits of static over dynamic dispatch for each of the (often empty) trait methods.<br>Ideally, we’d not have to do this, since it adds to the complexity of understanding the code. However, with the current type-erased lint store approach, it is beneficial to do so for performance reasons.</p>
-</blockquote>
-<h3 id="BuiltinCombinedEarlyLintPass"><a href="#BuiltinCombinedEarlyLintPass" class="headerlink" title="BuiltinCombinedEarlyLintPass"></a>BuiltinCombinedEarlyLintPass</h3><p>CombinedLintPass 同样分为 early 和 late 两类。 以 builtin 的 early lint 为例，Rustc 在 <code>rustc_lint::src::lib.rs</code> 中为这些 lintpass 定义了一个 <code>BuiltinCombinedEarlyLintPass</code> 结构。</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">early_lint_passes!(declare_combined_early_pass, [BuiltinCombinedEarlyLintPass]);</span><br></pre></td></tr></table></figure>
-<p>虽然这个定义看起来只有一行，但其中通过若干个宏的展开，汇总了14个 <code>LintPass</code>，并且每个 <code>LintPass</code> 提供了50多个 <code>check_*</code> 方法。接下来一一说明这些宏。</p>
-<h4 id="BuiltinCombinedEarlyLintPass-的宏定义"><a href="#BuiltinCombinedEarlyLintPass-的宏定义" class="headerlink" title="BuiltinCombinedEarlyLintPass 的宏定义"></a>BuiltinCombinedEarlyLintPass 的宏定义</h4><h5 id="early-lint-passes"><a href="#early-lint-passes" class="headerlink" title="early_lint_passes"></a>early_lint_passes</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> early_lint_passes &#123;</span><br><span class="line">    ($<span class="keyword">macro</span>:path, $args:tt) =&gt; &#123;</span><br><span class="line">        $macro!(</span><br><span class="line">            $args,</span><br><span class="line">            [</span><br><span class="line">                UnusedParens: UnusedParens,</span><br><span class="line">                UnusedBraces: UnusedBraces,</span><br><span class="line">                UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">                UnsafeCode: UnsafeCode,</span><br><span class="line">                AnonymousParameters: AnonymousParameters,</span><br><span class="line">                EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">                NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">                DeprecatedAttr: DeprecatedAttr::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">                WhileTrue: WhileTrue,</span><br><span class="line">                NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">                HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">                IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">                RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">                UnusedDocComment: UnusedDocComment,</span><br><span class="line">            ]</span><br><span class="line">        );</span><br><span class="line">    &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>首先是 early_lint_passes 宏，这个宏的主要作用是定义了所有的 early lintpass。这里的 lintpass 是成对出现的，<code>:</code>左边为 lintpass 的 Identifier，<code>:</code>右边为 lintpass 的constructor。所以会出现 <code>EllipsisInclusiveRangePatterns::default()</code> 和 <code>DeprecatedAttr::new()</code>这种形式。early_lint_passes 会将定义的 early lintpass 和 第二个参数一起传递给下一个宏。<br>通过这个宏，之前的<code>BuiltinCombinedEarlyLintPass</code>的定义被展开为：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">declare_combined_early_pass!([BuiltinCombinedEarlyLintPass], [</span><br><span class="line">                UnusedParens: UnusedParens,</span><br><span class="line">                UnusedBraces: UnusedBraces,</span><br><span class="line">                UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">                UnsafeCode: UnsafeCode,</span><br><span class="line">                AnonymousParameters: AnonymousParameters,</span><br><span class="line">                EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">                NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">                DeprecatedAttr: DeprecatedAttr::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">                WhileTrue: WhileTrue,</span><br><span class="line">                NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">                HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">                IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">                RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">                UnusedDocComment: UnusedDocComment,</span><br><span class="line">            ])</span><br></pre></td></tr></table></figure>
-<h5 id="declare-combined-early-pass"><a href="#declare-combined-early-pass" class="headerlink" title="declare_combined_early_pass"></a>declare_combined_early_pass</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_combined_early_pass &#123;</span><br><span class="line">    ([$name:ident], $passes:tt) =&gt; (</span><br><span class="line">        early_lint_methods!(declare_combined_early_lint_pass, [<span class="keyword">pub</span> $name, $passes]);</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>declare_combined_early_pass 宏接收 early_lint_passes宏传来的 name(BuiltinCombinedEarlyLintPass) 和 passes，并继续传递给 early_lint_methods 宏。<br>通过这个宏，<code>BuiltinCombinedEarlyLintPass</code>的定义继续展开为：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">early_lint_methods!(declare_combined_early_lint_pass, </span><br><span class="line">                    [<span class="keyword">pub</span> BuiltinCombinedEarlyLintPass, </span><br><span class="line">                      [</span><br><span class="line">                            UnusedParens: UnusedParens,</span><br><span class="line">                            UnusedBraces: UnusedBraces,</span><br><span class="line">                            UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">                            UnsafeCode: UnsafeCode,</span><br><span class="line">                            AnonymousParameters: AnonymousParameters,</span><br><span class="line">                            EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">                            NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">                            DeprecatedAttr: DeprecatedAttr::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">                            WhileTrue: WhileTrue,</span><br><span class="line">                            NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">                            HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">                            IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">                            RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">                            UnusedDocComment: UnusedDocComment,</span><br><span class="line">               ]</span><br><span class="line">                    ]);</span><br></pre></td></tr></table></figure>
-<h5 id="early-lint-methods"><a href="#early-lint-methods" class="headerlink" title="early_lint_methods"></a>early_lint_methods</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> early_lint_methods &#123;</span><br><span class="line">    ($<span class="keyword">macro</span>:path, $args:tt) =&gt; (</span><br><span class="line">        $macro!($args, [</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_param</span>(a: &amp;ast::Param);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_ident</span>(a: &amp;ast::Ident);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate</span>(a: &amp;ast::Crate);</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">check_crate_post</span>(a: &amp;ast::Crate);</span><br><span class="line">            ...</span><br><span class="line">        ]);</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>early<em>lint_methods 宏在前一篇文章中也介绍过，它定义了 <code>EarlyLintPass</code> 中需要实现的 `check</em>*<code>函数，并且将这些函数以及接收的参数</code>$args<code>传递给下一个宏。因为</code>BuiltinCombinedEarlyLintPass<code>也是 early lint 的一种，所以同样需要实现这些函数。
-通过这个宏，</code>BuiltinCombinedEarlyLintPass`的定义继续展开为：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">declare_combined_early_lint_pass!(</span><br><span class="line">    [<span class="keyword">pub</span> BuiltinCombinedEarlyLintPass, </span><br><span class="line">        [</span><br><span class="line">            UnusedParens: UnusedParens,</span><br><span class="line">            UnusedBraces: UnusedBraces,</span><br><span class="line">            UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">            UnsafeCode: UnsafeCode,</span><br><span class="line">            AnonymousParameters: AnonymousParameters,</span><br><span class="line">            EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">            NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">            DeprecatedAttr: DeprecatedAttr::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">            WhileTrue: WhileTrue,</span><br><span class="line">            NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">            HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">            IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">            RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">            UnusedDocComment: UnusedDocComment,</span><br><span class="line">        ]</span><br><span class="line">    ],</span><br><span class="line">    [</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">check_param</span>(a: &amp;ast::Param);</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">check_ident</span>(a: &amp;ast::Ident);</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">check_crate</span>(a: &amp;ast::Crate);</span><br><span class="line">        <span class="keyword">fn</span> <span class="title function_">check_crate_post</span>(a: &amp;ast::Crate);</span><br><span class="line">        ...</span><br><span class="line">    ]</span><br><span class="line">)</span><br></pre></td></tr></table></figure>
-<h5 id="declare-combined-early-lint-pass"><a href="#declare-combined-early-lint-pass" class="headerlink" title="declare_combined_early_lint_pass"></a>declare_combined_early_lint_pass</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> declare_combined_early_lint_pass &#123;</span><br><span class="line">    ([$v:vis $name:ident, [$($passes:ident: $constructor:expr,)*]], $methods:tt) =&gt; (</span><br><span class="line">        <span class="meta">#[allow(non_snake_case)]</span></span><br><span class="line">        $v <span class="keyword">struct</span> $name &#123;</span><br><span class="line">            $($passes: $passes,)*</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">impl</span> $name &#123;</span><br><span class="line">            $v <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">                <span class="keyword">Self</span> &#123;</span><br><span class="line">                    $($passes: $constructor,)*</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            $v <span class="keyword">fn</span> <span class="title function_">get_lints</span>() <span class="punctuation">-&gt;</span> LintArray &#123;</span><br><span class="line">                <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">lints</span> = Vec::<span class="title function_ invoke__">new</span>();</span><br><span class="line">                $(lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;$passes::<span class="title function_ invoke__">get_lints</span>());)*</span><br><span class="line">                lints</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> $name &#123;</span><br><span class="line">            expand_combined_early_lint_pass_methods!([$($passes),*], $methods);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="meta">#[allow(rustc::lint_pass_impl_without_macro)]</span></span><br><span class="line">        <span class="keyword">impl</span> <span class="title class_">LintPass</span> <span class="keyword">for</span> $name &#123;</span><br><span class="line">            <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> &#123;</span><br><span class="line">                <span class="built_in">panic!</span>()</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>declare_combined_early_lint_pass宏是生成 <code>BuiltinCombinedEarlyLintPass</code> 的主体。这个宏中做了以下工作：</p>
-<ul>
-<li>生成一个名为 <code>BuiltinCombinedEarlyLintPass</code> 的 struct，其中的属性为宏 <code>early_lint_passes</code> 提供的 lintpass 的 identifier。</li>
-<li>实现 <code>fn new()</code> <code>fn name()</code> 和 <code>fn get_lints()</code> 方法。其中 <code>new()</code> 调用了 <code>early_lint_passes</code> 提供的 lintpass 的 constructor。</li>
-<li>调用宏 <code>expand_combined_early_lint_pass_methods</code>，实现自身的 <code>check_*</code> 方法。</li>
-</ul>
-<p>通过这个宏，<code>BuiltinCombinedEarlyLintPass</code>的定义变为：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">            UnusedParens: UnusedParens,</span><br><span class="line">            UnusedBraces: UnusedBraces,</span><br><span class="line">            UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">            UnsafeCode: UnsafeCode,</span><br><span class="line">            AnonymousParameters: AnonymousParameters,</span><br><span class="line">            EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns,</span><br><span class="line">            NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">            DeprecatedAttr: DeprecatedAttr,</span><br><span class="line">            WhileTrue: WhileTrue,</span><br><span class="line">            NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">            HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">            IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">            RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">            UnusedDocComment: UnusedDocComment,</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        <span class="keyword">Self</span> &#123;</span><br><span class="line">            UnusedParens: UnusedParens,</span><br><span class="line">            UnusedBraces: UnusedBraces,</span><br><span class="line">            UnusedImportBraces: UnusedImportBraces,</span><br><span class="line">            UnsafeCode: UnsafeCode,</span><br><span class="line">            AnonymousParameters: AnonymousParameters,</span><br><span class="line">            EllipsisInclusiveRangePatterns: EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">default</span>(),</span><br><span class="line">            NonCamelCaseTypes: NonCamelCaseTypes,</span><br><span class="line">            DeprecatedAttr: DeprecatedAttr::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">            WhileTrue: WhileTrue,</span><br><span class="line">            NonAsciiIdents: NonAsciiIdents,</span><br><span class="line">            HiddenUnicodeCodepoints: HiddenUnicodeCodepoints,</span><br><span class="line">            IncompleteFeatures: IncompleteFeatures,</span><br><span class="line">            RedundantSemicolons: RedundantSemicolons,</span><br><span class="line">            UnusedDocComment: UnusedDocComment,</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_lints</span>() <span class="punctuation">-&gt;</span> LintArray &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">lints</span> = Vec::<span class="title function_ invoke__">new</span>();</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedParens::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedBraces::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedImportBraces::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnsafeCode::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;AnonymousParameters::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;EllipsisInclusiveRangePatterns::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;NonCamelCaseTypes::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;DeprecatedAttr::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;WhileTrue::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;NonAsciiIdents::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;HiddenUnicodeCodepoints::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;IncompleteFeatures::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;RedundantSemicolons::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedDocComment::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        </span><br><span class="line">        lints</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    expand_combined_early_lint_pass_methods!([$($passes),*], $methods);</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#[allow(rustc::lint_pass_impl_without_macro)]</span></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">LintPass</span> <span class="keyword">for</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">name</span>(&amp;<span class="keyword">self</span>) <span class="punctuation">-&gt;</span> &amp;<span class="symbol">&#x27;static</span> <span class="type">str</span> &#123;</span><br><span class="line">        <span class="built_in">panic!</span>()</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="expand-combined-early-lint-pass-methods"><a href="#expand-combined-early-lint-pass-methods" class="headerlink" title="expand_combined_early_lint_pass_methods"></a>expand_combined_early_lint_pass_methods</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> expand_combined_early_lint_pass_methods &#123;</span><br><span class="line">    ($passes:tt, [$($(<span class="meta">#[$attr:meta]</span>)* <span class="keyword">fn</span> $name:<span class="title function_ invoke__">ident</span>($($param:ident: $arg:ty),*);)*]) =&gt; (</span><br><span class="line">        $(<span class="keyword">fn</span> $<span class="title function_ invoke__">name</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, $($param: $arg),*) &#123;</span><br><span class="line">            expand_combined_early_lint_pass_method!($passes, <span class="keyword">self</span>, $name, (context, $($param),*));</span><br><span class="line">        &#125;)*</span><br><span class="line">    )</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>expand_combined_early_lint_pass_methods宏在 <code>BuiltinCombinedEarlyLintPass</code> 中展开所有 <code>early_lint_methods</code> 中定义的方法。<br>通过这个宏，<code>BuiltinCombinedEarlyLintPass</code>的定义变为（省略其他定义）：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_param</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Param) &#123;</span><br><span class="line">        expand_combined_early_lint_pass_method!($passes, <span class="keyword">self</span>, $name, (context, $($param),*));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_ident</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Ident) &#123;</span><br><span class="line">        expand_combined_early_lint_pass_method!($passes, <span class="keyword">self</span>, $name, (context, $($param),*));</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_crate</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Crate) &#123;</span><br><span class="line">        expand_combined_early_lint_pass_method!($passes, <span class="keyword">self</span>, $name, (context, $($param),*));</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h5 id="expand-combined-early-lint-pass-method"><a href="#expand-combined-early-lint-pass-method" class="headerlink" title="expand_combined_early_lint_pass_method"></a>expand_combined_early_lint_pass_method</h5><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">macro_rules!</span> expand_combined_early_lint_pass_method &#123;</span><br><span class="line">    ([$($passes:ident),*], $<span class="keyword">self</span>: ident, $name: ident, $params:tt) =&gt; (&#123;</span><br><span class="line">        $($<span class="keyword">self</span>.$passes.$name $params;)*</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>expand<em>combined_early_lint_pass_method：在展开的`check</em><em><code>函数中调用每一个</code>LintPass<code>的</code>check_</em><code>。
-通过这个宏，</code>BuiltinCombinedEarlyLintPass`的定义变为（省略其他定义）：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_param</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Param) &#123;</span><br><span class="line">        <span class="keyword">self</span>.UnusedParens.<span class="title function_ invoke__">check_param</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedBraces.<span class="title function_ invoke__">check_param</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedImportBraces.<span class="title function_ invoke__">check_param</span>(context, a);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_ident</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Ident) &#123;</span><br><span class="line">        <span class="keyword">self</span>.UnusedParens.<span class="title function_ invoke__">check_ident</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedBraces.<span class="title function_ invoke__">check_ident</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedImportBraces.<span class="title function_ invoke__">check_ident</span>(context, a);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_crate</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Crate) &#123;</span><br><span class="line">        <span class="keyword">self</span>.UnusedParens.<span class="title function_ invoke__">check_crate</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedBraces.<span class="title function_ invoke__">check_crate</span>(context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedImportBraces.<span class="title function_ invoke__">check_crate</span>(context, a);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">    </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h4 id="BuiltinCombinedEarlyLintPass-的最终定义"><a href="#BuiltinCombinedEarlyLintPass-的最终定义" class="headerlink" title="BuiltinCombinedEarlyLintPass 的最终定义"></a>BuiltinCombinedEarlyLintPass 的最终定义</h4><p>通过以上宏的展开，<code>BuiltinCombinedEarlyLintPass</code>的定义实际为如下形式：</p>
-<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">struct</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    UnusedParens: UnusedParens,</span><br><span class="line">    UnusedBraces: UnusedBraces,</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span>&#123;</span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">new</span>() <span class="punctuation">-&gt;</span> <span class="keyword">Self</span> &#123;</span><br><span class="line">        UnusedParens: UnusedParens,</span><br><span class="line">        UnusedBraces: UnusedBraces,</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">get_lints</span>() <span class="punctuation">-&gt;</span> LintArray &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">lints</span> = Vec::<span class="title function_ invoke__">new</span>();</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedParens::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        lints.<span class="title function_ invoke__">extend_from_slice</span>(&amp;UnusedBraces::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">        ...</span><br><span class="line">        lints</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">BuiltinCombinedEarlyLintPass</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_crates</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: &amp;ast::Crate)&#123;</span><br><span class="line">        <span class="keyword">self</span>.UnusedParens.<span class="title function_ invoke__">check_crates</span> (context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedBraces.<span class="title function_ invoke__">check_crates</span> (context, a);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_ident</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, context: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, a: Ident)&#123;</span><br><span class="line">        <span class="keyword">self</span>.UnusedParens.<span class="title function_ invoke__">check_ident</span> (context, a);</span><br><span class="line">        <span class="keyword">self</span>.UnusedBraces.<span class="title function_ invoke__">check_ident</span> (context, a);</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    .. </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>通过这个定义，可以在遍历 AST 时使用 <code>BuiltinCombinedEarlyLintPass</code> 的 <code>check_*</code> 方法实现多个 lintpass 的检查。</p>
-<h2 id="Lint-的进一步优化"><a href="#Lint-的进一步优化" class="headerlink" title="Lint 的进一步优化"></a>Lint 的进一步优化</h2><p>基于 CombinedLintPass ，可以对上一篇文章中提出的 Linter 的设计做进一步优化。<br><img src="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/combinedlintpass-01.jpg" alt="Linter"></p>
-<p>这里，可以用 CombinedLintPass 的<code>check_*</code> 方法，在 Visitor 遍历 AST 时执行对应的检查。虽然效果与之前一致，但因为宏的关系，所有的 <code>check_*</code> 方法和需要执行的 lintpass 都被收集到了一个结构中，也更容易管理。同样的，因为 CombinedLintPass 实际上调用的是每个 lintpass 各自的 check 方法，虽然调用起来可能下图一样很复杂，但因为 lintpass 中定义的 check 方法大部分是由宏生成的空检查，所以也不会造成性能上的损失。<br><img src="/2022/04/25/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0-combinedlintpass/combinedlintpass-02.jpg" alt="调用关系"></p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>本文简单介绍了 Rustc 源码中关于 <code>CombinedLintPass</code> 这一结构的定义和实现 ，并以此进一步优化 Linter 的设计。希望能够对理解 Rustc 及 Lint 有所帮助，如有错误，欢迎指正。后续的文章将继续介绍 Rustc 中 Lint 在编译过程中的注册和执行过程，期待继续关注。</p>
-<h2 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h2><ul>
-<li>KusionStack: <a target="_blank" rel="noopener" href="https://github.com/KusionStack">https://github.com/KusionStack</a></li>
-<li>Rustc: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust">https://github.com/rust-lang/rust</a></li>
-<li>rustc-dev-guide: <a target="_blank" rel="noopener" href="https://rustc-dev-guide.rust-lang.org/">https://rustc-dev-guide.rust-lang.org/</a></li>
-<li>Rust Visitor: <a target="_blank" rel="noopener" href="https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html">https://doc.rust-lang.org/nightly/nightly-rustc/rustc_ast/visit/index.html</a></li>
-<li>Rust Clippy: <a target="_blank" rel="noopener" href="https://github.com/rust-lang/rust-clippy">https://github.com/rust-lang/rust-clippy</a></li>
-</ul>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="HeiPa">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Write the code, Change the world">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/" class="post-title-link" itemprop="url">南大《软件分析》02.Intermediate Representation</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2022-04-25 15:34:14" itemprop="dateCreated datePublished" datetime="2022-04-25T15:34:14+08:00">2022-04-25</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2022-12-08 13:37:09" itemprop="dateModified" datetime="2022-12-08T13:37:09+08:00">2022-12-08</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">In</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90/" itemprop="url" rel="index"><span itemprop="name">软件分析</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。</p>
-<blockquote>
-<p>课程主页：<a target="_blank" rel="noopener" href="https://tai-e.pascal-lab.net/lectures.html">Static Program Analysis | Tai-e (pascal-lab.net)</a></p>
-<p>授课视频：<a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1b7411K7P4">视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili</a></p>
-<p>课程实验repo：<a target="_blank" rel="noopener" href="https://github.com/pascal-lab/Tai-e-assignments">pascal-lab/Tai-e-assignments: Tai-e assignments for static program analysis (github.com)</a></p>
-</blockquote>
-<h1 id="Contents"><a href="#Contents" class="headerlink" title="Contents"></a>Contents</h1><ol>
-<li>Compilers and Static Analyzers </li>
-<li>AST vs. IR </li>
-<li>IR: Three-Address Code (3AC) </li>
-<li>3AC in Real Static Analyzer </li>
-<li>Static Single Assignment (SSA) </li>
-<li>Basic Blocks (BB) </li>
-<li>Control Flow Graphs (CFG)</li>
-</ol>
+          <p>MyBatis学习笔记</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/2022/04/25/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B02-IntermediateRepresentation/#more" rel="contents">
+              <a class="btn" href="/2022/04/15/Mybatis/">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/MySQL/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/15/MySQL/" class="post-title-link" itemprop="url">JDBC MySQL笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 21:59:49" itemprop="dateModified" datetime="2022-12-08T21:59:49+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/MySQL/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/MySQL/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="1-初识MySQL"><a href="#1-初识MySQL" class="headerlink" title="1.初识MySQL"></a>1.初识MySQL</h1><p>JavaEE:企业级Java开发 web</p>
+<p>前端（页面：展示数据）</p>
+<p>后台（连接点：连接数据库JDBC，链接前端（控制，控制试图跳转，给前端传递数据））</p>
+<p>数据库（存数据，Txt，Excel，word）</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/04/15/MySQL/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/Spring/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/15/Spring/" class="post-title-link" itemprop="url">Spring笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 21:59:43" itemprop="dateModified" datetime="2022-12-08T21:59:43+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/Spring/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/Spring/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>Spring学习笔记</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/04/15/Spring/">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/JavaWeb/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2022/04/15/JavaWeb/" class="post-title-link" itemprop="url">Java Web笔记</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 22:00:02" itemprop="dateModified" datetime="2022-12-08T22:00:02+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Java/" itemprop="url" rel="index"><span itemprop="name">Java</span></a>
+                </span>
+            </span>
+
+          
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/JavaWeb/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/JavaWeb/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>JavaWeb学习笔记，包含Tomcat、Maven、Servlet、JSP、MVC等内容。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2022/04/15/JavaWeb/">
                 Read more &raquo;
               </a>
             </div>
@@ -1172,6 +1188,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="HeiPa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
   <p class="site-author-name" itemprop="name">HeiPa</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -1180,22 +1198,32 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+          
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
 
@@ -1228,6 +1256,26 @@
   </div>
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
@@ -1277,6 +1325,92 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

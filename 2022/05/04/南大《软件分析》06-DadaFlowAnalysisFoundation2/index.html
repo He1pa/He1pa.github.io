@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言本文是南京大学李樾、谭添老师的《软件分析》课程的笔记。内容来自课程ppt以及课程讲解。  课程主页：Static Program Analysis | Tai-e (pascal-lab.net) 授课视频：视频南京大学《软件分析》课程01（Introduction）_哔哩哔哩_bilibili 课程实验repo：pascal-lab&#x2F;Tai-e-assignments: Tai-e assi">
@@ -130,9 +130,24 @@
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
 
   </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">34</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a>
+
+  </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">21</span></a>
 
   </li>
   </ul>
@@ -166,7 +181,7 @@
     <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
       <meta itemprop="name" content="HeiPa">
       <meta itemprop="description" content="">
     </span>
@@ -206,6 +221,27 @@
             </span>
 
           
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/05/04/%E5%8D%97%E5%A4%A7%E3%80%8A%E8%BD%AF%E4%BB%B6%E5%88%86%E6%9E%90%E3%80%8B06-DadaFlowAnalysisFoundation2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
 
         </div>
       </header>
@@ -376,8 +412,8 @@
       <i class="fa fa-chevron-left"></i> 南大《软件分析》05.Data Flow Analysis Foundation I
     </a></div>
       <div class="post-nav-item">
-    <a href="/2022/12/08/CSS/" rel="next" title="CSS">
-      CSS <i class="fa fa-chevron-right"></i>
+    <a href="/2022/09/01/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A001-Lint%E4%B8%8ELintPass/" rel="next" title="Rustc源码学习01-Lint与LintPass.md">
+      Rustc源码学习01-Lint与LintPass.md <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -391,6 +427,7 @@
 
           </div>
           
+    <div class="comments" id="valine-comments"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -437,12 +474,14 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-number">2.</span> <span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Review-The-Questions-We-Have-Seen-Before"><span class="nav-number">3.</span> <span class="nav-text">Review The Questions We Have Seen Before</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Relate-Iterative-Algorithm-to-Fixed-Point-Theorem"><span class="nav-number">4.</span> <span class="nav-text">Relate Iterative Algorithm to Fixed-Point Theorem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prove-Function-F-is-Monotonic"><span class="nav-number">4.1.</span> <span class="nav-text">Prove Function F is Monotonic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#When-Will-the-Algorithm-Reach-the-Fixed-Point"><span class="nav-number">4.2.</span> <span class="nav-text">When Will the Algorithm Reach the Fixed Point?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#May-and-Must-Analyses-a-Lattice-View"><span class="nav-number">5.</span> <span class="nav-text">May and Must Analyses, a Lattice View</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MOP-and-Distributivity"><span class="nav-number">6.</span> <span class="nav-text">MOP and Distributivity</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Precise-Is-Our-Solution"><span class="nav-number">6.1.</span> <span class="nav-text">How Precise Is Our Solution?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ours-Iterative-Alorithm-vs-MOP"><span class="nav-number">6.2.</span> <span class="nav-text">Ours(Iterative Alorithm) vs. MOP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Constant-Propagation"><span class="nav-number">7.</span> <span class="nav-text">Constant Propagation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lattice"><span class="nav-number">7.1.</span> <span class="nav-text">Lattice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transfer-Function"><span class="nav-number">7.2.</span> <span class="nav-text">Transfer Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nondistributivity"><span class="nav-number">7.3.</span> <span class="nav-text">Nondistributivity</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Worklist-Algorithm-an-optimization-of-Iterative-Algorithm"><span class="nav-number">8.</span> <span class="nav-text">Worklist Algorithm, an optimization of Iterative Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Review-Iterative-Algorithm-for-May-amp-Forward-Analysis"><span class="nav-number">8.1.</span> <span class="nav-text">Review Iterative Algorithm for May&amp;Forward Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WorkList-Algorithm"><span class="nav-number">8.2.</span> <span class="nav-text">WorkList Algorithm</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Contents"><span class="nav-text">Contents</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Review-The-Questions-We-Have-Seen-Before"><span class="nav-text">Review The Questions We Have Seen Before</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Relate-Iterative-Algorithm-to-Fixed-Point-Theorem"><span class="nav-text">Relate Iterative Algorithm to Fixed-Point Theorem</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Prove-Function-F-is-Monotonic"><span class="nav-text">Prove Function F is Monotonic</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#When-Will-the-Algorithm-Reach-the-Fixed-Point"><span class="nav-text">When Will the Algorithm Reach the Fixed Point?</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#May-and-Must-Analyses-a-Lattice-View"><span class="nav-text">May and Must Analyses, a Lattice View</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#MOP-and-Distributivity"><span class="nav-text">MOP and Distributivity</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#How-Precise-Is-Our-Solution"><span class="nav-text">How Precise Is Our Solution?</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Ours-Iterative-Alorithm-vs-MOP"><span class="nav-text">Ours(Iterative Alorithm) vs. MOP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Constant-Propagation"><span class="nav-text">Constant Propagation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Lattice"><span class="nav-text">Lattice</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Transfer-Function"><span class="nav-text">Transfer Function</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Nondistributivity"><span class="nav-text">Nondistributivity</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Worklist-Algorithm-an-optimization-of-Iterative-Algorithm"><span class="nav-text">Worklist Algorithm, an optimization of Iterative Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Review-Iterative-Algorithm-for-May-amp-Forward-Analysis"><span class="nav-text">Review Iterative Algorithm for May&amp;Forward Analysis</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#WorkList-Algorithm"><span class="nav-text">WorkList Algorithm</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="HeiPa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
   <p class="site-author-name" itemprop="name">HeiPa</p>
   <div class="site-description" itemprop="description"></div>
 </div>
@@ -451,22 +490,32 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-count">21</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
-        <span class="site-state-item-count">5</span>
+          
+        <span class="site-state-item-count">6</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">34</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
 
 
 
@@ -499,6 +548,26 @@
   </div>
 
         
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
 
 
 
@@ -548,6 +617,92 @@
   
 
   
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
 
 </body>
 </html>

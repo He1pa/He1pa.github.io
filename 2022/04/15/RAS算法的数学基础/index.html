@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="前言最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RAS算法的数学基础">
+<meta property="og:url" content="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="前言最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-04-15T14:18:12.000Z">
+<meta property="article:modified_time" content="2022-12-08T14:00:33.511Z">
+<meta property="article:author" content="HeiPa">
+<meta property="article:tag" content="RSA">
+<meta property="article:tag" content="数学">
+<meta property="article:tag" content="费马小定理">
+<meta property="article:tag" content="Miller-Rabin">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>RAS算法的数学基础 | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">34</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">21</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          RAS算法的数学基础
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2022-04-15 22:18:12" itemprop="dateCreated datePublished" datetime="2022-04-15T22:18:12+08:00">2022-04-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2022-12-08 22:00:33" itemprop="dateModified" datetime="2022-12-08T22:00:33+08:00">2022-12-08</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/" itemprop="url" rel="index"><span itemprop="name">密码学</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB ETÜ - University of Economics &amp; Technology）的PPT课件，《信息安全原理及应用》第三版（熊平，朱天清）以及《信息安全数学基础——算法、应用与实践》第二版（任伟）。</p>
+<span id="more"></span>
+<h1 id="1-RSA简介"><a href="#1-RSA简介" class="headerlink" title="1.RSA简介"></a>1.RSA简介</h1><p>RSA是1977年由麻省理工学院的Ron Rivest,Adi Shamir和Leonard Adlenman提出的非对称公开密钥密码算法。其可靠性基于大数的因子分解问题。目前为止，仍未找到快速分解因子的算法，所以还没有任何可靠的攻击RSA算法的方式。只要密钥的长度足够长，用RSA加密的信息实际上是不可能破解的。因此，RSA算法已经成为目前应用最广泛的公钥密码。<br>RSA算法的加密过程如下：<br>1)    选择两个足够大素数p、q<br>2)    计算n=p·q   Ф=(p-1)(q-1)<br>3)    选择一个数e，满足1&lt;e&lt;Ф，且gcd（e，Ф）=1<br>4)    计算d，使得e·d≡1 mod Ф</p>
+<p>其中{n,e}为公钥，{n,d}为私钥。明文m加密算法为c=$m^e$ mod n，接收方解密方式为m= $c^d$ mod n。<br>RSA的算法并不复杂，其工作原理也有很多文章做了解释和证明。为了确保算法的可靠性，需选取足够长的密钥。本文将讲解在足够长的密钥（1024-2048位，约为$10^{300}$）的情况下，使用RSA算法运算时涉及到的数学基础，主要有Miller-Rabin检测法、费马小定理、欧拉函数与欧拉定理，中国余数定理以及模重复平方算法。</p>
+<h1 id="2-数论基础"><a href="#2-数论基础" class="headerlink" title="2.数论基础"></a>2.数论基础</h1><p>RSA用到的数学原理涉及到很多数论中的概念。在此做简要说明。</p>
+<h2 id="2-1-整除（Divisibility）"><a href="#2-1-整除（Divisibility）" class="headerlink" title="2.1 整除（Divisibility）"></a>2.1 整除（Divisibility）</h2><p>定理：整数a和b，如果存在整数c，使得b=a·c，则b能被a整除，记做a|b。</p>
+<h2 id="2-2-素数（Prime）"><a href="#2-2-素数（Prime）" class="headerlink" title="2.2 素数（Prime）"></a>2.2 素数（Prime）</h2><p>定义：如果整数p≥2且只能被1和它本身整除，则其为素数，否则为合数（composite）。</p>
+<h2 id="2-3-最大公约数-Greatest-Commom-Divisor-gcd"><a href="#2-3-最大公约数-Greatest-Commom-Divisor-gcd" class="headerlink" title="2.3 最大公约数(Greatest Commom Divisor,gcd)"></a>2.3 最大公约数(Greatest Commom Divisor,gcd)</h2><p>定义：a和b的最大公约数是能够同时整除a和b的最大正整数，记做gcd（a,b）</p>
+<h2 id="2-4-同余（Congruence-theorem）"><a href="#2-4-同余（Congruence-theorem）" class="headerlink" title="2.4 同余（Congruence theorem）"></a>2.4 同余（Congruence theorem）</h2><p>定义：设整数a,b,n(n≠0)，如果a-b是n的整数倍，即a=b+kn，k为整数，则a≡b mod n</p>
+<h2 id="2-5-乘法逆元（Multiplicative-Inverse-Elements）"><a href="#2-5-乘法逆元（Multiplicative-Inverse-Elements）" class="headerlink" title="2.5 乘法逆元（Multiplicative Inverse Elements）"></a>2.5 乘法逆元（Multiplicative Inverse Elements）</h2><p>定义：如果gcd（a,b）=1，那么：<br>1)    存在$a^{-1}$，使得a·a-1≡1 mod b，即(a·$a^{-1}$)mod b=1;<br>2)    存在$b^{-1}$，使得b·b-1≡1 mod a，即(b·$b^{-1}$)mod a=1。<br>把$a^{-1}$ 称为a模b的乘法逆元，$b^{-1}$称为b模a的乘法逆元。一般而言，如果a与n是互素的，即gcd（a，n）=1,那么a模n的乘法逆元a-1≡x mod n有唯一解；否则，a-1≡x mod n无解。</p>
+<h1 id="3-数学定理"><a href="#3-数学定理" class="headerlink" title="3.数学定理"></a>3.数学定理</h1><h2 id="3-1-Miller-Rabin检测法和费马小定理（Fermat’s-Little-Theorem，FLT）"><a href="#3-1-Miller-Rabin检测法和费马小定理（Fermat’s-Little-Theorem，FLT）" class="headerlink" title="3.1 Miller-Rabin检测法和费马小定理（Fermat’s Little Theorem，FLT）"></a>3.1 Miller-Rabin检测法和费马小定理（Fermat’s Little Theorem，FLT）</h2><p>在RSA算法中，n是由两个素数的乘积来确定的。由于n是公开的，为了避免攻击者用穷举法求出p和q（n=p·q），p和q应足够大。RSA目前建议的密钥长度为1024或2048位。对于一个1024位的密钥而言，p和q的大小在$10^{100}$~$10^{200}$之间。目前还没有有效的方法产生任意大小的素数，只能从期望大小的数中进行测试，直到检测到素数为止。目前常用的方法为Miller-Rabin素性检测法。Miller-Rabin检测法可以确定一个整数是合数，但不能确定其一定是素数。不过尽管如此，该算法所产生的数几乎可以肯定是素数。</p>
+<h3 id="3-1-1费马小定理（Fermat’s-Little-Theorem）"><a href="#3-1-1费马小定理（Fermat’s-Little-Theorem）" class="headerlink" title="3.1.1费马小定理（Fermat’s Little Theorem）"></a>3.1.1费马小定理（Fermat’s Little Theorem）</h3><p>Miller-Rabin素性检测法主要是依据费马小定理和费马测试，所以先介绍费马小定理<br>定理：如果p是素数且gcd（a,p）=1，1≤a≤p-1，则$a^{p-1}$≡1 mod p<br>因此，给定需要判定素性的数n，若能找到一个整数a，使得$a^{n-1}$≠1 mod n，则n是合数。<br>Fermat素性测试：<br>输入：奇数n≥3<br>输出：prime/composite<br>Fermat（n）：{<br>    随机选择a，2≤a≤n-2<br>    r=$a^{n-1}$ mod n;<br>    if r≠1 return composite；<br>    return prime；<br>}<br>在费马测试中，如果输出是合数，则n一定是合数。若输出为素数，则有可能为素数。这是因为存在着这样的一些合数n，对于满足gcd（a,n）=1的a，均有$a^{n-1}$=1 mod n。这些数被称为Carmichael数，例如561,1105,1729,2465,2821,6601,8911……但这种数比较稀少，对费马测试的准确性准确性影响很小。研究表明，如果算法输出为prime，即通过了素性测试，则n为素数的可能性大于1-1/2，若测试了t次均为prime，则n为素数的可能性大于1-1/$2^t$。<br>费马小定理除了可以用在Miller-Rabin检测法中，还被用于计算乘法逆元。当 p取素数时，计算过程如下：<br>1)    p是素数且gcd（a,p）=1<br>2)    FLT→$a^{p-1}$≡1 mod p→a·$a^{a-2}$≡1 mod p<br>3)    $a^{p-1}$≡$a^{p-2}$ mod p</p>
+<h3 id="3-1-2-Miller-Rabin检测法"><a href="#3-1-2-Miller-Rabin检测法" class="headerlink" title="3.1.2 Miller-Rabin检测法"></a>3.1.2 Miller-Rabin检测法</h3><p>在Fermat测试中，需要计算$a^{n-1}$mod n。若结果为1则输出素数，不为1则输出合数。为了简化计算过程，可以采用如下方法。对于n（n&gt;2），若n为偶数，则n必定为合数；n为奇数，则n-1为偶数，设n-1=2t,于是$a^{n-1}$=$（a^t）^2$，如果$a^t$=±1 mod n，则直接输出素数，没有必要继续计算（因为平方后会得到$a^{n-1}$=1 mod n）。进而，如果n-1=$2^k$t(k≥0)，则<br>$a^{n-1}$=$(((a^t)^2)^2)^2……)^2$共k次平方<br>同前面的分析，如果$a^t$=±1 mod n，则必有$a^{n-1}$=1 mod n，直接输出素数；否则，在k-1次平方的过程中，有一个为-1，则$a^{n-1}$=1 mod n，输出为素数。<br>根据上面的分析，算法如下。<br>Miller-Rabin素性测试<br>输入：奇数n≥3<br>输出：prime/composite<br>Miller-Rabin（n）{<br>    把n-1写成n-1=$2^k$t，随机选择整数a，1≤a≤n-1<br>    b=$a^t$ mod n;<br>    if b≡1 mod n return prime;<br>    for(i=0,i&lt;k,i++){<br>if b≡-1 mod n return prime;<br>else b=$b^2$ mod n;<br>}<br>return composite;<br>}</p>
+<h2 id="3-2-欧拉函数与欧拉定理"><a href="#3-2-欧拉函数与欧拉定理" class="headerlink" title="3.2 欧拉函数与欧拉定理"></a>3.2 欧拉函数与欧拉定理</h2><p>在AES算法中，利用Miller-Rabin检测法求得两个足够大的素数p、q，并且计算出计算n=p·q和Ф=(p-1)(q-1)。其中Ф的值为n的欧拉函数（Euler Phi）。</p>
+<h3 id="3-2-1欧拉函数（Euler-Phi-Function）"><a href="#3-2-1欧拉函数（Euler-Phi-Function）" class="headerlink" title="3.2.1欧拉函数（Euler Phi Function）"></a>3.2.1欧拉函数（Euler Phi Function）</h3><p>定义：小于n且与n互素的正整数的个数，记做Ф(n)，把Ф(n)称为欧拉函数。<br>性质：<br>    如果n=p是素数，Ф(n)=n-1<br>    如果n=$p^e$是素数的幂，Ф(n)=$p^e$-$p^{e-1}$<br>    如果gcd(m,n)=1，Ф(n·m)= Ф(n) ·Ф(m)<br>在AES算法中，因为p和q都是素数，所以Ф(n)= (p-1)(q-1)</p>
+<h3 id="3-2-2欧拉定理-Euler’s-Theorem"><a href="#3-2-2欧拉定理-Euler’s-Theorem" class="headerlink" title="3.2.2欧拉定理(Euler’s Theorem)"></a>3.2.2欧拉定理(Euler’s Theorem)</h3><p>定理：对于任意互素的整数a和n，有aФ(n) ≡1 mod n<br>事实上费马小定理仅是欧拉定理的一种特殊情况（n为素数），所以欧拉定理对于任意的模n都可以求解乘法逆元（用于3.4中计算私钥d）。计算过程如下：<br>    Euler’s Theorem→$a^{Ф(n)}$≡1 mod n→a·aФ(n) ≡1 mod n<br>    $a^{-1}$≡$a^{Ф(n)-1}$ mod n<br>例如，求$13^{-1}$ mod 49。<br>    Ф(49)= Ф($7^2$)=($7^2$)-($7^1$)=42<br>    Euler’s Theorem→$13^{42}$ ≡1 mod 49<br>    $13^{-1}$≡$13^{42}$ mod 49</p>
+<h2 id="3-3-模重复平方算法（Repeated-square-and-multiply-algorithm）"><a href="#3-3-模重复平方算法（Repeated-square-and-multiply-algorithm）" class="headerlink" title="3.3  模重复平方算法（Repeated square-and-multiply algorithm）"></a>3.3  模重复平方算法（Repeated square-and-multiply algorithm）</h2><p>RSA加密和解密时都需要计算模幂，欧拉定理求解逆元时也需要计算模幂。普通的求模幂的方法在幂指数特别大时耗时非常大。因此需要用模平法算法加快计算模幂的速度。在此算法中，将指数e用二进制形式表示，即e =$\sum<em>{i=0}^k=e_i2^i$，ei等于0或1，则：<br>$a^e=\prod ^k</em>{i=0}a^{e_i2_i}=(a^{2^0})^{e_0}(a^{2^1})^{e_1}\cdot \cdot \cdot (a^{2^k})^{e_k}$<br>例如，计算$5^{110}$ mod 131.<br>110=64+32+8+4+2=$(1101110)_2$<br>$5^2$≡ 25 mod 131 ,$5^4$≡ 101 mod 131<br>$5^8$≡ 114mod 131 ,$5^{16}$≡ 27 mod 131<br>$5^{32}$≡ 74 mod 131 ,$5^{64}$ ≡ 105 mod 131<br>所以$5^{110}$≡ $5^{64+32+8+4+2}$ ≡ $5^{64}$ ·$5^{32}$ ·$5^8$ ·$5^4$ ·$5^2$ ≡ 105·74·114·101·25 ≡ 60 mod 131</p>
+<h2 id="3-4-欧几里得算法（Euclidean-Algorithm-EA）"><a href="#3-4-欧几里得算法（Euclidean-Algorithm-EA）" class="headerlink" title="3.4 欧几里得算法（Euclidean Algorithm,EA）"></a>3.4 欧几里得算法（Euclidean Algorithm,EA）</h2><p>在求得p、q、n、Ф之后，选取一整数e，使得满足1&lt;e&lt;Ф，且gcd（e，Ф）=1。因为任意两个随机数互素的概率约为0.6，所以这一步并不复杂。随机选择整数e，求gcd（e，Ф）并逐一判断即可。e和Ф很小时，很容易e和Ф的最大公约数gcd（e，Ф），如果e和Ф的值很大，可以采用欧几里得算法（Euclidean Algorithm,EA）。<br>EA算法基于以下定理，对于任意非负整数a和任意正整数b，有<br>gcd（a,b）=gcd(b,a mod b)<br>循环使用该定理，可以得到gcd(a,b) = gcd(b,r1) = ··· = gcd(rk,0) = rk。<br>其算法描述如下：<br>    A←a,B←b；<br>    若B=0，则返回A=gcd（a，b）；<br>    R=A mod B；<br>    A←B；<br>    B←R；<br>    转到2）；<br>例如，<br>gcd(91,52) = gcd(52,91−52 = 39)<br>= gcd(39,52−39 = 13)<br>= gcd(13,39−3·13 = 0) = 13.<br>gcd(11111,12345) = gcd(1111,12345-1111= 1234)<br>= gcd(1234,11111−9·1234 = 5)<br>= gcd(5,1234−5·246 = 4)<br>= gcd(4,5-4 = 1)<br>= gcd(1,0)<br>=1.</p>
+<h2 id="3-5扩展的欧几里得算法-Extended-Euclidean-Algorithm-EEA"><a href="#3-5扩展的欧几里得算法-Extended-Euclidean-Algorithm-EEA" class="headerlink" title="3.5扩展的欧几里得算法(Extended Euclidean Algorithm,EEA)"></a>3.5扩展的欧几里得算法(Extended Euclidean Algorithm,EEA)</h2><p>在求得e之后，可以计算d，使得e·d≡1 mod Ф。d为e模Ф的乘法逆元，即为e-1。因为e与Ф互素，所以e-1一定存在。使用EA算法求得gcd（e，Ф）=1，再将推导过程一步一步反推回去，可求得两个整数x，y，满足x·e+y·Ф=1→ x·e=-y·Ф+1，即x·e ≡1 mod Ф，e-1=x。即为EEA算法。<br>在上面的例子中，gcd（91,25）= 13，所以91、25没有逆元<br>gcd(11111,12345)=1，<br>则1=5-4=5 -（1234-5·246）=247·5-1234<br>    =247·（11111-9·1234）-1234=247·11111-2224·1234<br>    =247·111 1-2224·（12345-11111）=2471·11111-2224·12345<br>所以，11111模12345的逆元为2471，12345模11111的逆元为-2224。<br>至此，我们可以结合欧拉定理和Repeated square-and-multiply algorithm，或者利用EEA算法来计算任意模n的逆元。</p>
+<h2 id="3-6中国剩余定理（Chinese-remainder-theorem，CRT）"><a href="#3-6中国剩余定理（Chinese-remainder-theorem，CRT）" class="headerlink" title="3.6中国剩余定理（Chinese remainder theorem，CRT）"></a>3.6中国剩余定理（Chinese remainder theorem，CRT）</h2><h3 id="3-6-1中国剩余定理"><a href="#3-6-1中国剩余定理" class="headerlink" title="3.6.1中国剩余定理"></a>3.6.1中国剩余定理</h3><p>中国剩余定理，又称孙子定理，最早见于南北朝的经典数学著作《孙子算经》中的“物不知数”问题：“今有物不知其数，三三数之剩二，五五数之剩三，七七数之剩二，问物几何？”<br>这其实是求解一个一次同余式方程组，即：<br>    x≡2 mod 3<br>    x≡3 mod 5<br>    x≡2 mod 7<br>《孙子算经》中给出了解法，但只是一个孤立的例子，南宋数学家秦九韶给出了一般性的求解方法。中国古代将这一成果统称为“孙子定理”，在外文文献中常被称为 “中国剩余定理”。它可能是最著名的由中国人给出的算法。下面给出其定理。<br>定理：设$m<em>1$,$m_2$,…，$m_k$是k个两两互素的正整数，m=$\prod </em>{i=1}^{k}m<em>i$，$M_i$=m/$m_i$，则对于任意的整数$a_1$,$a_2$,…,$a_k$，则同余式组<br>x≡$a_1$ mod $m_1$<br>x≡$a_2$ mod $m_2$<br>…<br>x≡$a_k$ mod $m_k$<br>有唯一解，即x≡$\sum </em>{i=1}^kM_iM^{-1}a_i$ mod n，其中$M_iM^{-1}$≡1 mod n。<br>例如韩信点兵问题，可化为同余式组<br>    x≡1 mod 5<br>    x≡5 mod 6<br>    x≡4 mod 7<br>    x≡10 mod 11<br>应用CRT，m=5·6·7·11=2310<br>$M_1$=462 $M_1^{-1}$≡3 mod 5<br>$M_2$=385 $M_2^{-1}$≡1 mod 6<br>$M_3$=330 $M_3^{-1}$≡1 mod 7<br>$M_4$=210 $M_4^{-1}$≡1 mod 11<br>x≡462·3·1+385·1·5+330·1·4+210·1·10≡6731≡2111 mod 2310</p>
+<h3 id="3-6-2-CRT在RSA中的应用"><a href="#3-6-2-CRT在RSA中的应用" class="headerlink" title="3.6.2 CRT在RSA中的应用"></a>3.6.2 CRT在RSA中的应用</h3><p>解密者在计算m=$c^d$ mod n的过程中，可以分别计算m=$c^d$ mod p和m=$c^d$ mod q，然后利用CRT计算出m。但CRT算法只能对解密过程加速，不能对加密过程加速，因为加密者只知道公钥（e，n），并不知道n的分解p、q。所以，，为了维护加密者的用户体验，很多情况下RSA的加密密钥e较解密密钥d小。</p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h1><p>在RSA算法的求解过程如下，<br>    用Miller-Rabin检测法去选取两个足够大（$10^{100}$~$10^{200}$）的素数p、q。<br>    利用p、q计算出n=p·q和n的欧拉数Ф(n)=(p-1)·(q-1)。<br>    随机选取整数e，    利用EA算法计算最大公约数gcd（e，Ф），使得gcd（e，Ф）=1。<br>    使用EEA或者Euler’s Theorem求解d。<br>    解密过程中，可以用到CRT算法来加速解密过程。  </p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/RSA/" rel="tag"># RSA</a>
+              <a href="/tags/%E6%95%B0%E5%AD%A6/" rel="tag"># 数学</a>
+              <a href="/tags/%E8%B4%B9%E9%A9%AC%E5%B0%8F%E5%AE%9A%E7%90%86/" rel="tag"># 费马小定理</a>
+              <a href="/tags/Miller-Rabin/" rel="tag"># Miller-Rabin</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/04/15/Mybatis/" rel="prev" title="MyBatis笔记">
+      <i class="fa fa-chevron-left"></i> MyBatis笔记
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2022/04/15/JavaScript/" rel="next" title="JavaScript">
+      JavaScript <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%89%8D%E8%A8%80"><span class="nav-text">前言</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#1-RSA%E7%AE%80%E4%BB%8B"><span class="nav-text">1.RSA简介</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E6%95%B0%E8%AE%BA%E5%9F%BA%E7%A1%80"><span class="nav-text">2.数论基础</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#2-1-%E6%95%B4%E9%99%A4%EF%BC%88Divisibility%EF%BC%89"><span class="nav-text">2.1 整除（Divisibility）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-2-%E7%B4%A0%E6%95%B0%EF%BC%88Prime%EF%BC%89"><span class="nav-text">2.2 素数（Prime）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-3-%E6%9C%80%E5%A4%A7%E5%85%AC%E7%BA%A6%E6%95%B0-Greatest-Commom-Divisor-gcd"><span class="nav-text">2.3 最大公约数(Greatest Commom Divisor,gcd)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-4-%E5%90%8C%E4%BD%99%EF%BC%88Congruence-theorem%EF%BC%89"><span class="nav-text">2.4 同余（Congruence theorem）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-5-%E4%B9%98%E6%B3%95%E9%80%86%E5%85%83%EF%BC%88Multiplicative-Inverse-Elements%EF%BC%89"><span class="nav-text">2.5 乘法逆元（Multiplicative Inverse Elements）</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E6%95%B0%E5%AD%A6%E5%AE%9A%E7%90%86"><span class="nav-text">3.数学定理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-Miller-Rabin%E6%A3%80%E6%B5%8B%E6%B3%95%E5%92%8C%E8%B4%B9%E9%A9%AC%E5%B0%8F%E5%AE%9A%E7%90%86%EF%BC%88Fermat%E2%80%99s-Little-Theorem%EF%BC%8CFLT%EF%BC%89"><span class="nav-text">3.1 Miller-Rabin检测法和费马小定理（Fermat’s Little Theorem，FLT）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1%E8%B4%B9%E9%A9%AC%E5%B0%8F%E5%AE%9A%E7%90%86%EF%BC%88Fermat%E2%80%99s-Little-Theorem%EF%BC%89"><span class="nav-text">3.1.1费马小定理（Fermat’s Little Theorem）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-2-Miller-Rabin%E6%A3%80%E6%B5%8B%E6%B3%95"><span class="nav-text">3.1.2 Miller-Rabin检测法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E6%AC%A7%E6%8B%89%E5%87%BD%E6%95%B0%E4%B8%8E%E6%AC%A7%E6%8B%89%E5%AE%9A%E7%90%86"><span class="nav-text">3.2 欧拉函数与欧拉定理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1%E6%AC%A7%E6%8B%89%E5%87%BD%E6%95%B0%EF%BC%88Euler-Phi-Function%EF%BC%89"><span class="nav-text">3.2.1欧拉函数（Euler Phi Function）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-2%E6%AC%A7%E6%8B%89%E5%AE%9A%E7%90%86-Euler%E2%80%99s-Theorem"><span class="nav-text">3.2.2欧拉定理(Euler’s Theorem)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-3-%E6%A8%A1%E9%87%8D%E5%A4%8D%E5%B9%B3%E6%96%B9%E7%AE%97%E6%B3%95%EF%BC%88Repeated-square-and-multiply-algorithm%EF%BC%89"><span class="nav-text">3.3  模重复平方算法（Repeated square-and-multiply algorithm）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-4-%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95%EF%BC%88Euclidean-Algorithm-EA%EF%BC%89"><span class="nav-text">3.4 欧几里得算法（Euclidean Algorithm,EA）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-5%E6%89%A9%E5%B1%95%E7%9A%84%E6%AC%A7%E5%87%A0%E9%87%8C%E5%BE%97%E7%AE%97%E6%B3%95-Extended-Euclidean-Algorithm-EEA"><span class="nav-text">3.5扩展的欧几里得算法(Extended Euclidean Algorithm,EEA)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-6%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86%EF%BC%88Chinese-remainder-theorem%EF%BC%8CCRT%EF%BC%89"><span class="nav-text">3.6中国剩余定理（Chinese remainder theorem，CRT）</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-1%E4%B8%AD%E5%9B%BD%E5%89%A9%E4%BD%99%E5%AE%9A%E7%90%86"><span class="nav-text">3.6.1中国剩余定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-6-2-CRT%E5%9C%A8RSA%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="nav-text">3.6.2 CRT在RSA中的应用</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%B0%8F%E7%BB%93"><span class="nav-text">小结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="HeiPa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+          load: ['[tex]/mhchem'],
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+          packages: {'[+]': ['mhchem']},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
