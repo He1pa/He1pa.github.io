@@ -17,26 +17,26 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"he1pa.github.io","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"www.he1pa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="前言最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB">
 <meta property="og:type" content="article">
 <meta property="og:title" content="RAS算法的数学基础">
-<meta property="og:url" content="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
+<meta property="og:url" content="https://www.he1pa.com/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/index.html">
 <meta property="og:site_name" content="Write the code, Change the world">
 <meta property="og:description" content="前言最近学校开了一门mathematics for cryptography的课，主要讲了一些密码学中常用到的数学原理。CSDN上关于RSA的文章中，只看到了关于RSA算法的一些讲解，对于其涉及的数学原理并没有多少介绍，因此想写点东西与大家分享，同时也是为了自己复习和巩固。第一次写文章，可能会有一些问题和不足，希望大家能够指正。此外，这篇文章主要参考了我们老师Zülfükar Saygı（TOBB">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2022-04-15T14:18:12.000Z">
 <meta property="article:modified_time" content="2022-12-08T14:00:33.511Z">
-<meta property="article:author" content="HeiPa">
+<meta property="article:author" content="He1Pa">
 <meta property="article:tag" content="RSA">
 <meta property="article:tag" content="数学">
 <meta property="article:tag" content="费马小定理">
 <meta property="article:tag" content="Miller-Rabin">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+<link rel="canonical" href="https://www.he1pa.com/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
 
 
 <script id="page-configurations">
@@ -128,17 +128,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">34</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">36</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">6</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">7</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">21</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">22</span></a>
 
   </li>
   </ul>
@@ -169,11 +169,11 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="https://he1pa.github.io/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
+    <link itemprop="mainEntityOfPage" href="https://www.he1pa.com/2022/04/15/RAS%E7%AE%97%E6%B3%95%E7%9A%84%E6%95%B0%E5%AD%A6%E5%9F%BA%E7%A1%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
-      <meta itemprop="name" content="HeiPa">
+      <meta itemprop="name" content="He1Pa">
       <meta itemprop="description" content="">
     </span>
 
@@ -286,8 +286,8 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2022/04/15/Spring/" rel="prev" title="Spring笔记">
-      <i class="fa fa-chevron-left"></i> Spring笔记
+    <a href="/2022/04/15/MySQL/" rel="prev" title="JDBC MySQL笔记">
+      <i class="fa fa-chevron-left"></i> JDBC MySQL笔记
     </a></div>
       <div class="post-nav-item">
     <a href="/2022/04/15/Mybatis/" rel="next" title="MyBatis笔记">
@@ -358,9 +358,9 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
-    <img class="site-author-image" itemprop="image" alt="HeiPa"
+    <img class="site-author-image" itemprop="image" alt="He1Pa"
       src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
-  <p class="site-author-name" itemprop="name">HeiPa</p>
+  <p class="site-author-name" itemprop="name">He1Pa</p>
   <div class="site-description" itemprop="description"></div>
 </div>
 <div class="site-state-wrap motion-element">
@@ -368,20 +368,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">21</span>
+          <span class="site-state-item-count">22</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-count">7</span>
         <span class="site-state-item-name">categories</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">34</span>
+        <span class="site-state-item-count">36</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
@@ -420,7 +420,7 @@
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
-  <span class="author" itemprop="copyrightHolder">HeiPa</span>
+  <span class="author" itemprop="copyrightHolder">He1Pa</span>
 </div>
   <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
   </div>
