@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.he1pa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Request: Git Openai API Key python 3  Fine tuning安装安装 OpenAI CLI1pip install --upgrade openai 在环境变量中设置OPENAI_API_KEY1export OPENAI_API_KEY&#x3D;&quot;&lt;OPENAI_API_KEY&gt;&quot; Prepare training data训练数据使">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ChatGPT fine tuning及部署">
+<meta property="og:url" content="https://www.he1pa.com/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="Request: Git Openai API Key python 3  Fine tuning安装安装 OpenAI CLI1pip install --upgrade openai 在环境变量中设置OPENAI_API_KEY1export OPENAI_API_KEY&#x3D;&quot;&lt;OPENAI_API_KEY&gt;&quot; Prepare training data训练数据使">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2023-04-20T09:30:06.000Z">
+<meta property="article:modified_time" content="2023-04-20T10:47:57.637Z">
+<meta property="article:author" content="He1Pa">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="https://www.he1pa.com/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>ChatGPT fine tuning及部署 | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">41</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">10</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">28</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.he1pa.com/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="He1Pa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ChatGPT fine tuning及部署
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-04-20 17:30:06 / Modified: 18:47:57" itemprop="dateCreated datePublished" datetime="2023-04-20T17:30:06+08:00">2023-04-20</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Request"><a href="#Request" class="headerlink" title="Request:"></a>Request:</h1><ul>
+<li>Git</li>
+<li>Openai API Key</li>
+<li>python 3</li>
+</ul>
+<h1 id="Fine-tuning"><a href="#Fine-tuning" class="headerlink" title="Fine tuning"></a>Fine tuning</h1><h2 id="安装"><a href="#安装" class="headerlink" title="安装"></a>安装</h2><p>安装 OpenAI CLI<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install --upgrade openai</span><br></pre></td></tr></table></figure></p>
+<p>在环境变量中设置<code>OPENAI_API_KEY</code><br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">export OPENAI_API_KEY=&quot;&lt;OPENAI_API_KEY&gt;&quot;</span><br></pre></td></tr></table></figure></p>
+<h2 id="Prepare-training-data"><a href="#Prepare-training-data" class="headerlink" title="Prepare training data"></a>Prepare training data</h2><p>训练数据使用 jsonl 格式，每一行都是一个 json。其中包含 <code>prompt</code> 和 <code>completion</code>，即问题和对应的回答。</p>
+<p>需要注意的是，对于基础模型，可能需要很多不同的 prompt(few-shot learning)，但对于 fine-tuning，训练数据通常是一个输入和多种输出。</p>
+<p>训练一个关于 KCL 的AI，首先教它回复关于如何安装 KCL。</p>
+<blockquote>
+<p>以下训练数据由Chatgpt生成<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请访问 https://kcl-lang.io/docs/next/user_docs/getting-started/install 以获取KCL安装指南。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以从 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL，并遵循安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL，其中包含有关如何安装和使用KCL的文档。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; KCL的安装指南可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 找到。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 有关如何安装和配置KCL的信息可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 中找到。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL并查看安装指南。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 有关如何安装KCL的详细信息可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 找到。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL，并遵循安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请查看 https://kcl-lang.io/docs/next/user_docs/getting-started/install 以获取有关如何安装和使用KCL的指南。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 找到有关如何安装和配置KCL的文档。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请访问 https://kcl-lang.io/docs/next/user_docs/getting-started/install 并下载KCL，然后遵循安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以从 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL，并遵循安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 有关如何安装KCL###的信息可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 中找到。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请访问 https://kcl-lang.io/docs/next/user_docs/getting-started/install 并按照指南安装KCL。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请访问 https://kcl-lang.io/docs/next/user_docs/getting-started/install 并下载KCL，然后按照安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请查看 https://kcl-lang.io/docs/next/user_docs/getting-started/install 并下载KCL，然后按照安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 请查看 https://kcl-lang.io/docs/next/user_docs/getting-started/install 并下载KCL，然后遵循安装指南来安装它。\nEND&quot;&#125;</span><br><span class="line">&#123;&quot;prompt&quot;: &quot;如何安装KCL###&quot;, &quot;completion&quot;: &quot; 您可以在 https://kcl-lang.io/docs/next/user_docs/getting-started/install 下载KCL，并遵循安装指南来安装它。\nEND&quot;&#125;</span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<h2 id="创建训练模型"><a href="#创建训练模型" class="headerlink" title="创建训练模型"></a>创建训练模型</h2><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openai api fine_tunes.create -t &lt;TRAIN_FILE_ID_OR_PATH&gt; -m &lt;BASE_MODEL&gt;</span><br></pre></td></tr></table></figure>
+<p>其中，TRAIN_FILE_ID_OR_PATH 为训练数据的文件路径，BASE_MODEL 为基础模型，可选值为 <code>ada</code>, <code>babbage</code>, <code>curie</code>, 或 <code>davinci</code>。每种模型有不同的能力和价格。</p>
+<p>执行命令后，会提交训练任务，通常需要排队，等待OpenAI训练完成即可。</p>
+<h2 id="使用模型"><a href="#使用模型" class="headerlink" title="使用模型"></a>使用模型</h2><p>查看自己已经训练好的模型:<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openai api fine_tunes.list</span><br></pre></td></tr></table></figure></p>
+<p>通过 OpenAI CLI使用模型<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openai api completions.create -m &lt;FINE_TUNED_MODEL&gt; -p &lt;YOUR_PROMPT&gt;</span><br></pre></td></tr></table></figure></p>
+<p>其他使用方法（cURL, Python, Node.js 参考 <a target="_blank" rel="noopener" href="https://platform.openai.com/docs/guides/fine-tuning/use-a-fine-tuned-model">https://platform.openai.com/docs/guides/fine-tuning/use-a-fine-tuned-model</a> ）</p>
+<h1 id="（伪）部署到网站"><a href="#（伪）部署到网站" class="headerlink" title="（伪）部署到网站"></a>（伪）部署到网站</h1><p>OpenAI CLI查询比较麻烦，考虑通过网页方式调用。这里选择白嫖Github Page。</p>
+<h2 id="新建-github-仓库"><a href="#新建-github-仓库" class="headerlink" title="新建 github 仓库"></a>新建 github 仓库</h2><p>新建仓库为</p>
+<h2 id="写一个前端"><a href="#写一个前端" class="headerlink" title="写一个前端"></a>写一个前端</h2><p>新建 index.html 并添加以下代码。并push到github。</p>
+<blockquote>
+<p>以下代码由 Chatgpt 生成<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html&gt;</span><br><span class="line">  &lt;head&gt;</span><br><span class="line">    &lt;title&gt;OpenAI API demo&lt;/title&gt;</span><br><span class="line">  &lt;/head&gt;</span><br><span class="line">  &lt;body&gt;</span><br><span class="line">    &lt;h1&gt;OpenAI API demo&lt;/h1&gt;</span><br><span class="line">    &lt;label for=&quot;api_key&quot;&gt;API Key:&lt;/label&gt;</span><br><span class="line">	  &lt;input type=&quot;text&quot; id=&quot;api_key&quot; /&gt;</span><br><span class="line"></span><br><span class="line">    &lt;label for=&quot;model&quot;&gt;Model:&lt;/label&gt;</span><br><span class="line">	  &lt;input type=&quot;text&quot; id=&quot;model&quot; /&gt;</span><br><span class="line"></span><br><span class="line">    &lt;label for=&quot;input&quot;&gt;Enter text:&lt;/label&gt;</span><br><span class="line">    &lt;input type=&quot;text&quot; id=&quot;input&quot; /&gt;</span><br><span class="line">    &lt;button onclick=&quot;submit()&quot;&gt;Submit&lt;/button&gt;</span><br><span class="line">    &lt;div id=&quot;output&quot;&gt;&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">    &lt;script&gt;</span><br><span class="line">      async function submit() &#123;</span><br><span class="line">        const apiKey = document.getElementById(&quot;api_key&quot;).value;</span><br><span class="line">        const model = document.getElementById(&quot;model&quot;).value;</span><br><span class="line">        const input = document.getElementById(&quot;input&quot;).value;</span><br><span class="line"></span><br><span class="line">        const response = await fetch(</span><br><span class="line">          &quot;https://api.openai.com/v1/completions&quot;,</span><br><span class="line">          &#123;</span><br><span class="line">            method: &quot;POST&quot;,</span><br><span class="line">            headers: &#123;</span><br><span class="line">              &quot;Content-Type&quot;: &quot;application/json&quot;,</span><br><span class="line">              Authorization: &quot;Bearer &quot; + apiKey,</span><br><span class="line">            &#125;,</span><br><span class="line">            body: JSON.stringify(&#123;</span><br><span class="line">              prompt: input,</span><br><span class="line">              max_tokens: 200,</span><br><span class="line">              model: model,</span><br><span class="line">            &#125;),</span><br><span class="line">          &#125;</span><br><span class="line">        );</span><br><span class="line"></span><br><span class="line">        const json = await response.json();</span><br><span class="line">        const output = json.choices[0].text.trim();</span><br><span class="line">        document.getElementById(&quot;output&quot;).innerHTML = output;</span><br><span class="line">      &#125;</span><br><span class="line">    &lt;/script&gt;</span><br><span class="line">  &lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+</blockquote>
+<p>注意：</p>
+<ol>
+<li>Key 不能直接写在代码中，OpenAI 会认为 Key 泄露并且让 Key 失效。</li>
+<li>模型可以写在代码中，但是考虑到模型迭代，测试阶段可以在前端直接输入模型名，方便测试。</li>
+</ol>
+<h2 id="设置-Github-Page"><a href="#设置-Github-Page" class="headerlink" title="设置 Github Page"></a>设置 Github Page</h2><p>Github repo -&gt; Settings -&gt; Pages -&gt; Build and deployment -&gt; Source -&gt; Deploy from branch</p>
+<h2 id="测试"><a href="#测试" class="headerlink" title="测试"></a>测试</h2><p><a target="_blank" rel="noopener" href="https://platform.openai.com/docs/api-reference/fine-tunes">https://platform.openai.com/docs/api-reference/fine-tunes</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/10/ChatGPT's-Impact-on-Programming-Languages-A-Look-into-the-Future/" rel="prev" title="ChatGPT's Impact on Programming Languages: A Look into the Future">
+      <i class="fa fa-chevron-left"></i> ChatGPT's Impact on Programming Languages: A Look into the Future
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Request"><span class="nav-text">Request:</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Fine-tuning"><span class="nav-text">Fine tuning</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%89%E8%A3%85"><span class="nav-text">安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Prepare-training-data"><span class="nav-text">Prepare training data</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B"><span class="nav-text">创建训练模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="nav-text">使用模型</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%EF%BC%88%E4%BC%AA%EF%BC%89%E9%83%A8%E7%BD%B2%E5%88%B0%E7%BD%91%E7%AB%99"><span class="nav-text">（伪）部署到网站</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%B0%E5%BB%BA-github-%E4%BB%93%E5%BA%93"><span class="nav-text">新建 github 仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%99%E4%B8%80%E4%B8%AA%E5%89%8D%E7%AB%AF"><span class="nav-text">写一个前端</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%AE%BE%E7%BD%AE-Github-Page"><span class="nav-text">设置 Github Page</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B5%8B%E8%AF%95"><span class="nav-text">测试</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="He1Pa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+  <p class="site-author-name" itemprop="name">He1Pa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">28</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">41</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">He1Pa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
