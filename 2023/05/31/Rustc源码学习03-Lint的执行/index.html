@@ -1,0 +1,558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.he1pa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lint 的执行流程前面两篇介绍了 Lint，LintPass 和 CombinedLintPass 几个结构的实现，并以这些结构写了一个 Lint 的伪代码实现。 1234567891011impl ast_visit::Visitor for Linter &amp;#123;    fn visit_crate(a: ast:crate)&amp;#123;        combinedlintpass.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Rustc源码学习03-Lint的执行">
+<meta property="og:url" content="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="Lint 的执行流程前面两篇介绍了 Lint，LintPass 和 CombinedLintPass 几个结构的实现，并以这些结构写了一个 Lint 的伪代码实现。 1234567891011impl ast_visit::Visitor for Linter &amp;#123;    fn visit_crate(a: ast:crate)&amp;#123;        combinedlintpass.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/compiler_process.jpg">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/early_lint_node.jpg">
+<meta property="article:published_time" content="2023-05-31T10:10:05.000Z">
+<meta property="article:modified_time" content="2023-05-31T10:27:48.680Z">
+<meta property="article:author" content="He1Pa">
+<meta property="article:tag" content="Rust">
+<meta property="article:tag" content="Rust源码学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/compiler_process.jpg">
+
+<link rel="canonical" href="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Rustc源码学习03-Lint的执行 | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">30</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.he1pa.com/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="He1Pa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Rustc源码学习03-Lint的执行
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-31 18:10:05 / Modified: 18:27:48" itemprop="dateCreated datePublished" datetime="2023-05-31T18:10:05+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Rust/" itemprop="url" rel="index"><span itemprop="name">Rust</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lint-的执行流程"><a href="#Lint-的执行流程" class="headerlink" title="Lint 的执行流程"></a>Lint 的执行流程</h1><p>前面两篇介绍了 <code>Lint</code>，<code>LintPass</code> 和 <code>CombinedLintPass</code> 几个结构的实现，并以这些结构写了一个 Lint 的伪代码实现。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">impl</span> <span class="title class_">ast_visit</span>::Visitor <span class="keyword">for</span> <span class="title class_">Linter</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_crate</span>(a: ast:<span class="keyword">crate</span>)&#123;</span><br><span class="line">        combinedlintpass.<span class="title function_ invoke__">check_crate</span>(a);</span><br><span class="line">        <span class="title function_ invoke__">walk_crate</span>(a);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">visit_stmt</span>(a: ast:stmt)&#123;</span><br><span class="line">        combinedlintpass.<span class="title function_ invoke__">check_stmt</span>(a)</span><br><span class="line">        <span class="title function_ invoke__">walk_stmt</span>(a);</span><br><span class="line">    &#125;</span><br><span class="line">    ...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="Rustc-中-Lint-的执行阶段"><a href="#Rustc-中-Lint-的执行阶段" class="headerlink" title="Rustc 中 Lint 的执行阶段"></a>Rustc 中 Lint 的执行阶段</h2><p>Rustc 的设计与经典编译器的设计基本无异，包含词法分析、语法分析、语义分析、生成IR、IR优化和代码生成等流程，但针对 Rust 的语言特性，还加入了一些特有的流程，如借用检查。对应的，代码在整个编译流程中的中间表示也有一定的扩展：</p>
+<ul>
+<li>Token stream：Lexer 将源代码的字符流转化为词法单元（token） 流，这些词法单元被传递给下一个步骤，即语法分析。</li>
+<li>Abstract Syntax Tree(AST)：Parser 将 Token 流转换为抽象语法树（AST），抽象语法树几乎可以完全描述源代码中所写的内容。在 AST 上，Rustc 还执行了宏扩展、 early lint 等过程。</li>
+<li>High-level IR(HIR)：这是一种脱糖的 AST。它仍与源代码中的内容非常接近，但它包含一些隐含的东西，例如一些省略的生命周期等。这个 IR 适合类型检查。late lint也在类型检查之后进行。</li>
+<li>Typed HIR(THIR)：THIR 与 HIR 类似，但它携带了类型信息，并且更加脱糖（例如，函数调用和隐式的间接引用都会变成完全显式）。</li>
+<li>Middle-level IR(MIR)：MIR 基本上是一个控制流图（Control-Flow Graph）。CFG 是程序执行过程的抽象表现，代表了程序执行过程中会遍历到的所有路径。它用图的形式表示一个过程内所有基本块可能流向。Rustc 在 MIR 上除了基础的基于 CFG 的静态分析和 IR 优化外，还进行了 Rust 中所有权的借用检查。</li>
+<li>LLVM IR：Rustc 的后端采用了 LLVM，因此，Rustc 会将 MIR 进一步转化为 LLVM IR 并传递给 LLVM 做进一步优化和代码生成的工作。</li>
+</ul>
+<p>以上 Rust 代码的中间表示的转化流程也反映了 Rust 整个编译的流程，总结为一张图：<br><img src="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/compiler_process.jpg" alt="编译流程"><br>Rustc 中的 <code>rustc_driver::lib.rs</code> 中控制了编译流程的各个阶段：</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">fn run_compiler(...) -&gt; interface::Result&lt;()&gt; &#123;</span><br><span class="line">    ...</span><br><span class="line">    interface::run_compiler(config, |compiler| &#123;</span><br><span class="line">        <span class="built_in">let</span> linker = compiler.enter(|queries| &#123;</span><br><span class="line">            ...</span><br><span class="line">            queries.parse()?;   // lexer parse</span><br><span class="line">            ...</span><br><span class="line">            queries.expansion()?; // resolver</span><br><span class="line">            ...</span><br><span class="line">            queries.prepare_outputs()?;</span><br><span class="line">            ...</span><br><span class="line">            queries.global_ctxt()?; // ast -&gt; hir</span><br><span class="line">            ...</span><br><span class="line">            queries.ongoing_codegen()?;</span><br><span class="line">            ...</span><br><span class="line">            &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>前面介绍过，Rustc 中的 Lint 包含 early 和 late 两种，它们分别在 AST -&gt; HIR 和 HIR -&gt; THIR 两个阶段执行。这里我们同样以 <code>WhileTrue</code> 这个例子去看 Lint 从定义、到注册，最后执行的完整的流程。同时，<code>WhileTrue</code> 是 builtin 的 early lint 其中的一种，被包含在 <code>BuiltinCombinedEarlyLintPass</code> 之中。</p>
+<h2 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h2><p>首先是 <code>WhileTrue</code>的 lint 和对应的 lintpass 的定义，它们被定义在  <code>rustc_lint/src/builtin.rs</code> 中</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">declare_lint! &#123;</span><br><span class="line">    <span class="comment">/// The `while_true` lint detects `while true &#123; &#125;`.</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// ### Example</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// ```rust,no_run</span></span><br><span class="line">    <span class="comment">/// while true &#123;</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// &#125;</span></span><br><span class="line">    <span class="comment">/// ```</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// &#123;&#123;produces&#125;&#125;</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// ### Explanation</span></span><br><span class="line">    <span class="comment">///</span></span><br><span class="line">    <span class="comment">/// `while true` should be replaced with `loop`. A `loop` expression is</span></span><br><span class="line">    <span class="comment">/// the preferred way to write an infinite loop because it more directly</span></span><br><span class="line">    <span class="comment">/// expresses the intent of the loop.</span></span><br><span class="line">    WHILE_TRUE,</span><br><span class="line">    Warn,</span><br><span class="line">    <span class="string">&quot;suggest using `loop &#123; &#125;` instead of `while true &#123; &#125;`&quot;</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">declare_lint_pass!(WhileTrue =&gt; [WHILE_TRUE]);</span><br><span class="line"></span><br><span class="line"><span class="keyword">impl</span> <span class="title class_">EarlyLintPass</span> <span class="keyword">for</span> <span class="title class_">WhileTrue</span> &#123;</span><br><span class="line">    <span class="keyword">fn</span> <span class="title function_">check_expr</span>(&amp;<span class="keyword">mut</span> <span class="keyword">self</span>, cx: &amp;EarlyContext&lt;<span class="symbol">&#x27;_</span>&gt;, e: &amp;ast::Expr) &#123;</span><br><span class="line">      ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与前面的介绍一样：</p>
+<ol>
+<li><code>declare_lint</code> 宏声明一个 lint：<code>WHILE_TRUE</code></li>
+<li><code>declare_lint_pass</code> 宏声明一个lintpass：<code>WhileTrue</code></li>
+<li>为 <code>WhileTrue</code> 实现 <code>EarlyLintPass</code> 中对应的检查方法，因为此 lintpass 只检查 Expr 节点，所以只需要实现 <code>check_expr()</code>函数即可。</li>
+</ol>
+<h2 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h2><p>注册是指编译过程中将 Lint 加入到 LintStore 的过程。<code>WhileTrue</code> 不需要单独的注册和执行，它的检查方法通过宏扩展的方式展开到 <code>BuiltinCombinedEarlyLintPass</code> 中。<code>BuiltinCombinedEarlyLintPass</code> 的注册和执行都发生在 <code>queries.expansion()</code> 函数中。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">expansion</span>(</span><br><span class="line">    &amp;<span class="keyword">self</span>,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;&amp;Query&lt;(Rc&lt;ast::Crate&gt;, Rc&lt;RefCell&lt;BoxedResolver&gt;&gt;, Lrc&lt;LintStore&gt;)&gt;&gt; &#123;</span><br><span class="line">    tracing::trace!(<span class="string">&quot;expansion&quot;</span>);</span><br><span class="line">    <span class="keyword">self</span>.expansion.<span class="title function_ invoke__">compute</span>(|| &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">crate_name</span> = <span class="keyword">self</span>.<span class="title function_ invoke__">crate_name</span>()?.<span class="title function_ invoke__">peek</span>().<span class="title function_ invoke__">clone</span>();</span><br><span class="line">        <span class="comment">// 注册</span></span><br><span class="line">        <span class="keyword">let</span> (krate, lint_store) = <span class="keyword">self</span>.<span class="title function_ invoke__">register_plugins</span>()?.<span class="title function_ invoke__">take</span>(); </span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_timer</span> = <span class="keyword">self</span>.<span class="title function_ invoke__">session</span>().<span class="title function_ invoke__">timer</span>(<span class="string">&quot;configure_and_expand&quot;</span>);</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">sess</span> = <span class="keyword">self</span>.<span class="title function_ invoke__">session</span>();</span><br><span class="line">        <span class="keyword">let</span> <span class="keyword">mut </span><span class="variable">resolver</span> = passes::<span class="title function_ invoke__">create_resolver</span>(</span><br><span class="line">            sess.<span class="title function_ invoke__">clone</span>(),</span><br><span class="line">            <span class="keyword">self</span>.<span class="title function_ invoke__">codegen_backend</span>().<span class="title function_ invoke__">metadata_loader</span>(),</span><br><span class="line">            &amp;krate,</span><br><span class="line">            &amp;crate_name,</span><br><span class="line">        );</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">krate</span> = resolver.<span class="title function_ invoke__">access</span>(|resolver| &#123;</span><br><span class="line">            <span class="comment">// 执行</span></span><br><span class="line">            passes::<span class="title function_ invoke__">configure_and_expand</span>(sess, &amp;lint_store, krate, &amp;crate_name, resolver)</span><br><span class="line">        &#125;)?;</span><br><span class="line">        <span class="title function_ invoke__">Ok</span>((Rc::<span class="title function_ invoke__">new</span>(krate), Rc::<span class="title function_ invoke__">new</span>(RefCell::<span class="title function_ invoke__">new</span>(resolver)), lint_store))</span><br><span class="line">    &#125;)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注册的过程会生成定义的 lint 的结构并添加到 <a target="_blank" rel="noopener" href="https://rustc-dev-guide.rust-lang.org/diagnostics/lintstore.html">LintStore</a> 中。Lint 整体上被分为4个种类：pre-expansion, early, late,  late-module。尽管 Lint 对应的 LintPass 在编译流程中执行的阶段不同，但注册都是发生在同一个阶段。<br>Lint 注册过程的函数调用链路如下：</p>
+<ul>
+<li>rustc_driver::lib::run_compiler()</li>
+<li>rustc_interface::queries::Queries.expansion()</li>
+<li>rustc_interface::queries::Queries.register_plugins()</li>
+<li>rustc_lint::lib::new_lint_store()</li>
+<li>rustc_lint::lib::register_builtins()</li>
+</ul>
+<p>在这里，默认的编译流程会执行 else{} 分支中的语句，BuiltinCombinedEarlyLintPass::get_lints() 会生成 <code>WHILE_TRUE</code> 并添加到 LintStore中。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> no_interleave_lints &#123;</span><br><span class="line">    pre_expansion_lint_passes!(register_passes, register_pre_expansion_pass);</span><br><span class="line">    early_lint_passes!(register_passes, register_early_pass);</span><br><span class="line">    late_lint_passes!(register_passes, register_late_pass);</span><br><span class="line">    late_lint_mod_passes!(register_passes, register_late_mod_pass);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedPreExpansionLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedEarlyLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedModuleLateLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedLateLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="执行"><a href="#执行" class="headerlink" title="执行"></a>执行</h2><p>不同的 LintPass 的执行过程发生在编译过程的不同阶段，其中，<code>BuiltinCombinedEarlyLintPass</code> 执行过程的函数调用链路如下：</p>
+<ul>
+<li>rustc_driver::lib::run_compiler()</li>
+<li>rustc_interface::queries::Queries.expansion()</li>
+<li>rustc_interface::passes::configure_and_expand()</li>
+<li>rustc_lint::early::check_ast_node()</li>
+<li>rustc_lint::early::early_lint_node()</li>
+</ul>
+<p>首先，在 configure_and_expand() 函数中，执行了 pre-expansion 和 early 两种 lintpass。注册时使用了 BuiltinCombinedEarlyLintPass::get_lints() 方法生成 lints，而这里用 BuiltinCombinedEarlyLintPass::new() 方法生成了 lintpass。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">configure_and_expand</span>(</span><br><span class="line">    sess: &amp;Session,</span><br><span class="line">    lint_store: &amp;LintStore,</span><br><span class="line">    <span class="keyword">mut</span> krate: ast::Crate,</span><br><span class="line">    crate_name: &amp;<span class="type">str</span>,</span><br><span class="line">    resolver: &amp;<span class="keyword">mut</span> Resolver&lt;<span class="symbol">&#x27;_</span>&gt;,</span><br><span class="line">) <span class="punctuation">-&gt;</span> <span class="type">Result</span>&lt;ast::Crate&gt; &#123;</span><br><span class="line">    <span class="title function_ invoke__">pre_expansion_lint</span>(sess, lint_store, resolver.<span class="title function_ invoke__">registered_tools</span>(), &amp;krate, crate_name);</span><br><span class="line">    ...</span><br><span class="line">    sess.<span class="title function_ invoke__">time</span>(<span class="string">&quot;early_lint_checks&quot;</span>, || &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">lint_buffer</span> = <span class="title function_ invoke__">Some</span>(std::mem::<span class="title function_ invoke__">take</span>(resolver.<span class="title function_ invoke__">lint_buffer</span>()));</span><br><span class="line">        rustc_lint::<span class="title function_ invoke__">check_ast_node</span>(</span><br><span class="line">            sess,</span><br><span class="line">            <span class="literal">false</span>,</span><br><span class="line">            lint_store,</span><br><span class="line">            resolver.<span class="title function_ invoke__">registered_tools</span>(),</span><br><span class="line">            lint_buffer,</span><br><span class="line">            rustc_lint::BuiltinCombinedEarlyLintPass::<span class="title function_ invoke__">new</span>(),</span><br><span class="line">            &amp;krate,</span><br><span class="line">        )</span><br><span class="line">    &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>Lint 的执行最终发生在 <code>rustc_lint::early::early_lint_node()</code> 函数中。比较 <code>early_lint_node()</code> 函数和 <code>CombinedLintPass</code> 一节最后的伪代码：</p>
+<p><img src="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/early_lint_node.jpg" alt="early_lint_node与CombinedLintPass"></p>
+<p>它们之间有以下的对应关系：</p>
+<ul>
+<li>参数 pass 是 configure_and_expand() 函数中新建的 BuiltinCombinedEarlyLintPass，它对应 combinedlintpass。</li>
+<li>EarlyContextAndPass 将  pass 与 context 信息组合在一起，并且实现了 visitor，它对应 Linter。</li>
+<li>check_node.check(cx) 调用了 cx.pass.check_crate() 进行 lint 检查，根据 BuiltinCombinedEarlyLintPass 的定义， 这个函数中会调用所有 builtin early lint 的 check_crate() 方法，然后执行 ast_visit::walk_crate() 遍历子节点，它对应了 visit_crate()。</li>
+</ul>
+<h2 id="no-interleave-lints"><a href="#no-interleave-lints" class="headerlink" title="no_interleave_lints"></a>no_interleave_lints</h2><p>虽然 Rustc 中考虑性能因素，将 LintPass 组合成 CombinedLintPass，但提供了一些编译参数去配置 Lint。其中，Lint 的注册和执行过程中都用到了 no_interleave_lints 参数。这个参数默认为 false，表示是否单独执行每一个 lint。编译时将这个修改这个参数就可以单独注册每一个 lint 以及单独执行 lintpass，这样的设计提供了更好的灵活性和自定义的能力（比如，可以对每一个 lint 单独做 benchmark）。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> no_interleave_lints &#123;</span><br><span class="line">    pre_expansion_lint_passes!(register_passes, register_pre_expansion_pass);</span><br><span class="line">    early_lint_passes!(register_passes, register_early_pass);</span><br><span class="line">    late_lint_passes!(register_passes, register_late_pass);</span><br><span class="line">    late_lint_mod_passes!(register_passes, register_late_mod_pass);</span><br><span class="line">&#125; <span class="keyword">else</span> &#123;</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedPreExpansionLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedEarlyLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedModuleLateLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">    store.<span class="title function_ invoke__">register_lints</span>(&amp;BuiltinCombinedLateLintPass::<span class="title function_ invoke__">get_lints</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">pub</span> <span class="keyword">fn</span> <span class="title function_">check_ast_node</span>&lt;<span class="symbol">&#x27;a</span>&gt;(...) &#123;</span><br><span class="line">    <span class="keyword">if</span> sess.opts.debugging_opts.no_interleave_lints &#123;</span><br><span class="line">        <span class="title function_ invoke__">for</span> (i, pass) <span class="keyword">in</span> passes.<span class="title function_ invoke__">iter_mut</span>().<span class="title function_ invoke__">enumerate</span>() &#123;</span><br><span class="line">            buffered =</span><br><span class="line">                sess.prof.<span class="title function_ invoke__">extra_verbose_generic_activity</span>(<span class="string">&quot;run_lint&quot;</span>, pass.<span class="title function_ invoke__">name</span>()).<span class="title function_ invoke__">run</span>(|| &#123;</span><br><span class="line">                    <span class="title function_ invoke__">early_lint_node</span>(</span><br><span class="line">                        sess,</span><br><span class="line">                        !pre_expansion &amp;&amp; i == <span class="number">0</span>,</span><br><span class="line">                        lint_store,</span><br><span class="line">                        registered_tools,</span><br><span class="line">                        buffered,</span><br><span class="line">                        EarlyLintPassObjects &#123; lints: slice::<span class="title function_ invoke__">from_mut</span>(pass) &#125;,</span><br><span class="line">                        check_node,</span><br><span class="line">                    )</span><br><span class="line">                &#125;);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">        buffered = <span class="title function_ invoke__">early_lint_node</span>(</span><br><span class="line">            sess,</span><br><span class="line">            !pre_expansion,</span><br><span class="line">            lint_store,</span><br><span class="line">            registered_tools,</span><br><span class="line">            buffered,</span><br><span class="line">            builtin_lints,</span><br><span class="line">            check_node,</span><br><span class="line">        );</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>至此，我们就分析了 Rustc 中一个 Lint 定义、实现对应的检查(LintPass)、注册、最终执行的完整流程。我们也可以利用这些宏，去定义新的Lint和LintPass(Clippy 中也是以相似的方式)。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Rust/" rel="tag"># Rust</a>
+              <a href="/tags/Rust%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A0/" rel="tag"># Rust源码学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/" rel="prev" title="zk-SNARK学习">
+      <i class="fa fa-chevron-left"></i> zk-SNARK学习
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/" rel="next" title="合约审计与形式化验证">
+      合约审计与形式化验证 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lint-%E7%9A%84%E6%89%A7%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">Lint 的执行流程</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Rustc-%E4%B8%AD-Lint-%E7%9A%84%E6%89%A7%E8%A1%8C%E9%98%B6%E6%AE%B5"><span class="nav-text">Rustc 中 Lint 的执行阶段</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E5%86%8C"><span class="nav-text">注册</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%89%A7%E8%A1%8C"><span class="nav-text">执行</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#no-interleave-lints"><span class="nav-text">no_interleave_lints</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-text">总结</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="He1Pa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+  <p class="site-author-name" itemprop="name">He1Pa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">He1Pa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

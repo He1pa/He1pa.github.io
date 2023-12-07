@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.he1pa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="定义 http:&#x2F;&#x2F;people.csail.mit.edu&#x2F;silvio&#x2F;Selected%20Scientific%20Papers&#x2F;Proof%20Systems&#x2F;The_Knowledge_Complexity_Of_Interactive_Proof_Systems.pdf  零知识协议是一种方法，通过这种方法，一方（证明者）可以向另一方（验证者）证明某事是真实的，除了证实特定声明之外，">
+<meta property="og:type" content="article">
+<meta property="og:title" content="zk-SNARK学习">
+<meta property="og:url" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="定义 http:&#x2F;&#x2F;people.csail.mit.edu&#x2F;silvio&#x2F;Selected%20Scientific%20Papers&#x2F;Proof%20Systems&#x2F;The_Knowledge_Complexity_Of_Interactive_Proof_Systems.pdf  零知识协议是一种方法，通过这种方法，一方（证明者）可以向另一方（验证者）证明某事是真实的，除了证实特定声明之外，">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://miro.medium.com/v2/resize:fit:828/format:webp/1*YD-ckgBfmmmRBCyVlhp8YQ.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/拉格朗日插值公式.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线加法.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线乘法.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/快速幂.png">
+<meta property="article:published_time" content="2023-05-31T09:36:52.000Z">
+<meta property="article:modified_time" content="2023-05-31T10:03:48.109Z">
+<meta property="article:author" content="He1Pa">
+<meta property="article:tag" content="Web3">
+<meta property="article:tag" content="椭圆曲线">
+<meta property="article:tag" content="密码学">
+<meta property="article:tag" content="zk-SNARK">
+<meta property="article:tag" content="ZKP">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://miro.medium.com/v2/resize:fit:828/format:webp/1*YD-ckgBfmmmRBCyVlhp8YQ.png">
+
+<link rel="canonical" href="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>zk-SNARK学习 | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">30</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.he1pa.com/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="He1Pa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          zk-SNARK学习
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-05-31 17:36:52 / Modified: 18:03:48" itemprop="dateCreated datePublished" datetime="2023-05-31T17:36:52+08:00">2023-05-31</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">In</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Web3/" itemprop="url" rel="index"><span itemprop="name">Web3</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h1><blockquote>
+<p><a target="_blank" rel="noopener" href="http://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Proof%20Systems/The_Knowledge_Complexity_Of_Interactive_Proof_Systems.pdf">http://people.csail.mit.edu/silvio/Selected%20Scientific%20Papers/Proof%20Systems/The_Knowledge_Complexity_Of_Interactive_Proof_Systems.pdf</a></p>
+</blockquote>
+<p>零知识协议是一种方法，通过这种方法，一方（证明者）可以向另一方（验证者）证明某事是真实的，除了证实特定声明之外，不会透露任何信息。</p>
+<p>在16世纪的文艺复兴时期，意大利有两位数学家为竞争一元三次方程求根公式发现者的桂冠，就采用了零知识证明的方法。当时，数学家塔尔塔里雅和菲奥都宣称自己掌握了这个求根公式，为了证明自己没有说谎，又不把公式的具体内容公布出来(可能在当时数学公式也是一种技术秘密)，他们摆开了擂台：双方各出30个一元三次方程给对方解，谁能全部解出，就说明谁掌握了这个公式。比赛结果显示，塔尔塔里雅解出了菲奥出的全部30个方程，而菲奥一个也解不出。于是人们相信塔尔塔里雅是一元三次方程求根公式的真正发现者，虽然当时除了塔尔塔里雅外，谁也不知道这个公式到底是个什么样子。</p>
+<h1 id="零知识证明的应用场景"><a href="#零知识证明的应用场景" class="headerlink" title="零知识证明的应用场景"></a>零知识证明的应用场景</h1><p><a target="_blank" rel="noopener" href="https://ethereum.org/zh/zero-knowledge-proofs/#use-cases-for-zero-knowledge-proofs">https://ethereum.org/zh/zero-knowledge-proofs/#use-cases-for-zero-knowledge-proofs</a></p>
+<ul>
+<li>匿名支付</li>
+<li>身份保护</li>
+<li>认证</li>
+<li>可验证计算</li>
+<li>减少链上投票中的回路和串通</li>
+</ul>
+<p>如何证明交易发起者？<br>每个用户都有一对公钥和密钥来管理钱包，公钥类似于银行账户的用户名，私钥类似于账户密码，账户地址是根据公钥通过不可逆算法算出来的字符串，公钥和地址都是可以公开的，私钥是需要个人妥善保管的。如果要证明这笔交易的发起方确实是小明，小明的钱包如果将私钥打包在交易中，那全网都知道了小明的私钥，相当于小明的银行卡密码被泄露了，那小明的资产就极其不安全。所以私钥不能泄露，多少比特币用户早年因为私钥丢了，结果当初不值钱的比特币现在已经是一笔巨款，简直是拍断大腿。<br>因此，接下来的问题是怎么在不泄露私钥的情况下证明这笔交易确实是有小明自己发起的，然后让网络上形成共识让这笔交易入链，交易完成后，小明才能喝到咖啡，咖啡店才能收到钱。这就是个很典型的零知识证明问题。</p>
+<h1 id="零知识证明的原理"><a href="#零知识证明的原理" class="headerlink" title="零知识证明的原理"></a>零知识证明的原理</h1><p> <img src="https://miro.medium.com/v2/resize:fit:828/format:webp/1*YD-ckgBfmmmRBCyVlhp8YQ.png" alt="image.png"></p>
+<h1 id="证明"><a href="#证明" class="headerlink" title="证明"></a>证明</h1><p>证明  x = 3 是  x^3^+x+5 = 35 的解</p>
+<h2 id="转换为计算函数"><a href="#转换为计算函数" class="headerlink" title="转换为计算函数"></a>转换为计算函数</h2><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def <span class="title function_ invoke__">qeval</span>(x):</span><br><span class="line">    y = x**<span class="number">3</span></span><br><span class="line">    <span class="keyword">return</span> x + y + <span class="number">5</span></span><br></pre></td></tr></table></figure>
+<h2 id="拍平（flatten）"><a href="#拍平（flatten）" class="headerlink" title="拍平（flatten）"></a>拍平（flatten）</h2><p>将函数转为两种形式的语句<br>x = y<br>和<br>x = y op z<br>其中 op 可以是 +、*   （- 和 /  ？）<br>这种表达式可以看作是电路中的逻辑门，每一条语句称为一个 <code>约束</code><br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">sym_1 = x * x</span><br><span class="line">y = sym_1 * x</span><br><span class="line">sym_2 = y + x</span><br><span class="line">~out = sym_2 + <span class="number">5</span></span><br></pre></td></tr></table></figure></p>
+<h2 id="R1CS"><a href="#R1CS" class="headerlink" title="R1CS"></a>R1CS</h2><p>将拍平的表达式转为 R1CS（rank-1 constraint system）电路。<br>R1CS 是一组长度为3的向量<code>(a, b, c)</code>，其中解向量 <code>s</code>满足<br>s·a * s·b - s·c = 0</p>
+<blockquote>
+<p>解向量 s 一般称为 witness</p>
+</blockquote>
+<p>向量构造方式就是拍平后的表达式的变量的系数。<br>首先将所有变量排列， ~one 表示常量 1<br><code>&#39;~one&#39;, &#39;x&#39;, &#39;~out&#39;, &#39;sym_1&#39;, &#39;y&#39;, &#39;sym_2&#39;</code></p>
+<p>第一行<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">sym_1 = x * x</span><br><span class="line"></span><br><span class="line">=&gt;</span><br><span class="line"></span><br><span class="line"><span class="number">1</span> * x + <span class="number">1</span> * x - <span class="number">1</span> * sym_1 = <span class="number">0</span></span><br></pre></td></tr></table></figure><br>所以<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">a = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">b = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">c = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
+<p>同理，剩下3行的向量分别为<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">y = sym_1 * x</span><br><span class="line">=&gt;</span><br><span class="line">a = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">b = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">c = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line"></span><br><span class="line">sym_2 = y + x</span><br><span class="line">=&gt;</span><br><span class="line">a = [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">b = [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">c = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">~out = sym_2 + <span class="number">5</span></span><br><span class="line">=&gt;</span><br><span class="line">a = [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">b = [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">c = [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
+<p><code>&#39;*&#39;</code> 对应系数分别在 a, b<br><code>&#39;+&#39;</code> 对应系数都在a， b的常数系数为1</p>
+<p>验证一下，x = 3 时，解向量 s = [1, 3, 35, 9, 27, 30]<br>第一行:<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] * </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] - </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">= <span class="number">3</span> * <span class="number">3</span> - <span class="number">9</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure><br>第二行<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>] * </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] - </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">= <span class="number">9</span> * <span class="number">3</span> - <span class="number">27</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>第三行<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>] * </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] - </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">= （<span class="number">3</span> + <span class="number">27</span>）* <span class="number">1</span> - <span class="number">27</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>第四行<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>] * </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>] - </span><br><span class="line">[<span class="number">1</span>, <span class="number">3</span>, <span class="number">35</span>, <span class="number">9</span>, <span class="number">27</span>, <span class="number">30</span>] · [<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">= （<span class="number">5</span> + <span class="number">30</span>）* <span class="number">1</span> - <span class="number">35</span> = <span class="number">0</span></span><br></pre></td></tr></table></figure></p>
+<p>完整的 R1CS<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">B</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">C</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br></pre></td></tr></table></figure></p>
+<h2 id="R1CS-gt-QAP"><a href="#R1CS-gt-QAP" class="headerlink" title="R1CS -&gt; QAP"></a>R1CS -&gt; QAP</h2><p>R1CS 可以完成证明，但对于一个解向量，验证时，有几个门电路就需要验证多少次。将 R1CS 转为 QAP(Quadratic Arithmetic Programs)，将四组三个长度为6的多项式，转变为6组3个3阶多项式。用多项式去代替向量的点积运算</p>
+<blockquote>
+<p>We go from four groups of three vectors of length six to six groups of three degree-3 polynomials, where evaluating the polynomials at each <em>x coordinate</em> represents one of the constraints.</p>
+</blockquote>
+<p>对于R1CS中的向量，转变为经过n个点的多项式（n 等于向量个数 4）<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br></pre></td></tr></table></figure></p>
+<p>取每一列构造坐标，行号为x，值为 y<br>A 的第一列 [0, 0, 0, 5]<br>构造坐标 (1,0),(2,0),(3,0)(4,5)， 求一个经过这四个点的多项式</p>
+<p>拉格朗日插值法<br>通过n个点 (x1,y1),(x2,y2),…,(xn,yn) 的n-1阶多项式为如下所示：<br><img src="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/拉格朗日插值公式.png" alt></p>
+<p>将(1,0),(2,0),(3,0)(4,5) 带入， 求得多项式 0.833 x^3 - 5x^2 + 9.166x - 5</p>
+<p>同理，计算出所有的多项式系数<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">A polynomials</span><br><span class="line">[-<span class="number">5.0</span>, <span class="number">9.166</span>, -<span class="number">5.0</span>, <span class="number">0.833</span>]</span><br><span class="line">[<span class="number">8.0</span>, -<span class="number">11.333</span>, <span class="number">5.0</span>, -<span class="number">0.666</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[-<span class="number">6.0</span>, <span class="number">9.5</span>, -<span class="number">4.0</span>, <span class="number">0.5</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">7.0</span>, <span class="number">3.5</span>, -<span class="number">0.5</span>]</span><br><span class="line">[-<span class="number">1.0</span>, <span class="number">1.833</span>, -<span class="number">1.0</span>, <span class="number">0.166</span>]</span><br><span class="line"></span><br><span class="line">B polynomials</span><br><span class="line">[<span class="number">3.0</span>, -<span class="number">5.166</span>, <span class="number">2.5</span>, -<span class="number">0.333</span>]</span><br><span class="line">[-<span class="number">2.0</span>, <span class="number">5.166</span>, -<span class="number">2.5</span>, <span class="number">0.333</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line"></span><br><span class="line">C polynomials</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[-<span class="number">1.0</span>, <span class="number">1.833</span>, -<span class="number">1.0</span>, <span class="number">0.166</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">4.333</span>, <span class="number">1.5</span>, -<span class="number">0.166</span>]</span><br><span class="line">[-<span class="number">6.0</span>, <span class="number">9.5</span>, -<span class="number">4.0</span>, <span class="number">0.5</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">7.0</span>, <span class="number">3.5</span>, -<span class="number">0.5</span>]</span><br></pre></td></tr></table></figure></p>
+<p>这样，x = 1 的时候，计算 18 个表达式，可以得到<br>[0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0]，正好对应 r1cs 的 A B C的第一行。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">A</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">5</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">B</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">C</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>]</span><br><span class="line">[<span class="number">0</span>, <span class="number">0</span>, <span class="number">1</span>, <span class="number">0</span>, <span class="number">0</span>, <span class="number">0</span>]</span><br></pre></td></tr></table></figure>
+<p>记 A(x) = s · (A1,A2,A3,A4,A5,A6)</p>
+<p>A(x) <em> B(x) - C(x)  = s·a </em> s·b - s·c</p>
+<p>同理， x = 1， 2， 3， 4 时，对应R1CS的4个约束， A(x) <em> B(x) - C(x)  = s·a </em> s·b - s·c = 0<br>所以  A(x) <em> B(x) - C(x) = 0 至少有 4 个解, 1, 2, 3, 4。<br>所以 A(x) </em> B(x) - C(x) 可以表示为 (x - 1)(x - 2)(x - 3)(x - 4) <em> H(x)<br>所以 A(x) </em> B(x) - C(x) 如果能够整除  (x - 1)(x - 2)(x - 3)(x - 4)，就可以认为满足所有约束</p>
+<p>验证： 带入解向量 s = (1,3,35,9,27,30)，求得<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">A</span>(x) = s · (A1,A2,A3,A4,A5,A6)</span><br><span class="line">     = (<span class="number">1</span>,<span class="number">3</span>,<span class="number">35</span>,<span class="number">9</span>,<span class="number">27</span>,<span class="number">30</span>) ·（</span><br><span class="line">[-<span class="number">5.0</span>, <span class="number">9.166</span>, -<span class="number">5.0</span>, <span class="number">0.833</span>]</span><br><span class="line">[<span class="number">8.0</span>, -<span class="number">11.333</span>, <span class="number">5.0</span>, -<span class="number">0.666</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[-<span class="number">6.0</span>, <span class="number">9.5</span>, -<span class="number">4.0</span>, <span class="number">0.5</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">7.0</span>, <span class="number">3.5</span>, -<span class="number">0.5</span>]</span><br><span class="line">[-<span class="number">1.0</span>, <span class="number">1.833</span>, -<span class="number">1.0</span>, <span class="number">0.166</span>]）</span><br><span class="line">= [<span class="number">43.0</span>, -<span class="number">73.333</span>, <span class="number">38.5</span>, -<span class="number">5.166</span>]  </span><br><span class="line">（第一个系数<span class="number">43</span> = <span class="number">1</span> * （-<span class="number">5</span>） + <span class="number">3</span> * <span class="number">8</span> - <span class="number">6</span> * <span class="number">9</span> + <span class="number">4</span> * <span class="number">27</span> - <span class="number">30</span>）</span><br><span class="line"></span><br></pre></td></tr></table></figure><br>同样<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">s . B  = [-<span class="number">3.0</span>, <span class="number">10.333</span>, -<span class="number">5.0</span>, <span class="number">0.666</span>]</span><br><span class="line">s . C  = [-<span class="number">41.0</span>, <span class="number">71.666</span>, -<span class="number">24.5</span>, <span class="number">2.833</span>]</span><br></pre></td></tr></table></figure></p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// 顺序写反了？43应该是1的系数？</span></span><br><span class="line"><span class="title function_ invoke__">A</span>(x) * <span class="title function_ invoke__">B</span>(x) - <span class="title function_ invoke__">C</span>(x) = </span><br><span class="line">(<span class="number">43</span> * x^<span class="number">3</span> - <span class="number">73.333</span> * x^<span class="number">2</span> + <span class="number">38.5</span> * x - <span class="number">5.166</span>) *</span><br><span class="line">(-<span class="number">3</span> * x^<span class="number">3</span> + <span class="number">10.333</span> * x^<span class="number">2</span> - <span class="number">5</span> * x + <span class="number">0.666</span>) -</span><br><span class="line">(-<span class="number">41</span> * x^<span class="number">3</span> - <span class="number">71.666</span> * x^<span class="number">2</span> - <span class="number">24.5</span> * x + <span class="number">2.833</span>) </span><br><span class="line">= -<span class="number">88</span> * x^<span class="number">6</span> + <span class="number">592.666</span> * x^<span class="number">5</span> - <span class="number">1063.777</span> * x^<span class="number">4</span> + <span class="number">805</span> * x^<span class="number">3</span> </span><br><span class="line">- <span class="number">294.777</span> * x^<span class="number">2</span> + <span class="number">51.5</span> * x -<span class="number">3.444</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">(x - <span class="number">1</span>)(x - <span class="number">2</span>)(x - <span class="number">3</span>)(x - <span class="number">4</span>)</span><br><span class="line">= <span class="number">24</span> * x^<span class="number">4</span> - <span class="number">50</span> * x^<span class="number">3</span> + <span class="number">35</span> * x^<span class="number">2</span> - <span class="number">10</span> * x + <span class="number">1</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="title function_ invoke__">A</span>(x) * <span class="title function_ invoke__">B</span>(x) - <span class="title function_ invoke__">C</span>(x)  / (x - <span class="number">1</span>)(x - <span class="number">2</span>)(x - <span class="number">3</span>)(x - <span class="number">4</span>)</span><br><span class="line">= - <span class="number">3.666</span> * x^<span class="number">2</span> - <span class="number">17.055</span> * x - <span class="number">3.444</span></span><br></pre></td></tr></table></figure>
+<p>能够整除，认为 解 s 满足所有约束</p>
+<p>相较于 R1CS，这部分用 R1CS 求出了多项式（系数）<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">A polynomials</span><br><span class="line">[-<span class="number">5.0</span>, <span class="number">9.166</span>, -<span class="number">5.0</span>, <span class="number">0.833</span>]</span><br><span class="line">[<span class="number">8.0</span>, -<span class="number">11.333</span>, <span class="number">5.0</span>, -<span class="number">0.666</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[-<span class="number">6.0</span>, <span class="number">9.5</span>, -<span class="number">4.0</span>, <span class="number">0.5</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">7.0</span>, <span class="number">3.5</span>, -<span class="number">0.5</span>]</span><br><span class="line">[-<span class="number">1.0</span>, <span class="number">1.833</span>, -<span class="number">1.0</span>, <span class="number">0.166</span>]</span><br><span class="line"></span><br><span class="line">B polynomials</span><br><span class="line">[<span class="number">3.0</span>, -<span class="number">5.166</span>, <span class="number">2.5</span>, -<span class="number">0.333</span>]</span><br><span class="line">[-<span class="number">2.0</span>, <span class="number">5.166</span>, -<span class="number">2.5</span>, <span class="number">0.333</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line"></span><br><span class="line">C polynomials</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[<span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>, <span class="number">0.0</span>]</span><br><span class="line">[-<span class="number">1.0</span>, <span class="number">1.833</span>, -<span class="number">1.0</span>, <span class="number">0.166</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">4.333</span>, <span class="number">1.5</span>, -<span class="number">0.166</span>]</span><br><span class="line">[-<span class="number">6.0</span>, <span class="number">9.5</span>, -<span class="number">4.0</span>, <span class="number">0.5</span>]</span><br><span class="line">[<span class="number">4.0</span>, -<span class="number">7.0</span>, <span class="number">3.5</span>, -<span class="number">0.5</span>]</span><br></pre></td></tr></table></figure></p>
+<p>对于任意的解向量 s，计算 s · (A1,A2,A3,A4,A5,A6) × s · (B1,B2,B3,B4,B5,B6) - s · (C1,C2,C3,C4,C5,C6) 能否整除 (x - 1)(x - 2)(x - 3)(x - 4)</p>
+<h1 id="椭圆曲线"><a href="#椭圆曲线" class="headerlink" title="椭圆曲线"></a>椭圆曲线</h1><h2 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h2><p><img src="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线.png" alt="image.png"><br>其中不等式保证曲线不包含奇点（保证椭圆上任意一点都有切线）<br>椭圆曲线关于 x 轴对称</p>
+<h2 id="椭圆曲线运算规则"><a href="#椭圆曲线运算规则" class="headerlink" title="椭圆曲线运算规则"></a>椭圆曲线运算规则</h2><h3 id="加法：A-B"><a href="#加法：A-B" class="headerlink" title="加法：A + B"></a>加法：A + B</h3><p><img src="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线加法.png" alt="image.png"><br>A B 是椭圆曲线上点，椭圆曲线上A + B的定义为：AB和椭圆曲线的交点关于X轴的对称点</p>
+<h3 id="乘法：-2A-A-A"><a href="#乘法：-2A-A-A" class="headerlink" title="乘法： 2A = A + A"></a>乘法： 2A = A + A</h3><p><img src="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/椭圆曲线乘法.png" alt="image.png"></p>
+<p>A  是椭圆曲线上点，椭圆曲线上 2A (A + A)的定义为：A点的切线和椭圆曲线的交点关于X轴的对称点<br>3A = A + 2A</p>
+<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><p>离散对数问题：<br>椭圆曲线上两个点 P Q， k为整数<br>Q = kP<br>加密原理：<br>点P为基点(base point), k 为私钥， Q 为公钥<br>给定 P 和 k， 计算 Q 很容易，<br><img src="/2023/05/31/zk-SNARK%E5%AD%A6%E4%B9%A0/快速幂.png" alt="image.png"><br>但给定 P Q，求 k 非常困难</p>
+<h3 id="指数知识假设"><a href="#指数知识假设" class="headerlink" title="指数知识假设"></a>指数知识假设</h3><p>在椭圆曲线上，给定一对点 (P,Q)，其中 Pk = Q ，然后在给定一个点 C ，你不可能得到一个点 R=Ck，除非你知道 C 是怎样由点 P “派生”出来的(比如你知道 C=nP 中的 n ，那么 Ck = nPk = nQ )。<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Pk = Q  </span><br><span class="line">C = nP </span><br><span class="line">Ck = R</span><br></pre></td></tr></table></figure></p>
+<p>zk-SNARK 的安全性依赖于这个假设，尽管其还没有被证明等价于其他困难问题（如离散对数问题），但是大多数密码学家认为它足够坚固。</p>
+<h1 id="zk-SNARK-证明"><a href="#zk-SNARK-证明" class="headerlink" title="zk - SNARK 证明"></a>zk - SNARK 证明</h1><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Pk = Q  </span><br><span class="line">C = nP </span><br><span class="line">Ck = R</span><br></pre></td></tr></table></figure>
+<p>Pk = Q   k =  f(x) = 43 <em> x^3 - 73.333 </em> x^2 + 38.5 * x - 5.166 = k<br>给定PQ ，证明者无法算出 k</p>
+<p>C = nP    n = s<br>Ck = nPk = n Q = s Q = R<br>给定 CR， 验已知k，可以验证 Ck = R<br>但根据 C = nP，无法计算 n，即解向量 s</p>
+<p>椭圆曲线上任取一点 G, k_a，k_b，k_c， t<br><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">G * A_1(t), G * A_1(t) * k_a</span><br><span class="line">G * A_2(t), G * A_2(t) * k_a</span><br><span class="line">…</span><br><span class="line">G * B_1(t), G * B_1(t) * k_b</span><br><span class="line">G * B_2(t), G * B_2(t) * k_b</span><br><span class="line">…</span><br><span class="line">G * C_1(t), G * C_1(t) * k_c</span><br><span class="line">G * C_2(t), G * C_2(t) * k_c</span><br><span class="line">…</span><br></pre></td></tr></table></figure></p>
+<p>根据指数知识假设，只有知道解向量 s，才能够求出<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">π_a = G * <span class="title function_ invoke__">A_1</span>(t) * s, π_a&#x27; = G * <span class="title function_ invoke__">A_1</span>(t) * k_a * s</span><br><span class="line">G * <span class="title function_ invoke__">A_2</span>(t) * s, G * <span class="title function_ invoke__">A_2</span>(t) * k_a * s</span><br><span class="line">…</span><br><span class="line">G * <span class="title function_ invoke__">B_1</span>(t) * s, G * <span class="title function_ invoke__">B_1</span>(t) * k_b * s</span><br><span class="line">G * <span class="title function_ invoke__">B_2</span>(t) * s, G * <span class="title function_ invoke__">B_2</span>(t) * k_b * s</span><br><span class="line">…</span><br><span class="line">G * <span class="title function_ invoke__">C_1</span>(t) * s, G * <span class="title function_ invoke__">C_1</span>(t) * k_c * s</span><br><span class="line">G * <span class="title function_ invoke__">C_2</span>(t) * s, G * <span class="title function_ invoke__">C_2</span>(t) * k_c * s</span><br></pre></td></tr></table></figure></p>
+<h1 id="Ref"><a href="#Ref" class="headerlink" title="Ref"></a>Ref</h1><p>Quadratic Arithmetic Programs: from Zero to Hero： <a target="_blank" rel="noopener" href="https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649?ref=blog.anoma.net">https://medium.com/@VitalikButerin/quadratic-arithmetic-programs-from-zero-to-hero-f6d558cea649?ref=blog.anoma.net</a><br>ETH ZKP： <a target="_blank" rel="noopener" href="https://ethereum.org/zh/zero-knowledge-proofs/">https://ethereum.org/zh/zero-knowledge-proofs/</a><br>VampIR：<a target="_blank" rel="noopener" href="https://blog.anoma.net/a-vamp-irs-guide-to-arithmetic-circuits-and-perfectly-boiled-eggs/">https://blog.anoma.net/a-vamp-irs-guide-to-arithmetic-circuits-and-perfectly-boiled-eggs/</a><br>【ECC加密算法】| ECC加密原理详解| 椭圆曲线加密| 密码学| 信息安全： <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1v44y1b7Fd/?spm_id_from=333.337.search-card.all.click&amp;vd_source=3f6c0363de570541eace117866128565">https://www.bilibili.com/video/BV1v44y1b7Fd/?spm_id_from=333.337.search-card.all.click&amp;vd_source=3f6c0363de570541eace117866128565</a><br>公钥加密技术ECC椭圆曲线加密算法原理： <a target="_blank" rel="noopener" href="https://www.bilibili.com/video/BV1BY411M74G/?spm_id_from=333.337.search-card.all.click&amp;vd_source=3f6c0363de570541eace117866128565">https://www.bilibili.com/video/BV1BY411M74G/?spm_id_from=333.337.search-card.all.click&amp;vd_source=3f6c0363de570541eace117866128565</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Web3/" rel="tag"># Web3</a>
+              <a href="/tags/%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF/" rel="tag"># 椭圆曲线</a>
+              <a href="/tags/%E5%AF%86%E7%A0%81%E5%AD%A6/" rel="tag"># 密码学</a>
+              <a href="/tags/zk-SNARK/" rel="tag"># zk-SNARK</a>
+              <a href="/tags/ZKP/" rel="tag"># ZKP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/04/20/ChatGPT-fine-tuning%E5%8F%8A%E9%83%A8%E7%BD%B2/" rel="prev" title="ChatGPT fine tuning 及部署">
+      <i class="fa fa-chevron-left"></i> ChatGPT fine tuning 及部署
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/" rel="next" title="Rustc源码学习03-Lint的执行">
+      Rustc源码学习03-Lint的执行 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">零知识证明的应用场景</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%9B%B6%E7%9F%A5%E8%AF%86%E8%AF%81%E6%98%8E%E7%9A%84%E5%8E%9F%E7%90%86"><span class="nav-text">零知识证明的原理</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%AF%81%E6%98%8E"><span class="nav-text">证明</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%BD%AC%E6%8D%A2%E4%B8%BA%E8%AE%A1%E7%AE%97%E5%87%BD%E6%95%B0"><span class="nav-text">转换为计算函数</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8B%8D%E5%B9%B3%EF%BC%88flatten%EF%BC%89"><span class="nav-text">拍平（flatten）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R1CS"><span class="nav-text">R1CS</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#R1CS-gt-QAP"><span class="nav-text">R1CS -&gt; QAP</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF"><span class="nav-text">椭圆曲线</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89-1"><span class="nav-text">定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A4%AD%E5%9C%86%E6%9B%B2%E7%BA%BF%E8%BF%90%E7%AE%97%E8%A7%84%E5%88%99"><span class="nav-text">椭圆曲线运算规则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E6%B3%95%EF%BC%9AA-B"><span class="nav-text">加法：A + B</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B9%98%E6%B3%95%EF%BC%9A-2A-A-A"><span class="nav-text">乘法： 2A &#x3D; A + A</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%B4%A8"><span class="nav-text">性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8C%87%E6%95%B0%E7%9F%A5%E8%AF%86%E5%81%87%E8%AE%BE"><span class="nav-text">指数知识假设</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#zk-SNARK-%E8%AF%81%E6%98%8E"><span class="nav-text">zk - SNARK 证明</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ref"><span class="nav-text">Ref</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="He1Pa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+  <p class="site-author-name" itemprop="name">He1Pa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">He1Pa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>

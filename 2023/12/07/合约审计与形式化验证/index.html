@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.1.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"www.he1pa.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"always","padding":18,"offset":12,"onmobile":true},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":"valine","storage":true,"lazyload":false,"nav":null,"activeClass":"valine"},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="合约审计与形式化验证: Certik 与 Move ProverCertiK (https:&#x2F;&#x2F;www.certik.com&#x2F;) 是 Web3 领先的智能合约审计公司，提供一整套工具来大规模保护行业安全。Certik 通过专家审查 + AI + 形式化验证保障合约安全。 Certik 对智能合约的形式化验证主要过程为:  将合同的规范和所需属性定义为形式化语言。 将合约代码翻译成形式化表示，例如数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="合约审计与形式化验证">
+<meta property="og:url" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/index.html">
+<meta property="og:site_name" content="Write the code, Change the world">
+<meta property="og:description" content="合约审计与形式化验证: Certik 与 Move ProverCertiK (https:&#x2F;&#x2F;www.certik.com&#x2F;) 是 Web3 领先的智能合约审计公司，提供一整套工具来大规模保护行业安全。Certik 通过专家审查 + AI + 形式化验证保障合约安全。 Certik 对智能合约的形式化验证主要过程为:  将合同的规范和所需属性定义为形式化语言。 将合约代码翻译成形式化表示，例如数">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Certik.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Move.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq1.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq2.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq3.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq4.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq5.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq6.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq7.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq8.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/moveres.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/symbolic.png">
+<meta property="og:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/methods.png">
+<meta property="article:published_time" content="2023-12-07T03:24:51.000Z">
+<meta property="article:modified_time" content="2023-12-07T03:43:57.481Z">
+<meta property="article:author" content="He1Pa">
+<meta property="article:tag" content="+ 智能合约 + Web3 + 形式化验证">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Certik.png">
+
+<link rel="canonical" href="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>合约审计与形式化验证 | Write the code, Change the world</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Write the code, Change the world</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags<span class="badge">46</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>Categories<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives<span class="badge">30</span></a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="https://www.he1pa.com/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+      <meta itemprop="name" content="He1Pa">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Write the code, Change the world">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          合约审计与形式化验证
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-12-07 11:24:51 / Modified: 11:43:57" itemprop="dateCreated datePublished" datetime="2023-12-07T11:24:51+08:00">2023-12-07</time>
+            </span>
+
+          
+            <span class="post-meta-item" title="Views" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">Views: </span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+  
+  <span class="post-meta-item">
+    
+      <span class="post-meta-item-icon">
+        <i class="far fa-comment"></i>
+      </span>
+      <span class="post-meta-item-text">Valine: </span>
+    
+    <a title="valine" href="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="合约审计与形式化验证-Certik-与-Move-Prover"><a href="#合约审计与形式化验证-Certik-与-Move-Prover" class="headerlink" title="合约审计与形式化验证: Certik 与 Move Prover"></a>合约审计与形式化验证: Certik 与 Move Prover</h1><p>CertiK (<a target="_blank" rel="noopener" href="https://www.certik.com/">https://www.certik.com/</a>) 是 Web3 领先的智能合约审计公司，提供一整套工具来大规模保护行业安全。Certik 通过专家审查 + AI + 形式化验证保障合约安全。<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Certik.png" alt="Certik"></p>
+<p>Certik 对智能合约的形式化验证主要过程为:</p>
+<ol>
+<li>将合同的规范和所需属性定义为形式化语言。</li>
+<li>将合约代码翻译成形式化表示，例如数学模型或逻辑。</li>
+<li>使用自动定理证明器或模型检查器来验证合约的规范和属性是否成立。</li>
+<li>重复验证过程以查找并修复与所需属性的任何错误或偏差。</li>
+</ol>
+<p>Certik 使用 SMT Solver 和 Coq 作为形式化验证的工具。</p>
+<ul>
+<li>SMT: <a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/6nL1ogDyekFC7nfCt9n0LR-formal-verification-of-erc-20-tokens-part-one">Formal Verification of ERC-20 Tokens</a></li>
+<li>Coq: <ul>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/gt2VYhKbigwcysl50fkJS-advanced-web3-formal-verification-of-hyperenclaves-tee">Advanced Web3 Formal Verification of HyperEnclave’s TEE</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/4ogMxJAy7dsREQhYbDIsVK-formal-verification-of-ton-master-chain-contracts">Formal Verification of TON Master Chain Contracts</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/2s2MLGm54I6uLYOE5pS9Na-how-to-formally-verify-a-cosmos-sdk-standard-module">How to Formally Verify A Cosmos SDK Standard Module</a></li>
+</ul>
+</li>
+</ul>
+<p>Certik 在更多的案例中使用了 Coq。Coq 是一个交互式的形式化验证工具。 它提供了一种用于编写数学定义、可执行算法和定理的形式语言，以及用于机器检查证明的半交互式开发的环境。</p>
+<blockquote>
+<p>Coq 证明助手: <a target="_blank" rel="noopener" href="https://yuque.antfin-inc.com/vl7kr4/st175p/lb1fnk">https://yuque.antfin-inc.com/vl7kr4/st175p/lb1fnk</a></p>
+</blockquote>
+<p>Move 是一种用于编写智能合约的特定领域编程语言。 它被几个最近启动的项目使用，包括 Aptos、0L 和  Starcoin 区块链。  Move 开发环境包括一个名为“Move Prover”的检查器。</p>
+<p>Move 编程语言有一个规范子语言，允许程序员声明有关 Move 程序的所需属性。特别是，Move Prover 遵循合约范式设计。 在内部，Move Prover 将 Move 程序及其规范转换为数学模型，然后使用演绎验证器 Boogie 对其进行形式化验证。 Boogie 使用 Z3 和 CVC4 等 SMT 求解器作为决策程序来进行证明。 一旦 Boogie 完成形式验证，其结果就会映射回 Move 语言级别并显示给程序员。<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Move.png" alt="Move"></p>
+<p>SMT（<strong>satisfiability modulo theories</strong>） 求解器是 找到一组约束的可满足解:  x - y = 3  x + y = 5 =&gt; x = 4 y = 1<br>合约/软件验证:  源代码 -&gt; 建模 -&gt; 约束 -&gt; 对约束的反例求解 -&gt; 有解则不满足约束，无解则满足约束<br>约束 x = y， 验证时: 对于 x != y，求解。所以 SMT 验证时的结果是给出一个反例和对应不满足的约束</p>
+<h2 id="Coq-和-Move-Prover-的区别"><a href="#Coq-和-Move-Prover-的区别" class="headerlink" title="Coq 和 Move Prover 的区别"></a>Coq 和 Move Prover 的区别</h2><p>用一个简单的例子感受 Coq 和 Move Prover之间的区别。</p>
+<p>写一个 ERC20 中 transfer 函数，其实现与表示代币从一个合约地址转移到另一个地址。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">uint sender;</span><br><span class="line">uint receiver;</span><br><span class="line">uint totalSupply;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Transfer money from User 1 to User 2.</span></span><br><span class="line">function <span class="title function_ invoke__">transfer</span>(uint amount) &#123;</span><br><span class="line">    sender = sender - amount;</span><br><span class="line">    receiver = receiver + amount;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个合约实际上要求 sender &gt;=  amount，但在这个代码中并没有检查。接下来使用 Coq 和 Move Prover 来检查这一“漏洞”。</p>
+<h3 id="Coq"><a href="#Coq" class="headerlink" title="Coq"></a>Coq</h3><p>形式验证需要证明程序的模型满足所声明的属性。在这个例子中，可以选择代币总数作为不变量，验证“交易前后代币不变这一属性”。即交易前的 sender, receiver 和交易后的sender’, receiver’ 满足  sender + receiver = sender’ + receiver’ </p>
+<p>Certik 在使用 Coq 进行合约审计时，会将合约的实现翻译为 Coq 函数。我们将这个函数翻译为 Coq 中的一个 Definition。</p>
+<figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Definition <span class="title function_ invoke__">transfer</span> (sender receiver amount : nat) : nat :=</span><br><span class="line">  <span class="keyword">let</span> <span class="variable">sender</span>&#x27; := sender - amount <span class="keyword">in</span></span><br><span class="line">  <span class="keyword">let</span> <span class="variable">receiver</span>&#x27; := receiver + amount <span class="keyword">in</span></span><br><span class="line">  sender&#x27; + receiver&#x27;.</span><br></pre></td></tr></table></figure>
+<p>Coq是函数式编程语言，无副作用。不能直接更改输入的 sender receiver 的值。可以选择将交易后的 sender’ receiver’ 作为返回值，这里选择直接返回 sender’ + receiver’</p>
+<p>然后，将模型需要满足的属性翻译为 Coq 中的引理。<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Lemma transfer_eq : <span class="title function_ invoke__">forall</span> (a b c : nat),</span><br><span class="line">  a + b = transfer a b c.</span><br></pre></td></tr></table></figure><br>这表示对于任意的自然数 a b c,  a + b = transfer(a, b, c)</p>
+<p>在开始证明之前，还需要引入一些Coq的标准库来辅助证明<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Require Import Arith.</span><br></pre></td></tr></table></figure></p>
+<p>使用 Proof. 来开始证明<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">Proof.</span><br><span class="line">  intros a b c.</span><br><span class="line">  unfold transfer.</span><br><span class="line">  <span class="title function_ invoke__">rewrite</span> (Nat.add_comm b c).</span><br><span class="line">  rewrite Nat.add_assoc.</span><br><span class="line">  rewrite Nat.sub_add.</span><br><span class="line">  reflexivity.</span><br><span class="line">Abort.</span><br></pre></td></tr></table></figure></p>
+<p>Coq 是一个交互式的定理证明工具。在执行每一个证明语句后，证明的目标会发生改变。通过将证明的目标拆解为子目标，然后利用现有条件或公理、性质和已证明的引理来逐个证明。</p>
+<p>一开始，证明的目标为:<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq1.png" alt="Coq1"><br>使用 intros 引入 a b c 作为已知条件<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq2.png" alt="Coq2"><br>展开 transfer 函数<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq3.png" alt="Coq3"><br>接下来使用标准库中的 Nat.add_comm Nat.add_assoc Nat.sub_add 来重写目标中的表达式<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq4.png" alt="Coq4"><br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq5.png" alt="Coq5"></p>
+<p>对于 Nat.sub_add， 查看其定义:<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq6.png" alt="Coq6"><br>表示对于任意的自然数 n m, n &lt;= m 时， m - n + n = m<br>对应此时目标中等号右边的  a - c + c。使用 Nat.sub_add 重写，<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq7.png" alt="Coq7"><br>这里引入了新的目标，即 c &lt;= a。是因为使用 Nat.sub_add 重写的前提为 c &lt;= a。即将证明的目标反推，如果证明了 c &lt;= a，并且 a + b = a + b，那么利用 Nat.sub_add 这一引理，就可以证明 a + b = a - c + c + b。<br>利用自反性(reflexivity)可以证明第一个目标。<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/Coq8.png" alt="Coq8"></p>
+<p>此时对于 c &lt;= a 无从下手，只能 Abort 放弃证明，合约模型不满足这一属性。</p>
+<p>此时回顾 c 和 a 在合约中的定义，分别表示amount 和 sender 的金额，这一条件要求 amount &lt;= sender，很容易发现合约“漏洞”。</p>
+<p>完整代码：<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">Require Import Arith.</span><br><span class="line"></span><br><span class="line">Definition <span class="title function_ invoke__">transfer</span> (sender receiver amount : nat) : nat :=</span><br><span class="line">  <span class="keyword">let</span> <span class="variable">sender</span>&#x27; := sender - amount <span class="keyword">in</span></span><br><span class="line">  <span class="keyword">let</span> <span class="variable">receiver</span>&#x27; := receiver + amount <span class="keyword">in</span></span><br><span class="line">  sender&#x27; + receiver&#x27;.</span><br><span class="line">  </span><br><span class="line"></span><br><span class="line">Lemma transfer_eq : <span class="title function_ invoke__">forall</span> (a b c : nat),</span><br><span class="line">  a + b = transfer a b c.</span><br><span class="line">  </span><br><span class="line">Proof.</span><br><span class="line">  intros a b c.</span><br><span class="line">  unfold transfer.</span><br><span class="line">  <span class="title function_ invoke__">rewrite</span> (Nat.add_comm b c).</span><br><span class="line">  rewrite Nat.add_assoc.</span><br><span class="line">  rewrite Nat.sub_add.</span><br><span class="line">  reflexivity.</span><br><span class="line">Abort.</span><br></pre></td></tr></table></figure></p>
+<p>在线体验： <a target="_blank" rel="noopener" href="https://coq.vercel.app/scratchpad.html">https://coq.vercel.app/scratchpad.html</a></p>
+<h3 id="Move-prover"><a href="#Move-prover" class="headerlink" title="Move prover"></a>Move prover</h3><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">module <span class="number">0x1234</span>::test &#123;</span><br><span class="line">    fun <span class="title function_ invoke__">transfer</span>(sender: <span class="type">u64</span>, receiver: <span class="type">u64</span>, value: <span class="type">u64</span>): <span class="type">u64</span> &#123;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_sender</span>: <span class="type">u64</span> = sender - value;</span><br><span class="line">        <span class="keyword">let</span> <span class="variable">_receiver</span>: <span class="type">u64</span> = receiver + value;</span><br><span class="line">        _sender + _receiver</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    spec transfer &#123;</span><br><span class="line">        pragma aborts_if_is_strict;</span><br><span class="line">        ensures result == sender + receiver;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>运行 move prove<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/moveres.png" alt="move result"></p>
+<p>验证过程中，还会在当前项目目录下生成 boogie ir 的文件 xxx.bpl<br><figure class="highlight rust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// fun test::transfer [verification] at ./sources/main.move:2:5+183</span></span><br><span class="line">procedure &#123;:timeLimit <span class="number">40</span>&#125; $<span class="number">1234_</span>test_transfer$<span class="title function_ invoke__">verify</span>(_$t0: int, _$t1: int, _$t2: int) <span class="title function_ invoke__">returns</span> ($ret0: int)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="comment">// declare local variables</span></span><br><span class="line">    var $t3: int;</span><br><span class="line">    var $t4: int;</span><br><span class="line">    var $t5: int;</span><br><span class="line">    var $t6: int;</span><br><span class="line">    var $t7: int;</span><br><span class="line">    var $t8: int;</span><br><span class="line">    var $t0: int;</span><br><span class="line">    var $t1: int;</span><br><span class="line">    var $t2: int;</span><br><span class="line">    var $temp_0<span class="symbol">&#x27;u64</span>&#x27;: int;</span><br><span class="line">    $t0 := _$t0;</span><br><span class="line">    $t1 := _$t1;</span><br><span class="line">    $t2 := _$t2;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// verification entrypoint assumptions</span></span><br><span class="line">    call $<span class="title function_ invoke__">InitVerification</span>();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// bytecode translation starts here</span></span><br><span class="line">    <span class="comment">// assume WellFormed($t0) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,26,27)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    assume $IsValid<span class="symbol">&#x27;u64</span>&#x27;($t0);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assume WellFormed($t1) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume $IsValid<span class="symbol">&#x27;u64</span>&#x27;($t1);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assume WellFormed($t2) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume $IsValid<span class="symbol">&#x27;u64</span>&#x27;($t2);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_local[sender]($t0) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_local(0,0,0):&quot;</span>, $t0&#125; $t0 == $t0;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_local[receiver]($t1) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_local(0,0,1):&quot;</span>, $t1&#125; $t1 == $t1;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_local[value]($t2) at ./sources/main.move:2:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_local(0,0,2):&quot;</span>, $t2&#125; $t2 == $t2;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// $t5 := -($t0, $t2) on_abort goto L2 with $t6 at ./sources/main.move:3:35+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,120,121)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    call $t5 := $<span class="title function_ invoke__">Sub</span>($t0, $t2);</span><br><span class="line">    <span class="title function_ invoke__">if</span> ($abort_flag) &#123;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$at(2,120,121)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">        $t6 := $abort_code;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$track_abort(0,0):&quot;</span>, $t6&#125; $t6 == $t6;</span><br><span class="line">        goto L2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_local[_sender]($t5) at ./sources/main.move:3:13+7</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_local(0,0,4):&quot;</span>, $t5&#125; $t5 == $t5;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// $t7 := +($t1, $t2) on_abort goto L2 with $t6 at ./sources/main.move:4:39+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,167,168)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    call $t7 := $<span class="title function_ invoke__">AddU64</span>($t1, $t2);</span><br><span class="line">    <span class="title function_ invoke__">if</span> ($abort_flag) &#123;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$at(2,167,168)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">        $t6 := $abort_code;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$track_abort(0,0):&quot;</span>, $t6&#125; $t6 == $t6;</span><br><span class="line">        goto L2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_local[_receiver]($t7) at ./sources/main.move:4:13+9</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_local(0,0,3):&quot;</span>, $t7&#125; $t7 == $t7;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// $t8 := +($t5, $t7) on_abort goto L2 with $t6 at ./sources/main.move:5:17+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,192,193)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    call $t8 := $<span class="title function_ invoke__">AddU64</span>($t5, $t7);</span><br><span class="line">    <span class="title function_ invoke__">if</span> ($abort_flag) &#123;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$at(2,192,193)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">        $t6 := $abort_code;</span><br><span class="line">        assume &#123;:print <span class="string">&quot;$track_abort(0,0):&quot;</span>, $t6&#125; $t6 == $t6;</span><br><span class="line">        goto L2;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// trace_return[0]($t8) at ./sources/main.move:5:9+19</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$track_return(0,0,0):&quot;</span>, $t8&#125; $t8 == $t8;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// label L1 at ./sources/main.move:6:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,208,209)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">L1:</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assert Not(false) at ./sources/main.move:6:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,208,209)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    assert &#123;:msg <span class="string">&quot;assert_failed(2,208,209): function does not abort under this condition&quot;</span>&#125;</span><br><span class="line">      !<span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assert Eq&lt;u64&gt;($t8, Add($t0, $t1)) at ./sources/main.move:10:9+36</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,275,311)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    assert &#123;:msg <span class="string">&quot;assert_failed(2,275,311): post-condition does not hold&quot;</span>&#125;</span><br><span class="line">      $IsEqual<span class="symbol">&#x27;u64</span>&#x27;($t8, ($t0 + $t1));</span><br><span class="line"></span><br><span class="line">    <span class="comment">// return $t8 at ./sources/main.move:10:9+36</span></span><br><span class="line">    $ret0 := $t8;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// label L2 at ./sources/main.move:6:5+1</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,208,209)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">L2:</span><br><span class="line"></span><br><span class="line">    <span class="comment">// assert false at ./sources/main.move:8:5+102</span></span><br><span class="line">    assume &#123;:print <span class="string">&quot;$at(2,215,317)&quot;</span>&#125; <span class="literal">true</span>;</span><br><span class="line">    assert &#123;:msg <span class="string">&quot;assert_failed(2,215,317): abort not covered by any of the `aborts_if` clauses&quot;</span>&#125;</span><br><span class="line">      <span class="literal">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// abort($t6) at ./sources/main.move:8:5+102</span></span><br><span class="line">    $abort_code := $t6;</span><br><span class="line">    $abort_flag := <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">return</span>;</span><br><span class="line"></span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure></p>
+<ul>
+<li>print: 打印调试信息，不影响执行</li>
+<li>$at 是一个 Boogie 的内置函数，用于指示某个语句或表达式的位置信息</li>
+<li>L1 L2， label，程序执行流程控制</li>
+<li>assume:  做一些前提假设。例如，assume WellFormed($t0) 表示假设 $t0 是一个合法的 Move 类型，并且 assume $IsValid’u64’($t0) 表示假设 $t0 是一个有效的无符号 64 位整数。这些假设在验证过程中用于推导其他断言。</li>
+<li>$abort_flag: 表示是否发生了异常（abort）</li>
+<li>assert: 断言，它用于在程序执行期间检查某个条件是否满足。如果断言条件为真，则程序继续执行；如果断言条件为假，则会导致验证失败。 例如     assert {:msg “assert_failed(2,275,311): post-condition does not hold”}</li>
+</ul>
+<h2 id="对比"><a href="#对比" class="headerlink" title="对比"></a>对比</h2><p>Coq<br>优点：</p>
+<ul>
+<li>从数学上证明，避免测试的 corner case</li>
+<li>形式化的规范避免自然语言中的模糊和歧义</li>
+<li>相对于 SMT，定理证明可以处理对无限状态系统的分析。上述例子中具体表现入参的区别， Coq 中可以对自然数域（nat 类型）做验证，而smt只能对有限的输入做验证</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>需要手动 translate，将智能合约的实现翻译为 Coq 代码，翻译的过程中可能导致 Coq 代码和原合约代码语义上的区别，例如 transfer 中 uint 变量类型被翻译为 nat</li>
+<li>需要证明的合约满足的属性是不明确的。错误的约束可能会将漏洞从代码带到规范中，而不恰当的约束也可能导致错误不能被检查。这一点不只是coq，move prover 同样需要人为定义spec</li>
+<li>Coq需要手动证明，成本高，需要验证人员对 Coq 和智能合约都有认知。同时 Coq 证明也很复杂， Certik 在验证 TEE 时用了数千行的规范和 17300 多行的证明代码</li>
+<li>过于 Customize，可以作为 Case by Case 的服务，但不太好沉淀为通用的解决方案。</li>
+</ul>
+<p>Move prover<br>优点</p>
+<ul>
+<li>SMT 是自动求解的，不需要像Coq一样手动构造证明</li>
+<li>更通用，完成语言前端到 boogie IR 的翻译之后，基本上所有语言都可以使用这个方案</li>
+</ul>
+<p>缺点</p>
+<ul>
+<li>语言设计时需要遵循SMT的约束，因此Move语言的能力有很大的限制，仅基础类型就不支持 int(只有 u8 u32 u64)， string， map</li>
+<li>spec 很难写: <a target="_blank" rel="noopener" href="https://github.com/move-language/move/blob/main/language/move-prover/doc/user/spec-lang.md">https://github.com/move-language/move/blob/main/language/move-prover/doc/user/spec-lang.md</a></li>
+<li>SMT 存在状态爆炸和可判定问题<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Decision_problem">https://en.wikipedia.org/wiki/Decision_problem</a></li>
+</ul>
+<h1 id="补充"><a href="#补充" class="headerlink" title="补充"></a>补充</h1><p>符号执行<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/symbolic.png" alt="symbolic"></p>
+<p><a target="_blank" rel="noopener" href="https://gitee.com/HW-PLLab/pllab_slides/blob/dev/WechatOfficialAccSlides/20230223-%E7%AC%A6%E5%8F%B7%E5%8C%96%E6%89%A7%E8%A1%8C%E5%9C%A8%E8%BD%AF%E4%BB%B6%E9%A2%86%E5%9F%9F%E7%9A%84%E5%BA%94%E7%94%A8%E5%8F%8A%E6%8C%91%E6%88%98-by-%E6%B2%88%E8%AF%97%E7%90%A6.pdf">https://gitee.com/HW-PLLab/pllab_slides/blob/dev/WechatOfficialAccSlides/20230223-%E7%AC%A6%E5%8F%B7%E5%8C%96%E6%89%A7%E8%A1%8C%E5%9C%A8%E8%BD%AF%E4%BB%B6%E9%A2%86%E5%9F%9F%E7%9A%84%E5%BA%94%E7%94%A8%E5%8F%8A%E6%8C%91%E6%88%98-by-%E6%B2%88%E8%AF%97%E7%90%A6.pdf</a></p>
+<p>合约语言验证技术对比<br><img src="/2023/12/07/%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/methods.png" alt="mothods"><br>Solana Certora Prover 和 solidity SMTCheck 也是基于 SMT 的方案。<br>DeepSea 能采用 Coq 作为验证工具，大概率是因为语言使用 Ocaml 实现，Coq 由 Ocaml 语言实现且 Coq 代码可以提取为 Ocaml 代码，两者之间存在一些可转换性。</p>
+<h1 id="Todo"><a href="#Todo" class="headerlink" title="Todo"></a>Todo</h1><p>Solana Certora Prover (SCP) </p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://medium.com/certora/formal-verification-of-solana-smart-contracts-2e57b960f953">https://medium.com/certora/formal-verification-of-solana-smart-contracts-2e57b960f953</a></li>
+<li><a target="_blank" rel="noopener" href="https://medium.com/certora/formal-verification-of-spl-token-2022-d521db465c2e">https://medium.com/certora/formal-verification-of-spl-token-2022-d521db465c2e</a></li>
+</ul>
+<p>Solidity SMTCheck</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://docs.soliditylang.org/en/v0.8.15/smtchecker.html">https://docs.soliditylang.org/en/v0.8.15/smtchecker.html</a></li>
+<li><a target="_blank" rel="noopener" href="https://runtimeverification.com/blog/how-formal-verification-of-smart-contracts-works">https://runtimeverification.com/blog/how-formal-verification-of-smart-contracts-works</a></li>
+</ul>
+<h1 id="Ref："><a href="#Ref：" class="headerlink" title="Ref："></a>Ref：</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://ethereum.org/zh/developers/docs/smart-contracts/formal-verification/">https://ethereum.org/zh/developers/docs/smart-contracts/formal-verification/</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/gt2VYhKbigwcysl50fkJS-advanced-web3-formal-verification-of-hyperenclaves-tee">Advanced Web3 Formal Verification of HyperEnclave’s TEE</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/4ogMxJAy7dsREQhYbDIsVK-formal-verification-of-ton-master-chain-contracts">Formal Verification of TON Master Chain Contracts</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/2s2MLGm54I6uLYOE5pS9Na-how-to-formally-verify-a-cosmos-sdk-standard-module">How to Formally Verify A Cosmos SDK Standard Module</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/6nL1ogDyekFC7nfCt9n0LR-formal-verification-of-erc-20-tokens-part-one">Formal Verification of ERC-20 Tokens</a></li>
+<li>What is Formal Verification in Smart Contract Auditing? <a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/3UDUMVAMia8ZibM7EmPf9f-what-is-formal-verification">https://www.certik.com/resources/blog/3UDUMVAMia8ZibM7EmPf9f-what-is-formal-verification</a></li>
+<li>An Introduction to Move  <a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/3o4Cg1cjQH4IwA88aT8OwT-an-introduction-to-move">https://www.certik.com/resources/blog/3o4Cg1cjQH4IwA88aT8OwT-an-introduction-to-move</a></li>
+<li>Formal Verification, the Move Language, and the Move Prover <a target="_blank" rel="noopener" href="https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover">https://www.certik.com/resources/blog/2wSOZ3mC55AB6CYol6Q2rP-formal-verification-the-move-language-and-the-move-prover</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/move-language/move">https://github.com/move-language/move</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/Zellic/move-prover-examples">https://github.com/Zellic/move-prover-examples</a></li>
+<li><a target="_blank" rel="noopener" href="https://github.com/leonardoalt/ethereum_formal_verification_overview"><strong>https://github.com/leonardoalt/ethereum_formal_verification_overview</strong></a></li>
+<li><a target="_blank" rel="noopener" href="https://research.facebook.com/file/168513165302305/The-Move-Prover.pdf">https://research.facebook.com/file/168513165302305/The-Move-Prover.pdf</a></li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%99%BA%E8%83%BD%E5%90%88%E7%BA%A6-Web3-%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81/" rel="tag"># + 智能合约 + Web3 + 形式化验证</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/31/Rustc%E6%BA%90%E7%A0%81%E5%AD%A6%E4%B9%A003-Lint%E7%9A%84%E6%89%A7%E8%A1%8C/" rel="prev" title="Rustc源码学习03-Lint的执行">
+      <i class="fa fa-chevron-left"></i> Rustc源码学习03-Lint的执行
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+    <div class="comments" id="valine-comments"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%90%88%E7%BA%A6%E5%AE%A1%E8%AE%A1%E4%B8%8E%E5%BD%A2%E5%BC%8F%E5%8C%96%E9%AA%8C%E8%AF%81-Certik-%E4%B8%8E-Move-Prover"><span class="nav-text">合约审计与形式化验证: Certik 与 Move Prover</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Coq-%E5%92%8C-Move-Prover-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-text">Coq 和 Move Prover 的区别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Coq"><span class="nav-text">Coq</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Move-prover"><span class="nav-text">Move prover</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AF%B9%E6%AF%94"><span class="nav-text">对比</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E8%A1%A5%E5%85%85"><span class="nav-text">补充</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Todo"><span class="nav-text">Todo</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Ref%EF%BC%9A"><span class="nav-text">Ref：</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="He1Pa"
+      src="https://avatars.githubusercontent.com/u/56333845?s=400&u=600fd5f50de976970544a4066a750cd59623091b&v=4">
+  <p class="site-author-name" itemprop="name">He1Pa</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">30</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">categories</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">46</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/He1pa" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;He1pa" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:18012015693@163.com" title="E-Mail → mailto:18012015693@163.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">He1Pa</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a>
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="Total Visitors">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="Total Views">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+
+<script>
+NexT.utils.loadComments(document.querySelector('#valine-comments'), () => {
+  NexT.utils.getScript('//unpkg.com/valine/dist/Valine.min.js', () => {
+    var GUEST = ['nick', 'mail', 'link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item => {
+      return GUEST.includes(item);
+    });
+    new Valine({
+      el         : '#valine-comments',
+      verify     : false,
+      notify     : false,
+      appId      : '0ajXWqnokF3aIBvbGWl62uKn-gzGzoHsz',
+      appKey     : '8M2ckzJi4U6v5MxlKf7NpRvY',
+      placeholder: "Just go go",
+      avatar     : 'mm',
+      meta       : guest,
+      pageSize   : '10' || 10,
+      visitor    : false,
+      lang       : '' || 'zh-cn',
+      path       : location.pathname,
+      recordIP   : false,
+      serverURLs : ''
+    });
+  }, window.Valine);
+});
+</script>
+
+</body>
+</html>
